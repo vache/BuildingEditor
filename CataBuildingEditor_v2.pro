@@ -11,12 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CataBuildingEditor_v2
 TEMPLATE = app
 
+CONFIG += c++11 debug_and_release
 
 SOURCES += main.cpp\
         buildingeditor.cpp \
-    buildingmodel.cpp \
-    buildingtile.cpp \
-    building.cpp \
     buildingeditorview.cpp \
     drawableitem.cpp \
     tile.cpp \
@@ -26,12 +24,17 @@ SOURCES += main.cpp\
     furniture.cpp \
     trap.cpp \
     jsonparser.cpp \
-    options.cpp
+    options.cpp \
+    newbuildingwizard.cpp \
+    highlightableitem.cpp \
+    buildingmodel.cpp \
+    overmapterrain.cpp \
+    tripoint.cpp \
+    features.cpp \
+    jsonwriter.cpp \
+    colors.cpp
 
 HEADERS  += buildingeditor.h \
-    buildingmodel.h \
-    buildingtile.h \
-    building.h \
     buildingeditorview.h \
     drawableitem.h \
     tile.h \
@@ -41,7 +44,15 @@ HEADERS  += buildingeditor.h \
     furniture.h \
     trap.h \
     jsonparser.h \
-    options.h
+    options.h \
+    newbuildingwizard.h \
+    highlightableitem.h \
+    buildingmodel.h \
+    overmapterrain.h \
+    tripoint.h \
+    features.h \
+    colors.h \
+    jsonwriter.h
 
 FORMS    += buildingeditor.ui \
     buildinginfodialog.ui

@@ -6,7 +6,7 @@
 class Building
 {
 public:
-    Building(int dimension);
+    Building();
 
     BuildingModel* _model;
 };

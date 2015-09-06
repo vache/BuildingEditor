@@ -2,7 +2,12 @@
 #define BUILDINGEDITOR_H
 
 #include <QMainWindow>
-#include "building.h"
+#include <QMap>
+#include "buildingmodel.h"
+#include "buildingeditorview.h"
+#include "terrain.h"
+#include "furniture.h"
+#include "features.h"
 
 namespace Ui {
 class BuildingEditor;
@@ -18,14 +23,22 @@ public:
 
 private slots:
 
+    void ZLevelSliderChanged(int value);
+
     void NewBuilding();
+    void NewTerrain(Terrain t, QString mod);
+    void NewFurniture(Furniture f, QString mod);
+
+    void Write();
+
 
 private:
     Ui::BuildingEditor *ui;
 
-    Building* _currentBuilding;
+    BuildingModel* m;
 
-
+    QStringList _allIDs;
+    QMap<QString, QString> _modIDs;
 };
 
 #endif // BUILDINGEDITOR_H

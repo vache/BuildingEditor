@@ -4,14 +4,12 @@
 class Options
 {
 public:
-    static Options* GetOptions();
+    static Options& GetOptions();
 
 private:
-    Options();
-    Options(Options&){}
-    Options& operator=(Options&){}
-
-    static Options* OptionsInstance;
+    Options() {}
+    Options(Options&) = delete;
+    Options& operator=(Options&) = delete;
 };
 
 #endif // OPTIONS_H

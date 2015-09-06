@@ -2,30 +2,40 @@
 #define BUILDINGMODEL_H
 
 #include <QAbstractTableModel>
-#include <QVector>
-#include "buildingtile.h"
+#include <QMap>
+#include "overmapterrain.h"
 #include "tile.h"
+#include "tripoint.h"
+
+enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, FurnitureRole };
 
 class BuildingModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit BuildingModel(int dimension, QObject *parent = 0);
+    explicit BuildingModel(bool active[][10], QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
 
     QVariant data(const QModelIndex &index, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+
+    QList<OvermapTerrain> GetOvermapTerrains();
 
 signals:
 
 public slots:
 
 private:
-    QVector<BuildingTile> _tiles;
-    int _dimension;
+    int _rows;
+    int _cols;
+    QMap<Tripoint, OvermapTerrain> _omts;
 
-    Tile GetTileAtIndex(QModelIndex modelIndex) const;
+    Tripoint GetOMTIndex(const QModelIndex &index) const;
+    OvermapTerrain GetOMTFromIndex(const QModelIndex & index);
+    Tripoint GetTileIndex(const QModelIndex &index) const;
+    Tile GetTileFromIndex(const QModelIndex & index);
 };
 
 #endif // BUILDINGMODEL_H
