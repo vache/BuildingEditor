@@ -2,10 +2,8 @@
 #include "features.h"
 #include <QDebug>
 
-Tile::Tile()
+Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup("")
 {
-    _terrain = "t_null";
-    _furniture = "f_null";
 }
 
 QChar Tile::GetChar(QString role) const
@@ -17,6 +15,10 @@ QChar Tile::GetChar(QString role) const
     else if (role == "furniture")
     {
         return GetFurnitureChar();
+    }
+    else if (role == "trap")
+    {
+        return GetTrapChar();
     }
     else
     {
@@ -31,24 +33,35 @@ QList<QChar> Tile::GetExportChars() const
     temp.remove("f_");
     if (_furniture != "f_null")
     {
-        Furniture f = Features::GetFeature(_furniture, Furn).value<Furniture>();
+        Furniture f = Features::GetFurniture(_furniture);
         preferredChars.append(f.GetSymbol());
         preferredChars.append(temp[0]);
         preferredChars.append(temp[0].toUpper());
     }
-//    else if ("_trap" != "tr_null") // TODO obviously
-//    {
-
-//    }
+    else if (_trap != "tr_null")
+    {
+        temp = _trap;
+        temp.remove("tr_");
+        Trap tr = Features::GetTrap(_trap);
+        preferredChars.append(tr.GetSymbol());
+        preferredChars.append(temp[0]);
+        preferredChars.append(temp[0].toUpper());
+    }
     else
     {
         temp = _terrain;
         temp.remove("t_");
-        Terrain t = Features::GetFeature(_terrain, Ter).value<Terrain>();
+        Terrain t = Features::GetTerrain(_terrain);
         if (t.HasFlag("WALL") || t.HasFlag("AUTO_WALL_SYMBOL"))
         {
             preferredChars.append('|');
             preferredChars.append('-');
+        }
+        else if (t.HasFlag("FLAT") || t.HasFlag("ROAD"))
+        {
+            preferredChars.append('.');
+            preferredChars.append('_');
+            preferredChars.append('`');
         }
         else
         {
@@ -66,35 +79,52 @@ QChar Tile::GetDisplayChar() const
     {
         return GetFurnitureChar();
     }
+    else if (_trap != "tr_null")
+    {
+        return GetTrapChar();
+    }
     return GetTerrainChar();
 }
 
 QChar Tile::GetTerrainChar() const
 {
-    return Features::GetFeature(_terrain, Ter).value<Terrain>().GetSymbol();
+    return Features::GetTerrain(_terrain).GetSymbol();
 }
 
 QChar Tile::GetFurnitureChar() const
 {
-    return Features::GetFeature(_furniture, Furn).value<Furniture>().GetSymbol();
+    return Features::GetFurniture(_furniture).GetSymbol();
+}
+
+QChar Tile::GetTrapChar() const
+{
+    return Features::GetTrap(_trap).GetSymbol();
 }
 
 QColor Tile::GetForegroundColor() const
 {
     if (_furniture != "f_null")
     {
-        return Features::GetFeature(_furniture, Furn).value<Furniture>().GetForeground();
+        return Features::GetFurniture(_furniture).GetForeground();
     }
-    return Features::GetFeature(_terrain, Ter).value<Terrain>().GetForeground();
+    else if (_trap != "tr_null")
+    {
+        return Features::GetTrap(_trap).GetForeground();
+    }
+    return Features::GetTerrain(_terrain).GetForeground();
 }
 
 QColor Tile::GetBackgroundColor() const
 {
     if (_furniture != "f_null")
     {
-        return Features::GetFeature(_furniture, Furn).value<Furniture>().GetBackground();
+        return Features::GetFurniture(_furniture).GetBackground();
     }
-    return Features::GetFeature(_terrain, Ter).value<Terrain>().GetBackground();
+    else if (_trap != "tr_null")
+    {
+        return Features::GetTrap(_trap).GetBackground();
+    }
+    return Features::GetTerrain(_terrain).GetBackground();
 }
 
 bool Tile::ExportEquivalent(const Tile &other) const

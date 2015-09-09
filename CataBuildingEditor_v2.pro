@@ -20,9 +20,9 @@ SOURCES += main.cpp\
     tile.cpp \
     buildinginfodialog.cpp \
     buildinginfo.cpp \
-    terrain.cpp \
-    furniture.cpp \
-    trap.cpp \
+#    terrain.cpp \
+#    furniture.cpp \
+#    trap.cpp \
     jsonparser.cpp \
     options.cpp \
     newbuildingwizard.cpp \
@@ -32,7 +32,9 @@ SOURCES += main.cpp\
     tripoint.cpp \
     features.cpp \
     jsonwriter.cpp \
-    colors.cpp
+    colors.cpp \
+    monstergroup.cpp \
+    itemgroup.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -40,9 +42,9 @@ HEADERS  += buildingeditor.h \
     tile.h \
     buildinginfodialog.h \
     buildinginfo.h \
-    terrain.h \
-    furniture.h \
-    trap.h \
+#    terrain.h \
+#    furniture.h \
+#    trap.h \
     jsonparser.h \
     options.h \
     newbuildingwizard.h \
@@ -52,7 +54,9 @@ HEADERS  += buildingeditor.h \
     tripoint.h \
     features.h \
     colors.h \
-    jsonwriter.h
+    jsonwriter.h \
+    monstergroup.h \
+    itemgroup.h
 
 FORMS    += buildingeditor.ui \
     buildinginfodialog.ui

@@ -4,18 +4,21 @@
 #include <QChar>
 #include <QColor>
 #include <QList>
+#include <QSet>
 #include "colors.h"
 
 class DrawableItem
 {
 public:
-    DrawableItem(QString id, QString desc, QChar sym, nc_color color);
-    inline QChar GetSymbol() { return _symbol; }
-    inline QString GetDescription() { return _description; }
-    inline QString GetID() { return _id; }
-    inline QColor GetBackground() { return _color.bg; }
-    inline QColor GetForeground() { return _color.fg; }
-    inline QList<QChar>& GetExportSymbols() { return _exportSymbols; }
+    DrawableItem();
+    DrawableItem(QString id, QString desc, QChar sym, nc_color color, QSet<QString> flags);
+    inline QChar GetSymbol() const { return _symbol; }
+    inline QString GetDescription() const { return _description; }
+    inline QString GetID() const { return _id; }
+    inline QColor GetBackground() const { return _color.bg; }
+    inline QColor GetForeground() const { return _color.fg; }
+    inline QList<QChar> GetExportSymbols() const { return _exportSymbols; }
+    inline bool HasFlag(QString flag) const { return _flags.contains(flag); }
 
 private:
     QList<QChar> _exportSymbols;
@@ -25,6 +28,14 @@ private:
     QChar _symbol;
 
     nc_color _color;
+
+    QSet<QString> _flags;
 };
+
+typedef DrawableItem Terrain;
+typedef DrawableItem Furniture;
+typedef DrawableItem Trap;
+
+Q_DECLARE_METATYPE(DrawableItem)
 
 #endif // DRAWABLEITEM_H

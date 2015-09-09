@@ -9,9 +9,12 @@
 #include <QObject>
 #include <QString>
 
-#include "furniture.h"
-#include "terrain.h"
-#include "trap.h"
+//#include "furniture.h"
+//#include "terrain.h"
+//#include "trap.h"
+#include "drawableitem.h"
+#include "monstergroup.h"
+#include "itemgroup.h"
 
 /*
  * This class pulls data needed to make a mapgen file from the game's relevant json files
@@ -25,6 +28,7 @@ public:
     void Parse(QString directory);
 
 private:
+    void ParseDrawableItem(QJsonObject &object);
     void ParseTerrain(QJsonObject &object);
     void ParseFurniture(QJsonObject &object);
     void ParseTrap(QJsonObject &object);
@@ -46,6 +50,11 @@ signals:
     void ParsedTerrain(Terrain, QString);
     void ParsedFurniture(Furniture, QString);
     void ParsedTrap(Trap, QString);
+
+    void ParsedItem(QString, QString, QChar, QString);
+    void ParsedItemGroup(ItemGroup, QString);
+    void ParsedMonster(QString, QString, QChar, QString);
+    void ParsedMonsterGroup(MonsterGroup, QString);
 };
 
 #endif // JSONPARSER_H

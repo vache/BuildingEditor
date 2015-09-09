@@ -46,7 +46,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <property name="tabSpacing">
        <number>2</number>
@@ -99,6 +99,11 @@
        <attribute name="label">
         <string>Monsters</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QListWidget" name="monsterWidget"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="monsterGroupPage">
        <property name="geometry">
@@ -112,6 +117,11 @@
        <attribute name="label">
         <string>Monster Groups</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="QListWidget" name="monsterGroupWidget"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="itemPage">
        <property name="geometry">
@@ -125,6 +135,11 @@
        <attribute name="label">
         <string>Items</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QListWidget" name="itemWidget"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="itemGroupPage">
        <property name="geometry">
@@ -138,6 +153,11 @@
        <attribute name="label">
         <string>Item Groups</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QListWidget" name="listWidget"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="trapPage">
        <property name="geometry">
@@ -151,11 +171,26 @@
        <attribute name="label">
         <string>Traps</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QListWidget" name="trapWidget"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
     <item row="0" column="1">
      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="gridBox">
+        <property name="text">
+         <string>Grid</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QSlider" name="zLevelSlider">
         <property name="minimum">

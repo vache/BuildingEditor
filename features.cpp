@@ -6,26 +6,48 @@ Features::Features()
 {
 }
 
+// TODO: tons of duplication here, simplify?
+
 QMap<QString, Terrain> Features::_terrains = QMap<QString, Terrain>();
 QMap<QString, Furniture> Features::_furnitures = QMap<QString, Furniture>();
+QMap<QString, Trap> Features::_traps = QMap<QString, Trap>();
+QMap<QString, MonsterGroup> Features::_monsterGroups = QMap<QString, MonsterGroup>();
 QSet<QString> Features::_modded = QSet<QString>();
 QMap<QString, QString> Features::_belongsToMod = QMap<QString, QString>();
 
 void Features::AddTerrain(QString terrainID, Terrain t, QString mod)
 {
-    Features::_terrains.insert(terrainID, t);
+    _terrains.insert(terrainID, t);
     if (mod != "")
     {
-        Features::_belongsToMod[terrainID] = mod;
+        _belongsToMod[terrainID] = mod;
     }
 }
 
 void Features::AddFurniture(QString furnitureID, Furniture f, QString mod)
 {
-    Features::_furnitures.insert(furnitureID, f);
+    _furnitures.insert(furnitureID, f);
     if (mod != "")
     {
-        Features::_belongsToMod[furnitureID] = mod;
+        _belongsToMod[furnitureID] = mod;
+    }
+}
+
+void Features::AddTrap(QString trapID, Trap tr, QString mod)
+{
+    _traps.insert(trapID, tr);
+    if (mod != "")
+    {
+        _belongsToMod[trapID] = mod;
+    }
+}
+
+void Features::AddMonsterGroup(QString monGroupID, MonsterGroup mg, QString mod)
+{
+    _monsterGroups.insert(monGroupID, mg);
+    if (mod != "")
+    {
+        _belongsToMod[monGroupID] = mod;
     }
 }
 
@@ -33,14 +55,53 @@ QVariant Features::GetFeature(QString featureID, Feature featureType)
 {
     switch (featureType)
     {
-    case Ter:
-        return QVariant::fromValue(Features::_terrains[featureID]);
-    case Furn:
-        return QVariant::fromValue(Features::_furnitures[featureID]);
+    case F_Terrain:
+        return QVariant::fromValue(_terrains[featureID]);
+    case F_Furniture:
+        return QVariant::fromValue(_furnitures[featureID]);
+    case F_Trap:
+        return QVariant::fromValue(_traps[featureID]);
     default:
         return QVariant();
     }
 }
+
+Terrain Features::GetTerrain(QString terrainID)
+{
+    if (_terrains.contains(terrainID))
+    {
+        return _terrains[terrainID];
+    }
+    return Terrain();
+}
+
+Furniture Features::GetFurniture(QString furnitureID)
+{
+    if (_furnitures.contains(furnitureID))
+    {
+        return _furnitures[furnitureID];
+    }
+    return Furniture();
+}
+
+Trap Features::GetTrap(QString trapID)
+{
+    if (_traps.contains(trapID))
+    {
+        return _traps[trapID];
+    }
+    return Trap();
+}
+
+MonsterGroup Features::GetMonsterGroup(QString monsterGroupID)
+{
+    if (_monsterGroups.contains(monsterGroupID))
+    {
+        return _monsterGroups[monsterGroupID];
+    }
+    return MonsterGroup("");
+}
+
 
 bool Features::IsModded(QString id)
 {

@@ -92,7 +92,12 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
 
 bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    Tile t = GetTileFromIndex(index);
+    OvermapTerrain omt = GetOMTFromIndex(index);
+    if (!omt.IsActive())
+    {
+        return false;
+    }
+    Tile t = omt.GetTile(GetTileIndex(index));
     switch(role)
     {
     case TerrainRole:
@@ -103,6 +108,11 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         return true;
     case FurnitureRole:
         t.SetFurniture(value.toString());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        return true;
+    case TrapRole:
+        t.SetTrap(value.toString());
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;

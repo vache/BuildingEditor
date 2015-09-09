@@ -10,11 +10,6 @@ class Terrain : public DrawableItem
 public:
     Terrain();
     Terrain(QString id, QString desc, QChar sym, nc_color color = nc_color());
-
-    void AddFlags(QStringList flags);
-    bool HasFlag(QString flag);
-private:
-    QSet<QString> _flags;
 };
 
 Q_DECLARE_METATYPE(Terrain)

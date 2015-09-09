@@ -3,11 +3,13 @@
 
 #include <QMap>
 #include <QVariant>
-#include "furniture.h"
-#include "terrain.h"
+//#include "furniture.h"
+//#include "terrain.h"
+#include "drawableitem.h"
 #include "buildingmodel.h"
 
-enum Feature { Ter = TerrainRole, Furn = FurnitureRole };
+enum Feature { F_Terrain = TerrainRole, F_Furniture = FurnitureRole, F_Trap = TrapRole,
+               F_MonsterGroup = MonsterGroupRole, F_Item, F_Monster, F_ItemGroup };
 Q_DECLARE_METATYPE(Feature)
 
 class Features
@@ -15,7 +17,16 @@ class Features
 public:
     static void AddTerrain(QString terrainID, Terrain t, QString mod);
     static void AddFurniture(QString furnitureID, Furniture f, QString mod);
+    static void AddTrap(QString trapID, Trap tr, QString mod);
+    static void AddMonsterGroup(QString monGroupID, MonsterGroup mg, QString mod);
+
     static QVariant GetFeature(QString featureID, Feature featureType);
+
+    static Terrain GetTerrain(QString terrainID);
+    static Furniture GetFurniture(QString furnitureID);
+    static Trap GetTrap(QString trapID);
+    static MonsterGroup GetMonsterGroup(QString monsterGroupID);
+
     static bool IsModded(QString id);
     static QString BelongsToMod(QString id);
     static QStringList ModList();
@@ -23,6 +34,9 @@ public:
 private:
     static QMap<QString, Terrain> _terrains;
     static QMap<QString, Furniture> _furnitures;
+    static QMap<QString, Trap> _traps;
+    static QMap<QString, MonsterGroup> _monsterGroups;
+
     static QMap<QString, QString> _belongsToMod;
     static QSet<QString> _modded;
 

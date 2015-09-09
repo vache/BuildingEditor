@@ -19,13 +19,43 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     connect(&p, SIGNAL(ParsedTerrain(Terrain, QString)), this, SLOT(NewTerrain(Terrain, QString)));
     connect(&p, SIGNAL(ParsedFurniture(Furniture, QString)), this, SLOT(NewFurniture(Furniture, QString)));
+    connect(&p, SIGNAL(ParsedTrap(Trap,QString)), this, SLOT(NewTrap(Trap,QString)));
+    connect(&p, SIGNAL(ParsedItem(QString,QString,QChar,QString)), this, SLOT(NewItem(QString,QString,QChar,QString)));
+    connect(&p, SIGNAL(ParsedMonster(QString,QString,QChar,QString)), this, SLOT(NewMonster(QString,QString,QChar,QString)));
+    connect(&p, SIGNAL(ParsedItemGroup(ItemGroup,QString)), this, SLOT(NewItemGroup(ItemGroup,QString)));
+    connect(&p, SIGNAL(ParsedMonsterGroup(MonsterGroup,QString)), this, SLOT(NewMonsterGroup(MonsterGroup,QString)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
+    connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
     connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->furnitureWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->trapWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->itemWidget, SIGNAL(itemChanged(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->monsterWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(this, SIGNAL(SelectedBox()), ui->tableView, SLOT(SetTool(FilledRectangle)));
 
     p.Parse("c:/code/Cataclysm-DDA/data");
 
     ui->mainToolBar->addAction("Write", this, SLOT(Write()));
+    ui->mainToolBar->addSeparator();
+
+    _tools =  new QActionGroup(ui->mainToolBar);
+    QAction* penAction = new QAction("Pen", _tools);
+    penAction->setData(QVariant::fromValue<Tool>(Pen));
+    penAction->setCheckable(true);
+    penAction->setChecked(true);
+    connect(penAction, SIGNAL(triggered()), ui->tableView, SLOT(ToolChanged()));
+
+    QAction* filledRectAction = new QAction("Filled Rect", _tools);
+    filledRectAction->setData(QVariant::fromValue<Tool>(FilledRectangle));
+    filledRectAction->setCheckable(true);
+    connect(filledRectAction, SIGNAL(triggered()), ui->tableView, SLOT(ToolChanged()));
+
+    QAction* hollowRectAction = new QAction("Hollow Rect", _tools);
+    hollowRectAction->setData(QVariant::fromValue<Tool>(HollowRectangle));
+    hollowRectAction->setCheckable(true);
+    connect(hollowRectAction, SIGNAL(triggered()), ui->tableView, SLOT(ToolChanged()));
+
+    ui->mainToolBar->addActions(_tools->actions());
 
     // TEST CODE
     QList<QChar> test;
@@ -56,6 +86,9 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
             }
         }
     }
+    active[0][1] = true;
+    active[1][1] = true;
+
     m = new BuildingModel(active);
 
     ui->tableView->setModel(m);
@@ -99,22 +132,66 @@ void BuildingEditor::NewTerrain(Terrain t, QString mod)
 {
     Features::AddTerrain(t.GetID(), t, mod);
 
-    QString displayText = QString("%1 - %2").arg(t.GetSymbol()).arg(t.GetDescription());
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1 - %2%3").arg(t.GetSymbol()).arg(t.GetDescription()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->terrainWidget);
     item->setToolTip(t.GetID());
     item->setData(Qt::UserRole, t.GetID());
-    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(Ter));
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Terrain));
 }
 
 void BuildingEditor::NewFurniture(Furniture f, QString mod)
 {
     Features::AddFurniture(f.GetID(), f, mod);
 
-    QString displayText = QString("%1 - %2").arg(f.GetSymbol()).arg(f.GetDescription());
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1 - %2%3").arg(f.GetSymbol()).arg(f.GetDescription()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->furnitureWidget);
     item->setToolTip(f.GetID());
     item->setData(Qt::UserRole, f.GetID());
-    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(Furn));
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Furniture));
+}
+
+void BuildingEditor::NewTrap(Trap tr, QString mod)
+{
+    Features::AddTrap(tr.GetID(), tr, mod);
+
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1 - %2%3").arg(tr.GetSymbol()).arg(tr.GetDescription()).arg(modded);
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->trapWidget);
+    item->setToolTip(tr.GetID());
+    item->setData(Qt::UserRole, tr.GetID());
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Trap));
+}
+
+void BuildingEditor::NewItem(QString name, QString id, QChar symbol, QString mod)
+{
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1 - %2%3").arg(symbol).arg(name).arg(modded);
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->itemWidget);
+    item->setToolTip(id);
+    item->setData(Qt::UserRole, id);
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Item));
+}
+
+void BuildingEditor::NewItemGroup(ItemGroup ig, QString mod)
+{
+
+}
+
+void BuildingEditor::NewMonster(QString name, QString id, QChar symbol, QString mod)
+{
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1 - %2%3").arg(symbol).arg(name).arg(modded);
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->monsterWidget);
+    item->setToolTip(id);
+    item->setData(Qt::UserRole, id);
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Monster));
+}
+
+void BuildingEditor::NewMonsterGroup(MonsterGroup mg, QString mod)
+{
+
 }
 
 void BuildingEditor::Write()

@@ -1,5 +1,7 @@
 #include "jsonwriter.h"
 #include <QFile>
+#include <QFileDialog>
+#include <QTextStream>
 #include <QDebug>
 
 JsonWriter::JsonWriter()
@@ -22,19 +24,26 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
 {
     // this is a single 24x24 OMT.  we want to loop through, determine the pairs of items, and
     // create the json, then save to file.
+    // sanity check to make sure we dont process inactive OMTs
+    if (!t.IsActive())
+    {
+        return;
+    }
+    // TODO verify all ids are valid (check for t_null)
 
-//    QJsonDocument doc;
-//    QFile jsonFile;
+    QJsonDocument doc;
+    QFile jsonFile;
 
-//    QJsonObject mapgenObject;
-//    mapgenObject["type"] = QString("mapgen");
-//    mapgenObject["om_terrain"] = QString("house"); // TODO pull this from settings
-//    mapgenObject["method"] = QString("json");
-//    mapgenObject["weight"] = 100; // TODO pull this from settings
+    QJsonObject mapgenObject;
+    mapgenObject["type"] = QString("mapgen");
+    mapgenObject["om_terrain"] = QString("house"); // TODO pull this from settings
+    mapgenObject["method"] = QString("json");
+    mapgenObject["weight"] = 100; // TODO pull this from settings
 
-//    QJsonObject object;
-//    QJsonArray rows;
+    QJsonObject object;
+    QJsonArray rowsObject;
 
+    // TODO this ENTIRE business can be moved to a method under Tile
     QList<QChar> availableChars;
     QString chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]\{}|;',./:<>? ";
     for (int i = 0; i < chars.size(); i++)
@@ -124,7 +133,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
                 availableChars.removeAll(c);
                 inserted = true;
 
-                qDebug() << "Assigned" << c << "to" << sortedTiles[i].GetDisplayChar();
+                qDebug() << "Assigned" << c << "to" << sortedTiles[i].GetTerrainID() << "," << sortedTiles[i].GetFurnitureID();
             }
         }
         if (!inserted)
@@ -133,7 +142,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
             {
                 exportMap[availableChars[0]] = sortedTiles[i];
 
-                qDebug() << "Assigned" << availableChars[0] << "to" << sortedTiles[i].GetDisplayChar();
+                qDebug() << "Assigned" << availableChars[0] << "to" << sortedTiles[i].GetTerrainID() << "," << sortedTiles[i].GetFurnitureID();
 
                 availableChars.pop_front();
                 inserted = true;
@@ -147,6 +156,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     }
 
     // create the "rows"
+    QStringList rows;
     for (int row = 0; row < OVERMAP_TERRAIN_WIDTH; row++)
     {
         QString rowString = "";
@@ -159,5 +169,55 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
             rowString.append(exportChar);
         }
         qDebug() << rowString;
+        rows.append(rowString);
     }
+    rowsObject = QJsonArray::fromStringList(rows);
+    object["rows"] = rowsObject;
+    // TODO all the way down to about here...
+
+    // Get list of char->id maps for terrain and furniture
+    QList<QPair<QChar, QString>> terrainMappings;
+    QList<QPair<QChar, QString>> furnitureMappings;
+    foreach (QChar key, exportMap.keys())
+    {
+        terrainMappings.append(QPair<QChar, QString>(key, exportMap[key].GetTerrainID()));
+        furnitureMappings.append(QPair<QChar, QString>(key, exportMap[key].GetFurnitureID()));
+        qDebug() << key << ":" << exportMap[key].GetTerrainID();
+        qDebug() << key << ":" << exportMap[key].GetFurnitureID();
+    }
+
+    QJsonObject jsonTerrainMap;
+    QPair<QChar, QString> mapping;
+    foreach (mapping, terrainMappings)
+    {
+        jsonTerrainMap.insert(QString(mapping.first), mapping.second);
+    }
+    object["terrain"] = jsonTerrainMap;
+
+    QJsonObject jsonFurnitureMap;
+    foreach (mapping, furnitureMappings)
+    {
+        jsonFurnitureMap.insert(QString(mapping.first), mapping.second);
+    }
+    object["furniture"] = jsonFurnitureMap;
+
+    mapgenObject["object"] = object;
+    doc.setObject(mapgenObject);
+
+    qDebug() << doc.toJson();
+
+    QString filename = QFileDialog::getSaveFileName();
+
+    if (filename.isEmpty())
+    {
+        return;
+    }
+
+    jsonFile.setFileName(filename);
+    jsonFile.open(QIODevice::Text | QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream ts(&jsonFile);
+    ts << doc.toJson();
+    ts.flush();
+    jsonFile.flush();
+    jsonFile.close();
 }
