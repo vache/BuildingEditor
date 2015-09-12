@@ -13,7 +13,6 @@ BuildingEditorView::BuildingEditorView(QWidget *parent) :
 void BuildingEditorView::SetTool(Tool tool)
 {
     _currentTool = tool;
-    qDebug() << ((_currentTool == FilledRectangle) ? "Rectangle" : "Other");
 }
 
 void BuildingEditorView::SetFeature(Feature featureType, QString feature)
@@ -36,6 +35,8 @@ void BuildingEditorView::FeatureSelected(QListWidgetItem* item)
 {
     _currentFeature = item->data(Qt::UserRole).toString();
     _currentFeatureType = item->data(FeatureTypeRole).value<Feature>();
+
+    qDebug() << "Feature Set To:" << _currentFeature << " Type:" << _currentFeatureType;
 }
 
 void BuildingEditorView::ToolChanged()

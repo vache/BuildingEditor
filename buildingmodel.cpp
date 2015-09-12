@@ -116,6 +116,25 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
+    case MonsterGroupRole:
+        t.SetMonsterGroup(value.value<MonsterGroup>());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        return true;
+    case ItemGroupRole:
+        t.SetItemGroup(ItemGroup(value.toString()));
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+    case MonsterRole:
+        t.SetMonster(value.toString());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        return true;
+    case ItemRole:
+        t.AddItem(value.toString());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        return true;
     default:
         return false;
     }

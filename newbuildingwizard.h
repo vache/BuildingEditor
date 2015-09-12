@@ -2,18 +2,21 @@
 #define NEWBUILDINGWIZARD_H
 
 #include <QWizard>
-#include <QWizardPage>
+
+namespace Ui {
+class NewBuildingWizard;
+}
 
 class NewBuildingWizard : public QWizard
 {
     Q_OBJECT
+
 public:
     explicit NewBuildingWizard(QWidget *parent = 0);
+    ~NewBuildingWizard();
 
-signals:
-
-public slots:
-
+private:
+    Ui::NewBuildingWizard *ui;
 };
 
 #endif // NEWBUILDINGWIZARD_H

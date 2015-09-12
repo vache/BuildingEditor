@@ -43,7 +43,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     QJsonObject object;
     QJsonArray rowsObject;
 
-    // TODO this ENTIRE business can be moved to a method under Tile
+    // TODO this ENTIRE business can be moved to a method under OMT
     QList<QChar> availableChars;
     QString chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]\{}|;',./:<>? ";
     for (int i = 0; i < chars.size(); i++)
@@ -200,6 +200,16 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
         jsonFurnitureMap.insert(QString(mapping.first), mapping.second);
     }
     object["furniture"] = jsonFurnitureMap;
+
+    for (int y = 0; y < OVERMAP_TERRAIN_WIDTH; y++)
+    {
+        for (int x = 0; x < OVERMAP_TERRAIN_WIDTH; x++)
+        {
+            Tile tile = t.GetTile(Tripoint(x, y, 0));
+
+            qDebug() << QString("%1,%2").arg(x).arg(y) << tile.GetItemGroup().GetID();
+        }
+    }
 
     mapgenObject["object"] = object;
     doc.setObject(mapgenObject);

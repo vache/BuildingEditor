@@ -25,8 +25,6 @@ SOURCES += main.cpp\
 #    trap.cpp \
     jsonparser.cpp \
     options.cpp \
-    newbuildingwizard.cpp \
-    highlightableitem.cpp \
     buildingmodel.cpp \
     overmapterrain.cpp \
     tripoint.cpp \
@@ -34,7 +32,10 @@ SOURCES += main.cpp\
     jsonwriter.cpp \
     colors.cpp \
     monstergroup.cpp \
-    itemgroup.cpp
+    itemgroup.cpp \
+    generalwizardpage.cpp \
+    newbuildingwizard.cpp \
+    currentfeature.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -47,8 +48,6 @@ HEADERS  += buildingeditor.h \
 #    trap.h \
     jsonparser.h \
     options.h \
-    newbuildingwizard.h \
-    highlightableitem.h \
     buildingmodel.h \
     overmapterrain.h \
     tripoint.h \
@@ -56,7 +55,12 @@ HEADERS  += buildingeditor.h \
     colors.h \
     jsonwriter.h \
     monstergroup.h \
-    itemgroup.h
+    itemgroup.h \
+    generalwizardpage.h \
+    newbuildingwizard.h \
+    currentfeature.h
 
 FORMS    += buildingeditor.ui \
-    buildinginfodialog.ui
+    buildinginfodialog.ui \
+    generalwizardpage.ui \
+    newbuildingwizard.ui

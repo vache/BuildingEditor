@@ -40,6 +40,9 @@ private slots:
 
     void Write();
 
+    void SetObjectEditorMode(Feature f);
+    void SetObjectEditorMode(QListWidgetItem* i);
+
 private:
     Ui::BuildingEditor *ui;
 
@@ -50,7 +53,6 @@ private:
     QMap<QString, QString> _modIDs;
 
 signals:
-    void SelectedBox();
 };
 
 #endif // BUILDINGEDITOR_H

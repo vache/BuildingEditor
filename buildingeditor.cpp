@@ -26,12 +26,23 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(&p, SIGNAL(ParsedMonsterGroup(MonsterGroup,QString)), this, SLOT(NewMonsterGroup(MonsterGroup,QString)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
+
+    // TODO simplify!
     connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->furnitureWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->trapWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
-    connect(ui->itemWidget, SIGNAL(itemChanged(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->itemWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->monsterWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
-    connect(this, SIGNAL(SelectedBox()), ui->tableView, SLOT(SetTool(FilledRectangle)));
+    connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+
+    connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->furnitureWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->trapWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->itemWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->monsterWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
 
     p.Parse("c:/code/Cataclysm-DDA/data");
 
@@ -56,6 +67,9 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(hollowRectAction, SIGNAL(triggered()), ui->tableView, SLOT(ToolChanged()));
 
     ui->mainToolBar->addActions(_tools->actions());
+
+    ui->itemGroupEditor->setVisible(false);
+    ui->monsterGroupEditor->setVisible(false);
 
     // TEST CODE
     QList<QChar> test;
@@ -86,8 +100,8 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
             }
         }
     }
-    active[0][1] = true;
-    active[1][1] = true;
+//    active[0][1] = true;
+//    active[1][1] = true;
 
     m = new BuildingModel(active);
 
@@ -97,7 +111,6 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     {
         qDebug() << mod;
     }
-
     // END TEST CODE
 }
 
@@ -176,7 +189,11 @@ void BuildingEditor::NewItem(QString name, QString id, QChar symbol, QString mod
 
 void BuildingEditor::NewItemGroup(ItemGroup ig, QString mod)
 {
-
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1%2").arg(ig.GetID()).arg(modded);
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->itemGroupWidget);
+    item->setData(Qt::UserRole, ig.GetID());
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_ItemGroup));
 }
 
 void BuildingEditor::NewMonster(QString name, QString id, QChar symbol, QString mod)
@@ -191,11 +208,49 @@ void BuildingEditor::NewMonster(QString name, QString id, QChar symbol, QString 
 
 void BuildingEditor::NewMonsterGroup(MonsterGroup mg, QString mod)
 {
-
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1%2").arg(mg.GetID()).arg(modded);
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->monsterGroupWidget);
+    item->setData(Qt::UserRole, mg.GetID());
+    item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_MonsterGroup));
 }
 
 void BuildingEditor::Write()
 {
     JsonWriter w;
     w.Write(m);
+}
+
+void BuildingEditor::SetObjectEditorMode(Feature f)
+{
+    ui->itemGroupEditor->setVisible(false);
+    ui->monsterGroupEditor->setVisible(false);
+    switch(f)
+    {
+        case F_Terrain:
+            break;
+        case F_Furniture:
+            break;
+        case F_Trap:
+            break;
+        case F_ItemGroup:
+            ui->itemGroupEditor->setVisible(true);
+            break;
+        case F_MonsterGroup:
+            ui->monsterGroupEditor->setVisible(true);
+            break;
+        case F_Item:
+            break;
+        case F_Monster:
+            break;
+        default:
+            break;
+    }
+}
+
+void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
+{
+    Feature f = i->data(FeatureTypeRole).value<Feature>();
+
+    SetObjectEditorMode(f);
 }

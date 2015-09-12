@@ -1,7 +1,11 @@
 #include "monstergroup.h"
 
-MonsterGroup::MonsterGroup(QString id) : HighlightableItem(id, Qt::red), _chance(0), _density(0),
-    _area(0,0,0,0)
+MonsterGroup::MonsterGroup() : _id(""), _chance(0), _density(0), _area(QRect())
+{
+}
+
+MonsterGroup::MonsterGroup(QString id, int chance, float density, QRect area) : _id(id),
+    _chance(chance), _density(density), _area(area)
 {
 }
 

@@ -9,7 +9,8 @@
 #include "buildingmodel.h"
 
 enum Feature { F_Terrain = TerrainRole, F_Furniture = FurnitureRole, F_Trap = TrapRole,
-               F_MonsterGroup = MonsterGroupRole, F_Item, F_Monster, F_ItemGroup };
+               F_MonsterGroup = MonsterGroupRole, F_Item = ItemRole, F_Monster = MonsterRole,
+               F_ItemGroup = ItemGroupRole };
 Q_DECLARE_METATYPE(Feature)
 
 class Features
