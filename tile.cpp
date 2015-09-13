@@ -141,3 +141,17 @@ bool Tile::operator ==(const Tile & other) const
 {
     return ExportEquivalent(other);
 }
+
+Tile & Tile::operator =(const Tile & other)
+{
+    _terrain = other._terrain;
+    _furniture = other._furniture;
+    _trap = other._trap;
+    _items = other._items;
+    _itemGroup = other._itemGroup;
+    _monster = other._monster;
+    _monsterGroup = other._monsterGroup;
+    _vehicle = other._vehicle;
+
+    return *this;
+}

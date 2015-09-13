@@ -11,7 +11,7 @@ enum DirectionalLine { NS = 0, EW, NE, NW, SE, SW, NES, NSW, NEW, ESW, NESW };
 
 BuildingEditor::BuildingEditor(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::BuildingEditor), m(NULL)
+    ui(new Ui::BuildingEditor), m(NULL), _currentItem(NULL)
 {
     ui->setupUi(this);
 
@@ -24,6 +24,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(&p, SIGNAL(ParsedMonster(QString,QString,QChar,QString)), this, SLOT(NewMonster(QString,QString,QChar,QString)));
     connect(&p, SIGNAL(ParsedItemGroup(ItemGroup,QString)), this, SLOT(NewItemGroup(ItemGroup,QString)));
     connect(&p, SIGNAL(ParsedMonsterGroup(MonsterGroup,QString)), this, SLOT(NewMonsterGroup(MonsterGroup,QString)));
+    connect(&p, SIGNAL(ParsedVehicle(Vehicle,QString)), this, SLOT(NewVehicle(Vehicle,QString)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
 
@@ -35,6 +36,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->monsterWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->vehicleWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
 
     connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->furnitureWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
@@ -43,6 +45,17 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->monsterWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->vehicleWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+
+    connect(this, SIGNAL(CurrentFeatureChanged(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+
+    // TODO should be a better way...
+    connect(ui->itemGroupChance, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->monsterGroupChance, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->monsterGroupDensity, SIGNAL(valueChanged(double)), this, SLOT(ObjectEditorModified()));
+    connect(ui->vehicleChance, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->vehicleStatus, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->vehicleDirection, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
 
     p.Parse("c:/code/Cataclysm-DDA/data");
 
@@ -70,6 +83,18 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     ui->itemGroupEditor->setVisible(false);
     ui->monsterGroupEditor->setVisible(false);
+    ui->itemEditor->setVisible(false);
+    ui->vehicleEditor->setVisible(false);
+
+    ui->vehicleStatus->addItem("Undamaged", 0);
+    ui->vehicleStatus->addItem("Lightly Damaged", -1);
+    ui->vehicleStatus->addItem("Disabled", 1);
+
+    ui->vehicleDirection->addItem("North", 0);
+    ui->vehicleDirection->addItem("East", 1);
+    ui->vehicleDirection->addItem("South", 2);
+    ui->vehicleDirection->addItem("West", 3);
+    ui->vehicleDirection->addItem("Random", 4);
 
     // TEST CODE
     QList<QChar> test;
@@ -192,7 +217,7 @@ void BuildingEditor::NewItemGroup(ItemGroup ig, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1%2").arg(ig.GetID()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->itemGroupWidget);
-    item->setData(Qt::UserRole, ig.GetID());
+    item->setData(Qt::UserRole, QVariant::fromValue(ig));
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_ItemGroup));
 }
 
@@ -211,9 +236,20 @@ void BuildingEditor::NewMonsterGroup(MonsterGroup mg, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1%2").arg(mg.GetID()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->monsterGroupWidget);
-    item->setData(Qt::UserRole, mg.GetID());
+    item->setData(Qt::UserRole, QVariant::fromValue(mg));
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_MonsterGroup));
 }
+
+void BuildingEditor::NewVehicle(Vehicle veh, QString mod)
+{
+    QString modded = (mod == "") ? "" : " *";
+    QString displayText = QString("%1%2").arg(veh.GetName()).arg(modded);
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->vehicleWidget);
+    item->setToolTip(veh.GetID());
+    item->setData(Qt::UserRole, QVariant::fromValue(veh));
+    item->setData(FeatureTypeRole, QVariant::fromValue(F_Vehicle));
+}
+
 
 void BuildingEditor::Write()
 {
@@ -225,6 +261,7 @@ void BuildingEditor::SetObjectEditorMode(Feature f)
 {
     ui->itemGroupEditor->setVisible(false);
     ui->monsterGroupEditor->setVisible(false);
+    ui->itemEditor->setVisible(false);
     switch(f)
     {
         case F_Terrain:
@@ -250,7 +287,106 @@ void BuildingEditor::SetObjectEditorMode(Feature f)
 
 void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
 {
-    Feature f = i->data(FeatureTypeRole).value<Feature>();
+    _currentItem = i;
 
-    SetObjectEditorMode(f);
+    Feature f = i->data(FeatureTypeRole).value<Feature>();
+    QVariant v = i->data(Qt::UserRole);
+
+    ui->itemGroupEditor->setVisible(false);
+    ui->monsterGroupEditor->setVisible(false);
+    ui->itemEditor->setVisible(false);
+    ui->vehicleEditor->setVisible(false);
+
+    switch(f)
+    {
+        case F_Terrain:
+            break;
+        case F_Furniture:
+            break;
+        case F_Trap:
+            break;
+        case F_ItemGroup:
+        {
+            ui->itemGroupEditor->setVisible(true);
+            ui->itemGroupName->setText(v.value<ItemGroup>().GetID());
+            ui->itemGroupChance->setValue(v.value<ItemGroup>().GetChance());
+            break;
+        }
+        case F_MonsterGroup:
+            ui->monsterGroupEditor->setVisible(true);
+            ui->monsterGroupName->setText(v.value<MonsterGroup>().GetID());
+            ui->monsterGroupDensity->setValue(v.value<MonsterGroup>().GetDensity());
+            ui->monsterGroupChance->setValue(v.value<MonsterGroup>().GetChance());
+            break;
+        case F_Item:
+        {
+            ui->itemEditor->setVisible(true);
+            break;
+        }
+        case F_Monster:
+            break;
+        case F_Vehicle:
+            ui->vehicleEditor->setVisible(true);
+            ui->vehicleID->setText(v.value<Vehicle>().GetID());
+            ui->vehicleName->setText(v.value<Vehicle>().GetName());
+            ui->vehicleChance->setValue(v.value<Vehicle>().GetChance());
+            ui->vehicleStatus->setCurrentIndex(ui->vehicleStatus->findData(v.value<Vehicle>().GetStatus()));
+            ui->vehicleDirection->setCurrentIndex(ui->vehicleDirection->findData(v.value<Vehicle>().GetDirection()));
+            break;
+        default:
+            break;
+    }
+}
+
+void BuildingEditor::ObjectEditorModified()
+{
+    if (_currentItem == NULL)
+    {
+        return;
+    }
+    Feature f = _currentItem->data(FeatureTypeRole).value<Feature>();
+    QVariant v = _currentItem->data(Qt::UserRole);
+
+    switch(f)
+    {
+        case F_Terrain:
+            break;
+        case F_Furniture:
+            break;
+        case F_Trap:
+            break;
+        case F_ItemGroup:
+        {
+            ItemGroup ig = v.value<ItemGroup>();
+            ig.SetChance(ui->itemGroupChance->value());
+            _currentItem->setData(Qt::UserRole, QVariant::fromValue(ig));
+            emit CurrentFeatureChanged(_currentItem);
+            break;
+        }
+        case F_MonsterGroup:
+        {
+            MonsterGroup mg = v.value<MonsterGroup>();
+            mg.SetChance(ui->monsterGroupChance->value());
+            mg.SetDensity(ui->monsterGroupDensity->value());
+            _currentItem->setData(Qt::UserRole, QVariant::fromValue(mg));
+            emit CurrentFeatureChanged(_currentItem);
+            break;
+        }
+        case F_Item:
+            break;
+        case F_Monster:
+            break;
+        case F_Vehicle:
+        {
+            Vehicle veh = v.value<Vehicle>();
+            veh.SetChance(ui->vehicleChance->value());
+            veh.SetStatus(ui->vehicleStatus->itemData(ui->vehicleStatus->currentIndex()).toInt());
+            veh.SetDirection(ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt());
+            _currentItem->setData(Qt::UserRole, QVariant::fromValue(veh));
+            emit CurrentFeatureChanged(_currentItem);
+            break;
+        }
+        default:
+            break;
+    }
 }

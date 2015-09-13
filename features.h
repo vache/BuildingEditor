@@ -10,7 +10,7 @@
 
 enum Feature { F_Terrain = TerrainRole, F_Furniture = FurnitureRole, F_Trap = TrapRole,
                F_MonsterGroup = MonsterGroupRole, F_Item = ItemRole, F_Monster = MonsterRole,
-               F_ItemGroup = ItemGroupRole };
+               F_ItemGroup = ItemGroupRole, F_Vehicle = VehicleRole };
 Q_DECLARE_METATYPE(Feature)
 
 class Features

@@ -10,7 +10,10 @@
 #include "drawableitem.h"
 #include "features.h"
 #include "itemgroup.h"
+#include "vehicle.h"
 #include <QActionGroup>
+// test...
+#include <QListWidgetItem>
 
 namespace Ui {
 class BuildingEditor;
@@ -37,11 +40,13 @@ private slots:
     void NewItemGroup(ItemGroup ig, QString mod);
     void NewMonster(QString name, QString id, QChar symbol, QString mod);
     void NewMonsterGroup(MonsterGroup mg, QString mod);
+    void NewVehicle(Vehicle veh, QString mod);
 
     void Write();
 
     void SetObjectEditorMode(Feature f);
     void SetObjectEditorMode(QListWidgetItem* i);
+    void ObjectEditorModified();
 
 private:
     Ui::BuildingEditor *ui;
@@ -52,7 +57,10 @@ private:
     QStringList _allIDs;
     QMap<QString, QString> _modIDs;
 
+    QListWidgetItem* _currentItem;
+
 signals:
+    void CurrentFeatureChanged(QListWidgetItem*);
 };
 
 #endif // BUILDINGEDITOR_H

@@ -122,7 +122,7 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         emit dataChanged(index, index);
         return true;
     case ItemGroupRole:
-        t.SetItemGroup(ItemGroup(value.toString()));
+        t.SetItemGroup(value.value<ItemGroup>());
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
     case MonsterRole:
@@ -132,6 +132,11 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         return true;
     case ItemRole:
         t.AddItem(value.toString());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        return true;
+    case VehicleRole:
+        t.SetVehicle(value.value<Vehicle>());
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;

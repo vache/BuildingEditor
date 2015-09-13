@@ -8,6 +8,7 @@
 #include <QRect>
 #include <QPoint>
 #include <QHeaderView>
+#include <QVariant>
 #include "buildingmodel.h"
 #include "features.h"
 
@@ -24,7 +25,7 @@ signals:
 
 public slots:
     void SetTool(Tool tool);
-    void SetFeature(Feature featureType, QString feature);
+    void SetFeature(Feature featureType, QVariant feature);
     void FeatureSelected(QListWidgetItem* item);
     void ToolChanged();
 
@@ -33,7 +34,7 @@ private slots:
 
 private:
     Tool _currentTool;
-    QString _currentFeature;
+    QVariant _currentFeature;
     Feature _currentFeatureType;
 
     QRubberBand* _rubberBand;

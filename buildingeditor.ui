@@ -46,10 +46,10 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="tabSpacing">
-       <number>2</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="terrainPage">
        <property name="geometry">
@@ -57,7 +57,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -75,7 +75,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -93,7 +93,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -111,7 +111,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -129,7 +129,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -147,7 +147,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -165,7 +165,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>475</height>
+         <height>356</height>
         </rect>
        </property>
        <attribute name="label">
@@ -174,6 +174,16 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QListWidget" name="trapWidget"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="vehiclePage">
+       <attribute name="label">
+        <string>Vehicles</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QListWidget" name="vehicleWidget"/>
         </item>
        </layout>
       </widget>
@@ -282,7 +292,7 @@
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
     <string>Item Group Editor</string>
@@ -323,7 +333,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="chanceSpinBox"/>
+      <widget class="QSpinBox" name="itemGroupChance"/>
      </item>
      <item>
       <spacer name="horizontalSpacer">
@@ -342,6 +352,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="monsterGroupEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Monster Group Editor</string>
    </property>
@@ -378,7 +391,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="densitySpinBox"/>
+      <widget class="QDoubleSpinBox" name="monsterGroupDensity"/>
      </item>
      <item>
       <widget class="QLabel" name="label_5">
@@ -388,10 +401,138 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="chanceSpinBox_2"/>
+      <widget class="QSpinBox" name="monsterGroupChance"/>
      </item>
      <item>
       <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="itemEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Item Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Items: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="itemList"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="itemDelete">
+       <property name="text">
+        <string>Remove</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="vehicleEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Vehicle ID: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="vehicleID">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Vehicle Name: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="vehicleName">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Chance: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="vehicleChance"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>Status: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="vehicleStatus"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Direction: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="vehicleDirection"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

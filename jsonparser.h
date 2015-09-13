@@ -15,6 +15,7 @@
 #include "drawableitem.h"
 #include "monstergroup.h"
 #include "itemgroup.h"
+#include "vehicle.h"
 
 /*
  * This class pulls data needed to make a mapgen file from the game's relevant json files
@@ -55,6 +56,8 @@ signals:
     void ParsedItemGroup(ItemGroup, QString);
     void ParsedMonster(QString, QString, QChar, QString);
     void ParsedMonsterGroup(MonsterGroup, QString);
+
+    void ParsedVehicle(Vehicle, QString);
 };
 
 #endif // JSONPARSER_H

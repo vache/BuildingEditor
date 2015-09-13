@@ -15,7 +15,7 @@ void BuildingEditorView::SetTool(Tool tool)
     _currentTool = tool;
 }
 
-void BuildingEditorView::SetFeature(Feature featureType, QString feature)
+void BuildingEditorView::SetFeature(Feature featureType, QVariant feature)
 {
     _currentFeatureType = featureType;
     _currentFeature = feature;
@@ -33,10 +33,23 @@ void BuildingEditorView::OnClicked(const QModelIndex &index)
 
 void BuildingEditorView::FeatureSelected(QListWidgetItem* item)
 {
-    _currentFeature = item->data(Qt::UserRole).toString();
+    _currentFeature = item->data(Qt::UserRole);
     _currentFeatureType = item->data(FeatureTypeRole).value<Feature>();
 
-    qDebug() << "Feature Set To:" << _currentFeature << " Type:" << _currentFeatureType;
+    switch(_currentFeatureType)
+    {
+    case F_ItemGroup:
+        qDebug() << "Feature Set To:" << _currentFeature.value<ItemGroup>().GetID() << " Type:" << _currentFeatureType;
+        break;
+    case F_MonsterGroup:
+        qDebug() << "Feature Set To:" << _currentFeature.value<MonsterGroup>().GetID() << " Type:" << _currentFeatureType;
+        break;
+    case F_Vehicle:
+        qDebug() << "Feature Set To:" << _currentFeature.value<Vehicle>().GetID() << " Type:" << _currentFeatureType;
+        break;
+    default:
+        qDebug() << "Feature Set To:" << _currentFeature.toString() << " Type:" << _currentFeatureType;
+    }
 }
 
 void BuildingEditorView::ToolChanged()

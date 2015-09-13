@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     itemgroup.cpp \
     generalwizardpage.cpp \
     newbuildingwizard.cpp \
-    currentfeature.cpp
+    currentfeature.cpp \
+    vehicle.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -58,7 +59,8 @@ HEADERS  += buildingeditor.h \
     itemgroup.h \
     generalwizardpage.h \
     newbuildingwizard.h \
-    currentfeature.h
+    currentfeature.h \
+    vehicle.h
 
 FORMS    += buildingeditor.ui \
     buildinginfodialog.ui \

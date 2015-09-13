@@ -1,10 +1,10 @@
 #include "itemgroup.h"
 
-ItemGroup::ItemGroup() : _id(""), _chance(0), _area(QRect())
+ItemGroup::ItemGroup() : _id(""), _chance(0)
 {
 }
 
-ItemGroup::ItemGroup(QString id, int chance, QRect area) : _id(id), _chance(chance), _area(area)
+ItemGroup::ItemGroup(QString id, int chance) : _id(id), _chance(chance)
 {
 }
 

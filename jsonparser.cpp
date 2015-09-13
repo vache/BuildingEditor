@@ -245,12 +245,17 @@ void JsonParser::ParseMonster(QJsonObject &object)
 
 void JsonParser::ParseVehicle(QJsonObject &object)
 {
+    QString name = object.value("name").toString("invalid name");
+    QString id = object.value("id").toString("invalid_id");
+    Vehicle vehicle(id, name);
 
+    emit ParsedVehicle(vehicle, _currentMod);
 }
 
+// json spawning from vehicle groups is unimplemented currently
 void JsonParser::ParseVehicleGroup(QJsonObject &object)
 {
-
+    Q_UNUSED(object)
 }
 
 // item types: AMMO, GENERIC, GUN, ARMOR, BIONIC_ITEM, BOOK, COMESTIBLE, CONTAINER, TOOL, GUNMOD, TOOL_ARMOR, VAR_VEH_PART, INSTRUMENT

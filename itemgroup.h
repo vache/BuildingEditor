@@ -1,7 +1,6 @@
 #ifndef ITEMGROUP_H
 #define ITEMGROUP_H
 
-#include <QRect>
 #include <QString>
 #include <QMetaType>
 
@@ -9,15 +8,13 @@ class ItemGroup
 {
 public:
     ItemGroup();
-    ItemGroup(QString id, int chance = 0, QRect area = QRect());
+    ItemGroup(QString id, int chance = 0);
 
     inline QString GetID() const { return _id; }
 
+    // NOTE: chance is implemented in game as a %, ie. if (rng(0,99) < chance) { spawn_item }
     inline void SetChance(int chance) { _chance = chance; }
     inline int GetChance() const { return _chance; }
-
-    inline void SetArea(QRect area) { _area = area; }
-    inline QRect GetArea() const { return _area; }
 
     bool operator==(const ItemGroup & other) const;
     bool operator!=(const ItemGroup & other) const;
@@ -26,7 +23,6 @@ public:
 private:
     QString _id;
     int _chance;
-    QRect _area;
 };
 
 Q_DECLARE_METATYPE(ItemGroup)

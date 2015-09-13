@@ -38,7 +38,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     mapgenObject["type"] = QString("mapgen");
     mapgenObject["om_terrain"] = QString("house"); // TODO pull this from settings
     mapgenObject["method"] = QString("json");
-    mapgenObject["weight"] = 100; // TODO pull this from settings
+    mapgenObject["weight"] = 5000; // TODO pull this from settings
 
     QJsonObject object;
     QJsonArray rowsObject;
@@ -64,7 +64,14 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     // Make a list of all the tiles we've got, and make a count of the # of instances of each
     QVector<Tile> tiles;
     QVector<int> tileCount;
+    // Use those two lists to make a list of tile sorted by the most common
     QVector<Tile> sortedTiles;
+    // Also while in this loop, get the arrays for monster and item groups:
+    QJsonArray monsterGroups;
+    QJsonArray itemGroups;
+    QJsonArray monsters;
+    QJsonArray items;
+    QJsonArray vehicles;
     for (int row = 0; row < OVERMAP_TERRAIN_WIDTH; row++)
     {
         for (int col = 0; col < OVERMAP_TERRAIN_WIDTH; col++)
@@ -81,7 +88,103 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
                 tiles.append(tile);
                 tileCount.append(1);
             }
+            if (tile.GetMonsterGroup().GetID() != "")
+            {
+                QJsonObject monsterGroup;
+                monsterGroup["y"] = row;
+                monsterGroup["x"] = col;
+                monsterGroup["monster"] = tile.GetMonsterGroup().GetID();
+                monsterGroup["chance"] = tile.GetMonsterGroup().GetChance();
+                monsterGroup["density"] = tile.GetMonsterGroup().GetDensity();
+                monsterGroups.append(monsterGroup);
+            }
+            if (tile.GetItemGroup().GetID() != "")
+            {
+                QJsonObject itemGroup;
+                itemGroup["y"] = row;
+                itemGroup["x"] = col;
+                itemGroup["item"] = tile.GetItemGroup().GetID();
+                itemGroup["chance"] = tile.GetItemGroup().GetChance();
+                itemGroups.append(itemGroup);
+            }
+            if (!tile.GetItems().isEmpty())
+            {
+                QMap<QString, int> itemCount;
+                foreach (QString i, tile.GetItems())
+                {
+                    if (itemCount.contains(i))
+                    {
+                        itemCount[i]++;
+                    }
+                    else
+                    {
+                        itemCount[i] = 1;
+                    }
+                }
+                foreach (QString i, itemCount.keys())
+                {
+                    QJsonObject item;
+                    item["x"] = col;
+                    item["y"] = row;
+                    item["item"] = i;
+                    item["repeat"] = itemCount[i];
+                    items.append(item);
+                }
+            }
+            if (tile.GetMonster() != "")
+            {
+                QJsonObject monster;
+                monster["x"] = col;
+                monster["y"] = row;
+                monster["monster"] = tile.GetMonster();
+                //monster["friendly"] = tile.GetMonster().GetFriendly();
+                //monster["name"] = tile.GetMonster().GetName();
+                monsters.append(monster);
+            }
+            if (tile.GetVehicle().GetID() != "")
+            {
+                QJsonObject vehicle;
+                vehicle["x"] = col;
+                vehicle["y"] = row;
+                vehicle["vehicle"] = tile.GetVehicle().GetID();
+                vehicle["chance"] = tile.GetVehicle().GetChance();
+                vehicle["status"] = tile.GetVehicle().GetStatus();
+                int direction = tile.GetVehicle().GetDirection();
+                if (direction != 4)
+                {
+                    vehicle["rotation"] = direction;
+                }
+                else
+                {
+                    QJsonArray rotation;
+                    rotation.append(0);
+                    rotation.append(3);
+                    vehicle["rotation"] = rotation;
+                }
+
+                vehicles.append(vehicle);
+            }
         }
+    }
+    if (!monsterGroups.empty())
+    {
+        object["place_monsters"] = monsterGroups;
+    }
+    if (!itemGroups.empty())
+    {
+        object["place_items"] = itemGroups;
+    }
+    if (!monsters.empty())
+    {
+        object["place_monster"] = monsters;
+    }
+    if (!items.empty())
+    {
+        object["add"] = items;
+    }
+    if (!vehicles.empty())
+    {
+        object["place_vehicles"] = vehicles;
     }
 
     qDebug() << "Found" << tileCount.size() << "tile combinations";
@@ -206,8 +309,6 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
         for (int x = 0; x < OVERMAP_TERRAIN_WIDTH; x++)
         {
             Tile tile = t.GetTile(Tripoint(x, y, 0));
-
-            qDebug() << QString("%1,%2").arg(x).arg(y) << tile.GetItemGroup().GetID();
         }
     }
 

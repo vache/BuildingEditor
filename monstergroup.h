@@ -9,19 +9,17 @@ class MonsterGroup
 {
 public:
     MonsterGroup();
-    MonsterGroup(QString id, int chance = 0, float density = 0, QRect area = QRect());
+    MonsterGroup(QString id, int chance = 0, float density = 0);
     bool operator==(const MonsterGroup & other) const;
 
     inline QString GetID() const { return _id; }
 
+    // NOTE: chance is implemented in game as 1/chance.
     inline int GetChance() const { return _chance; }
     inline void SetChance(int chance) { _chance = chance; }
 
     inline float GetDensity() const { return _density; }
     inline void SetDensity(float density) { _density = density; }
-
-    inline QRect GetArea() const { return _area; }
-    inline void SetArea(QRect area) { _area = area; }
 
 // These fields aren't needed for display, but the OMT will need to know them at export time, and
 // it keeps me from having to create extra classes just to hold them
@@ -30,8 +28,6 @@ private:
     // Tile will have to know this
     int _chance;
     float _density;
-    // OMT will have to know this
-    QRect _area;
 };
 
 Q_DECLARE_METATYPE(MonsterGroup)
