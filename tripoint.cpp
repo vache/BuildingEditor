@@ -43,3 +43,8 @@ bool Tripoint::operator <(const Tripoint& other) const
         return false;
     }
 }
+
+bool Tripoint::operator==(const Tripoint& other) const
+{
+    return (_x == other.x()) && (_y == other.y()) && (_z == other.z());
+}

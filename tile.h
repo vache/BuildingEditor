@@ -28,11 +28,12 @@ public:
     inline void SetTerrain(QString terrain) { _terrain = terrain; }
     inline void SetFurniture(QString furniture) { _furniture = furniture; }
     inline void SetTrap(QString trap) { _trap = trap; }
-    inline void SetMonsterGroup(MonsterGroup monGroup) { _monsterGroup = monGroup; qDebug() << _monsterGroup.GetID() << _monsterGroup.GetChance() << _monsterGroup.GetDensity(); }
-    inline void AddItem(QString item) { _items.append(item); }
-    inline void SetMonster(QString monster) { _monster = monster; qDebug() << _monster; }
-    inline void SetItemGroup(ItemGroup itemGroup) { _itemGroup = itemGroup; qDebug() << _itemGroup.GetID() << _itemGroup.GetChance(); }
+    inline void SetMonsterGroup(MonsterGroup monGroup) { _monsterGroup = monGroup; }
+    void AddItem(QString item);
+    inline void SetMonster(QString monster) { _monster = monster; }
+    inline void SetItemGroup(ItemGroup itemGroup) { _itemGroup = itemGroup; }
     inline void SetVehicle(Vehicle vehicle) { _vehicle = vehicle; }
+    inline void SetToilet(bool toilet) { _toilet = toilet; }
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -42,6 +43,7 @@ public:
     inline QString GetMonster() const { return _monster; }
     inline ItemGroup GetItemGroup() const { return _itemGroup; }
     inline Vehicle GetVehicle() const { return _vehicle; }
+    inline bool GetToilet() const { return _toilet; }
 
     bool ExportEquivalent(const Tile& other) const;
     bool operator==(const Tile& other) const;
@@ -57,6 +59,7 @@ private:
     QString _monster;
     ItemGroup _itemGroup;
     Vehicle _vehicle;
+    bool _toilet; // TODO this shouldnt be a bool for long, but it works for this release.
 };
 
 #endif // TILE_H

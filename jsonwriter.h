@@ -9,6 +9,8 @@
 #include "overmapterrain.h"
 #include "buildingmodel.h"
 
+int index(Tripoint p);
+
 /*
  * This class writes the created building to a json file in a game readable format
  */

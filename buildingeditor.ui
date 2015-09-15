@@ -46,7 +46,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>8</number>
       </property>
       <property name="tabSpacing">
        <number>6</number>
@@ -57,7 +57,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -75,7 +75,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -93,7 +93,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -111,7 +111,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -129,7 +129,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -147,7 +147,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -165,7 +165,7 @@
          <x>0</x>
          <y>0</y>
          <width>400</width>
-         <height>356</height>
+         <height>390</height>
         </rect>
        </property>
        <attribute name="label">
@@ -178,6 +178,14 @@
        </layout>
       </widget>
       <widget class="QWidget" name="vehiclePage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>400</width>
+         <height>390</height>
+        </rect>
+       </property>
        <attribute name="label">
         <string>Vehicles</string>
        </attribute>
@@ -187,12 +195,25 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="specialPage">
+       <attribute name="label">
+        <string>Special Features</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QListWidget" name="specialsWidget"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item row="0" column="1">
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <widget class="QCheckBox" name="gridBox">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggle Editor Grid&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Grid</string>
         </property>
@@ -203,6 +224,9 @@
       </item>
       <item>
        <widget class="QSlider" name="zLevelSlider">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="minimum">
          <number>-10</number>
         </property>
@@ -320,6 +344,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="itemGroupName">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ID of the current item group&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -333,7 +360,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="itemGroupChance"/>
+      <widget class="QSpinBox" name="itemGroupChance">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Chance (out of 100) to spawn an item from the group&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">
@@ -378,6 +409,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="monsterGroupName">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ID of the current monster group&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -391,7 +425,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="monsterGroupDensity"/>
+      <widget class="QDoubleSpinBox" name="monsterGroupDensity">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Relative number of zombies to spawn&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_5">
@@ -401,7 +439,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="monsterGroupChance"/>
+      <widget class="QSpinBox" name="monsterGroupChance">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Chance (one in __) to spawn the monster group&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_2">
@@ -469,7 +511,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <attribute name="dockWidgetArea">
-    <number>8</number>
+    <number>4</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -482,6 +524,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="vehicleID">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ID of the current vehicle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -496,6 +541,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="vehicleName">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name of the current vehicle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -509,7 +557,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="vehicleChance"/>
+      <widget class="QSpinBox" name="vehicleChance">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Chance (one in __) to spawn the current vehicle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_9">
@@ -519,7 +571,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="vehicleStatus"/>
+      <widget class="QComboBox" name="vehicleStatus">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Condition the vehicle should spawn in&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_11">
@@ -529,7 +585,44 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="vehicleDirection"/>
+      <widget class="QComboBox" name="vehicleDirection">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vehicle facing when spawned&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="vehicleCustomDirection">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Direction in degrees clockwise to face the vehicle (East is 0)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="maximum">
+        <number>359</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Fuel: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="vehicleFuel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fuel percentage the vehicle should spawn with&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_4">

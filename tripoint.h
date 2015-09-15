@@ -4,6 +4,7 @@
 class Tripoint
 {
 public:
+    Tripoint() : _x(-1), _y(-1), _z(-1) {}
     Tripoint(int x, int y, int z);
     bool operator<(const Tripoint& other) const;
     inline int x() const { return _x; }
@@ -12,6 +13,7 @@ public:
     inline void setX(int x) { _x = x; }
     inline void setY(int y) { _y = y; }
     inline void setZ(int z) { _z = z; }
+    bool operator==(const Tripoint& other) const;
 private:
     int _x;
     int _y;

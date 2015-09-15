@@ -2,7 +2,8 @@
 #include "features.h"
 #include <QDebug>
 
-Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup("")
+Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup(MonsterGroup()),
+    _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false)
 {
 }
 
@@ -116,7 +117,23 @@ QColor Tile::GetForegroundColor() const
 
 QColor Tile::GetBackgroundColor() const
 {
-    if (_furniture != "f_null")
+    if (!_vehicle.GetID().isEmpty())
+    {
+        return QColor(Qt::blue);
+    }
+    else if (_toilet)
+    {
+        return QColor(Qt::cyan);
+    }
+    else if (!_itemGroup.GetID().isEmpty() || !_items.isEmpty())
+    {
+        return QColor(Qt::green);
+    }
+    else if (!_monsterGroup.GetID().isEmpty() || !_monster.isEmpty())
+    {
+        return QColor(Qt::red);
+    }
+    else if (_furniture != "f_null")
     {
         return Features::GetFurniture(_furniture).GetBackground();
     }
@@ -125,6 +142,18 @@ QColor Tile::GetBackgroundColor() const
         return Features::GetTrap(_trap).GetBackground();
     }
     return Features::GetTerrain(_terrain).GetBackground();
+}
+
+void Tile::AddItem(QString item)
+{
+    if (!item.isEmpty())
+    {
+        _items.append(item);
+    }
+    else
+    {
+        _items.clear();
+    }
 }
 
 bool Tile::ExportEquivalent(const Tile &other) const
@@ -139,6 +168,8 @@ bool Tile::ExportEquivalent(const Tile &other) const
 
 bool Tile::operator ==(const Tile & other) const
 {
+    // TODO this is a dirty dirty hack designed to help the json group tiles better.
+    // worth implementing a real == function?
     return ExportEquivalent(other);
 }
 
@@ -152,6 +183,7 @@ Tile & Tile::operator =(const Tile & other)
     _monster = other._monster;
     _monsterGroup = other._monsterGroup;
     _vehicle = other._vehicle;
+    _toilet = other._toilet;
 
     return *this;
 }

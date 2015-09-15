@@ -8,9 +8,10 @@
 #include "drawableitem.h"
 #include "buildingmodel.h"
 
+//TODO im tired of this thing, its a duplicate of the custom roles.  get rid of it.
 enum Feature { F_Terrain = TerrainRole, F_Furniture = FurnitureRole, F_Trap = TrapRole,
                F_MonsterGroup = MonsterGroupRole, F_Item = ItemRole, F_Monster = MonsterRole,
-               F_ItemGroup = ItemGroupRole, F_Vehicle = VehicleRole };
+               F_ItemGroup = ItemGroupRole, F_Vehicle = VehicleRole, F_Toilet = ToiletRole };
 Q_DECLARE_METATYPE(Feature)
 
 class Features

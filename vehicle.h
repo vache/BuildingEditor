@@ -8,7 +8,7 @@ class Vehicle
 {
 public:
     Vehicle();
-    Vehicle(QString id, QString name="", int chance=0, int status=-1, int _dir=0);
+    Vehicle(QString id, QString name="", int chance=0, int status=-1, int dir=0, int fuel=-1);
 
     inline QString GetID() const { return _id; }
 
@@ -24,6 +24,9 @@ public:
     inline int GetDirection() const { return _dir; }
     inline void SetDirection(int dir) { _dir = dir; }
 
+    inline int GetFuel() const { return _fuel; }
+    inline void SetFuel(int fuel) { _fuel = fuel; }
+
     Vehicle& operator=(const Vehicle & other);
 
 private:
@@ -32,6 +35,7 @@ private:
     int _chance;
     int _status;
     int _dir;
+    int _fuel;
 };
 
 Q_DECLARE_METATYPE(Vehicle)

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QMetaType>
+#include <QHash>
 
 class ItemGroup
 {
@@ -24,6 +25,8 @@ private:
     QString _id;
     int _chance;
 };
+
+uint qHash(ItemGroup);
 
 Q_DECLARE_METATYPE(ItemGroup)
 

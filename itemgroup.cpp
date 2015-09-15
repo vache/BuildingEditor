@@ -25,3 +25,8 @@ bool ItemGroup::operator !=(const ItemGroup & other) const
 
 //    return *this;
 //}
+
+uint qHash(ItemGroup ig)
+{
+    return qHash(ig.GetChance()) + qHash(ig.GetID());
+}

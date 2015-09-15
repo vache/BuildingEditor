@@ -4,6 +4,7 @@
 #include <QRect>
 #include <QString>
 #include <QMetaType>
+#include <QHash>
 
 class MonsterGroup
 {
@@ -29,6 +30,8 @@ private:
     int _chance;
     float _density;
 };
+
+uint qHash(MonsterGroup);
 
 Q_DECLARE_METATYPE(MonsterGroup)
 

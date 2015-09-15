@@ -13,3 +13,8 @@ bool MonsterGroup::operator ==(const MonsterGroup & other) const
 {
     return (_id == other._id) && (_chance == other._chance) && (_density == other._density);
 }
+
+uint qHash(MonsterGroup mg)
+{
+    return qHash(mg.GetID()) + qHash(mg.GetChance()) + qHash(int(100 * mg.GetDensity()));
+}

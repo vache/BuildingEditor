@@ -3,6 +3,15 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QDebug>
+#include <QInputDialog>
+#include <QSettings>
+#include <QHash>
+#include <QListIterator>
+
+int index(Tripoint p)
+{
+    return p.y() * OVERMAP_TERRAIN_WIDTH + p.x();
+}
 
 JsonWriter::JsonWriter()
 {
@@ -34,11 +43,21 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     QJsonDocument doc;
     QFile jsonFile;
 
+    bool ok;
     QJsonObject mapgenObject;
     mapgenObject["type"] = QString("mapgen");
-    mapgenObject["om_terrain"] = QString("house"); // TODO pull this from settings
+    QString omter = QInputDialog::getText(0, "Enter Overmap Terrain", "Enter the ID of the overmap terrain this mapgen is for", QLineEdit::Normal, "house", &ok); // TODO pull this from settings
+    if (!ok)
+    {
+        return;
+    }
+    mapgenObject["om_terrain"] = (!omter.isEmpty()) ? omter : "house";
     mapgenObject["method"] = QString("json");
-    mapgenObject["weight"] = 5000; // TODO pull this from settings
+    mapgenObject["weight"] = QInputDialog::getInt(0, "Enter Weight", "Enter the relative weight of this mapgen", 100, 1, 10000, 100, &ok); // TODO pull this from settings
+    if (!ok)
+    {
+        return;
+    }
 
     QJsonObject object;
     QJsonArray rowsObject;
@@ -66,17 +85,23 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     QVector<int> tileCount;
     // Use those two lists to make a list of tile sorted by the most common
     QVector<Tile> sortedTiles;
-    // Also while in this loop, get the arrays for monster and item groups:
+    // Also while in this loop, get the arrays for just about everything else...:
+    QJsonArray traps;
     QJsonArray monsterGroups;
     QJsonArray itemGroups;
     QJsonArray monsters;
     QJsonArray items;
     QJsonArray vehicles;
+    QJsonArray toilets;
+    // TODO in this loop, form the lists of monster/item groups, and possibly their respective locations?
+    QHash<MonsterGroup, QVector<bool>> monsterGroupCollection;
+    QHash<ItemGroup, QVector<bool>> itemGroupCollection;
     for (int row = 0; row < OVERMAP_TERRAIN_WIDTH; row++)
     {
         for (int col = 0; col < OVERMAP_TERRAIN_WIDTH; col++)
         {
-            Tile tile = t.GetTile(Tripoint(col, row, 0));
+            Tripoint p = Tripoint(col, row, 0);
+            Tile tile = t.GetTile(p);
 
             int tileIndex = tiles.indexOf(tile);
             if (tileIndex != -1)
@@ -88,24 +113,57 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
                 tiles.append(tile);
                 tileCount.append(1);
             }
+
+            if (tile.GetTrapID() != "tr_null")
+            {
+                QJsonObject trap;
+                trap["y"] = row;
+                trap["x"] = col;
+                trap["trap"] = tile.GetTrapID();
+                traps.append(trap);
+            }
             if (tile.GetMonsterGroup().GetID() != "")
             {
-                QJsonObject monsterGroup;
-                monsterGroup["y"] = row;
-                monsterGroup["x"] = col;
-                monsterGroup["monster"] = tile.GetMonsterGroup().GetID();
-                monsterGroup["chance"] = tile.GetMonsterGroup().GetChance();
-                monsterGroup["density"] = tile.GetMonsterGroup().GetDensity();
-                monsterGroups.append(monsterGroup);
+                // this looks hideous.
+                if (monsterGroupCollection.contains(tile.GetMonsterGroup()))
+                {
+                    monsterGroupCollection[tile.GetMonsterGroup()][index(p)] = true;
+                }
+                else
+                {
+                    monsterGroupCollection[tile.GetMonsterGroup()].resize(OVERMAP_TERRAIN_WIDTH * OVERMAP_TERRAIN_WIDTH);
+                    monsterGroupCollection[tile.GetMonsterGroup()].fill(false);
+                    monsterGroupCollection[tile.GetMonsterGroup()][index(p)] = true;
+                }
+
+//                QJsonObject monsterGroup;
+//                monsterGroup["y"] = row;
+//                monsterGroup["x"] = col;
+//                monsterGroup["monster"] = tile.GetMonsterGroup().GetID();
+//                monsterGroup["chance"] = tile.GetMonsterGroup().GetChance();
+//                monsterGroup["density"] = tile.GetMonsterGroup().GetDensity();
+//                monsterGroups.append(monsterGroup);
             }
             if (tile.GetItemGroup().GetID() != "")
             {
-                QJsonObject itemGroup;
-                itemGroup["y"] = row;
-                itemGroup["x"] = col;
-                itemGroup["item"] = tile.GetItemGroup().GetID();
-                itemGroup["chance"] = tile.GetItemGroup().GetChance();
-                itemGroups.append(itemGroup);
+                // this looks hideous.
+                if (itemGroupCollection.contains(tile.GetItemGroup()))
+                {
+                    itemGroupCollection[tile.GetItemGroup()][index(p)] = true;
+                }
+                else
+                {
+                    itemGroupCollection[tile.GetItemGroup()].resize(OVERMAP_TERRAIN_WIDTH * OVERMAP_TERRAIN_WIDTH);
+                    itemGroupCollection[tile.GetItemGroup()].fill(false);
+                    itemGroupCollection[tile.GetItemGroup()][index(p)] = true;
+                }
+
+//                QJsonObject itemGroup;
+//                itemGroup["y"] = row;
+//                itemGroup["x"] = col;
+//                itemGroup["item"] = tile.GetItemGroup().GetID();
+//                itemGroup["chance"] = tile.GetItemGroup().GetChance();
+//                itemGroups.append(itemGroup);
             }
             if (!tile.GetItems().isEmpty())
             {
@@ -149,8 +207,9 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
                 vehicle["vehicle"] = tile.GetVehicle().GetID();
                 vehicle["chance"] = tile.GetVehicle().GetChance();
                 vehicle["status"] = tile.GetVehicle().GetStatus();
+                vehicle["fuel"] = tile.GetVehicle().GetFuel();
                 int direction = tile.GetVehicle().GetDirection();
-                if (direction != 4)
+                if (direction != -1)
                 {
                     vehicle["rotation"] = direction;
                 }
@@ -158,21 +217,24 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
                 {
                     QJsonArray rotation;
                     rotation.append(0);
-                    rotation.append(3);
+                    rotation.append(359);
                     vehicle["rotation"] = rotation;
                 }
 
                 vehicles.append(vehicle);
             }
+            if (tile.GetToilet())
+            {
+                QJsonObject toilet;
+                toilet["x"] = col;
+                toilet["y"] = row;
+                toilets.append(toilet);
+            }
         }
     }
-    if (!monsterGroups.empty())
+    if (!traps.empty())
     {
-        object["place_monsters"] = monsterGroups;
-    }
-    if (!itemGroups.empty())
-    {
-        object["place_items"] = itemGroups;
+        object["place_traps"] = traps;
     }
     if (!monsters.empty())
     {
@@ -185,6 +247,197 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     if (!vehicles.empty())
     {
         object["place_vehicles"] = vehicles;
+    }
+    if (!toilets.empty())
+    {
+        object["place_toilets"] = toilets;
+    }
+
+    QHash<MonsterGroup, QRect> finalizedMonsterGroups;
+    foreach (MonsterGroup mg, monsterGroupCollection.keys())
+    {
+        QVector<bool> mgLocs = monsterGroupCollection[mg];
+
+        while (mgLocs.contains(true))
+        {
+            QRect currentSection;
+            int currentIndex = mgLocs.indexOf(true);
+            int starty = currentIndex / OVERMAP_TERRAIN_WIDTH;
+            int startx = currentIndex % OVERMAP_TERRAIN_WIDTH;
+            currentSection.setLeft(startx);
+            currentSection.setTop(starty);
+
+            int x = startx;
+            while (x < OVERMAP_TERRAIN_WIDTH && mgLocs[index(Tripoint(x+1, starty, 0))])
+            {
+                x++;
+            }
+            currentSection.setRight(x);
+
+            int y = starty;
+            bool keepGoing = true;
+            while(y < OVERMAP_TERRAIN_WIDTH && keepGoing)
+            {
+                for (int i = startx; i <= x; i++)
+                {
+                    keepGoing = mgLocs[index(Tripoint(i, y+1, 0))];
+                    if (!keepGoing)
+                    {
+                        break;
+                    }
+                }
+                if (!keepGoing)
+                {
+                    break;
+                }
+                y++;
+            }
+            currentSection.setBottom(y);
+
+            for (y = currentSection.top(); y <= currentSection.bottom(); y++)
+            {
+                for (x = currentSection.left(); x <= currentSection.right(); x++)
+                {
+                    mgLocs[index(Tripoint(x,y,0))] = false;
+                }
+            }
+            finalizedMonsterGroups.insertMulti(mg, currentSection);
+        }
+    }
+
+    foreach (MonsterGroup mg, finalizedMonsterGroups.uniqueKeys())
+    {
+        foreach (QRect r, finalizedMonsterGroups.values(mg))
+        {
+            qDebug() << mg.GetID() << r.left() << r.top() << "->" << r.right() << r.bottom();
+            QJsonObject monsterGroup;
+
+            if (r.left() == r.right())
+            {
+                monsterGroup["x"] = r.left();
+            }
+            else
+            {
+                QJsonArray xArray;
+                xArray.append(r.left());
+                xArray.append(r.right());
+                monsterGroup["x"] = xArray;
+            }
+            if (r.top() == r.bottom())
+            {
+                monsterGroup["y"] = r.top();
+            }
+            else
+            {
+                QJsonArray yArray;
+                yArray.append(r.top());
+                yArray.append(r.bottom());
+                monsterGroup["y"] = yArray;
+            }
+            monsterGroup["monster"] = mg.GetID();
+            monsterGroup["chance"] = mg.GetChance();
+            monsterGroup["density"] = mg.GetDensity();
+
+            monsterGroups.append(monsterGroup);
+        }
+    }
+
+    if (!monsterGroups.empty())
+    {
+        object["place_monsters"] = monsterGroups;
+    }
+
+    QHash<ItemGroup, QRect> finalizedItemGroups;
+    foreach (ItemGroup ig, itemGroupCollection.keys())
+    {
+        QVector<bool> igLocs = itemGroupCollection[ig];
+
+        while (igLocs.contains(true))
+        {
+            QRect currentSection;
+            int currentIndex = igLocs.indexOf(true);
+            int starty = currentIndex / OVERMAP_TERRAIN_WIDTH;
+            int startx = currentIndex % OVERMAP_TERRAIN_WIDTH;
+            currentSection.setLeft(startx);
+            currentSection.setTop(starty);
+
+            int x = startx;
+            while (x < OVERMAP_TERRAIN_WIDTH && igLocs[index(Tripoint(x+1, starty, 0))])
+            {
+                x++;
+            }
+            currentSection.setRight(x);
+
+            int y = starty;
+            bool keepGoing = true;
+            while(y < OVERMAP_TERRAIN_WIDTH && keepGoing)
+            {
+                for (int i = startx; i <= x; i++)
+                {
+                    keepGoing = igLocs[index(Tripoint(i, y+1, 0))];
+                    if (!keepGoing)
+                    {
+                        break;
+                    }
+                }
+                if (!keepGoing)
+                {
+                    break;
+                }
+                y++;
+            }
+            currentSection.setBottom(y);
+
+            for (y = currentSection.top(); y <= currentSection.bottom(); y++)
+            {
+                for (x = currentSection.left(); x <= currentSection.right(); x++)
+                {
+                    igLocs[index(Tripoint(x,y,0))] = false;
+                }
+            }
+            finalizedItemGroups.insertMulti(ig, currentSection);
+        }
+    }
+
+    foreach (ItemGroup ig, finalizedItemGroups.uniqueKeys())
+    {
+        foreach (QRect r, finalizedItemGroups.values(ig))
+        {
+            qDebug() << ig.GetID() << r.left() << r.top() << "->" << r.right() << r.bottom();
+            QJsonObject itemGroup;
+
+            if (r.left() == r.right())
+            {
+                itemGroup["x"] = r.left();
+            }
+            else
+            {
+                QJsonArray xArray;
+                xArray.append(r.left());
+                xArray.append(r.right());
+                itemGroup["x"] = xArray;
+            }
+            if (r.top() == r.bottom())
+            {
+                itemGroup["y"] = r.top();
+            }
+            else
+            {
+                QJsonArray yArray;
+                yArray.append(r.top());
+                yArray.append(r.bottom());
+                itemGroup["y"] = yArray;
+            }
+            itemGroup["item"] = ig.GetID();
+            itemGroup["chance"] = ig.GetChance();
+
+            itemGroups.append(itemGroup);
+        }
+    }
+
+    if (!itemGroups.empty())
+    {
+        object["place_items"] = itemGroups;
     }
 
     qDebug() << "Found" << tileCount.size() << "tile combinations";
@@ -317,7 +570,9 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
 
     qDebug() << doc.toJson();
 
-    QString filename = QFileDialog::getSaveFileName();
+    QSettings settings;
+    QString dataDir = settings.value("cataclysm_dir", "").toString();
+    QString filename = QFileDialog::getSaveFileName(0, "Save As...", dataDir, "JSON (*.json)");
 
     if (filename.isEmpty())
     {

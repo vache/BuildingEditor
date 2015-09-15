@@ -5,6 +5,9 @@
 #include "jsonwriter.h"
 
 #include <QDebug>
+#include <QFileDialog>
+#include <QSettings>
+#include <QMessageBox>
 
 // convert to LINE_XXXX to match cata convention?
 enum DirectionalLine { NS = 0, EW, NE, NW, SE, SW, NES, NSW, NEW, ESW, NESW };
@@ -15,7 +18,15 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QCoreApplication::setApplicationName("Cataclysm Building Editor");
+    QCoreApplication::setOrganizationName("vache");
+
+    ui->zLevelLE->setHidden(true);
+    ui->zLevelSlider->setHidden(true);
+
     JsonParser p;
+
+    connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(NewBuilding()));
 
     connect(&p, SIGNAL(ParsedTerrain(Terrain, QString)), this, SLOT(NewTerrain(Terrain, QString)));
     connect(&p, SIGNAL(ParsedFurniture(Furniture, QString)), this, SLOT(NewFurniture(Furniture, QString)));
@@ -37,6 +48,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->vehicleWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->specialsWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
 
     connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->furnitureWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
@@ -46,6 +58,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->vehicleWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->specialsWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
 
     connect(this, SIGNAL(CurrentFeatureChanged(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
 
@@ -56,8 +69,59 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->vehicleChance, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->vehicleStatus, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->vehicleDirection, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->vehicleCustomDirection, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->vehicleFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
 
-    p.Parse("c:/code/Cataclysm-DDA/data");
+    // TODO move all UI init to own methods.
+
+    // Erasers need to go in before the parser does its thing!
+    // NOTE: for some reason, tr_null is defined in traps.json (unlike everything else) so skip it here
+    // though we may want to actually add it for the sake of consistency
+    // NOTE: also note, terrain should never be null, so dont let them change it back to null.
+    QListWidgetItem* f_null = new QListWidgetItem("Erase Furniture", ui->furnitureWidget);
+    f_null->setData(Qt::UserRole, "f_null");
+    f_null->setData(FeatureTypeRole, QVariant::fromValue(F_Furniture));
+    Features::AddFurniture("f_null", Furniture(), "");
+
+    QListWidgetItem* ig_null = new QListWidgetItem("Erase Item Group", ui->itemGroupWidget);
+    ig_null->setData(Qt::UserRole, QVariant::fromValue(ItemGroup()));
+    ig_null->setData(FeatureTypeRole, QVariant::fromValue(F_ItemGroup));
+
+    QListWidgetItem* mg_null = new QListWidgetItem("Erase Monster Group", ui->monsterGroupWidget);
+    mg_null->setData(Qt::UserRole, QVariant::fromValue(MonsterGroup()));
+    mg_null->setData(FeatureTypeRole, QVariant::fromValue(F_MonsterGroup));
+
+    QListWidgetItem* mon_null = new QListWidgetItem("Erase Monster", ui->monsterWidget);
+    mon_null->setData(Qt::UserRole, "");
+    mon_null->setData(FeatureTypeRole, QVariant::fromValue(F_Monster));
+
+    QListWidgetItem* i_null = new QListWidgetItem("Erase Items", ui->itemWidget);
+    i_null->setData(Qt::UserRole, "");
+    i_null->setData(FeatureTypeRole, QVariant::fromValue(F_Item));
+
+    QListWidgetItem* veh_null = new QListWidgetItem("Erase Vehicle", ui->vehicleWidget);
+    veh_null->setData(Qt::UserRole, QVariant::fromValue(Vehicle()));
+    veh_null->setData(FeatureTypeRole, QVariant::fromValue(F_Vehicle));
+
+    QListWidgetItem* toilet = new QListWidgetItem("Place Toilet Water", ui->specialsWidget);
+    toilet->setData(Qt::UserRole, true);
+    toilet->setData(FeatureTypeRole, QVariant::fromValue(F_Toilet));
+
+    QListWidgetItem* rem_toilet = new QListWidgetItem("Remove Toilet Water", ui->specialsWidget);
+    rem_toilet->setData(Qt::UserRole, false);
+    rem_toilet->setData(FeatureTypeRole, QVariant::fromValue(F_Toilet));
+
+    QSettings settings;
+
+    QString dataDir = settings.value("cataclysm_dir", "").toString();
+    QString cataclysmDir = QFileDialog::getExistingDirectory(this, "Select Your Cataclysm Data Directory", dataDir);
+    if (cataclysmDir.isEmpty())
+    {
+        // TODO this should show an error terminate the application, this is just for testing...
+        cataclysmDir = "c:/code/Cataclysm-DDA/data";
+    }
+    settings.setValue("cataclysm_dir", cataclysmDir);
+    p.Parse(cataclysmDir);
 
     ui->mainToolBar->addAction("Write", this, SLOT(Write()));
     ui->mainToolBar->addSeparator();
@@ -90,11 +154,12 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     ui->vehicleStatus->addItem("Lightly Damaged", -1);
     ui->vehicleStatus->addItem("Disabled", 1);
 
-    ui->vehicleDirection->addItem("North", 0);
-    ui->vehicleDirection->addItem("East", 1);
-    ui->vehicleDirection->addItem("South", 2);
-    ui->vehicleDirection->addItem("West", 3);
-    ui->vehicleDirection->addItem("Random", 4);
+    ui->vehicleDirection->addItem("North", 270);
+    ui->vehicleDirection->addItem("East", 0);
+    ui->vehicleDirection->addItem("South", 90);
+    ui->vehicleDirection->addItem("West", 180);
+    //ui->vehicleDirection->addItem("Random", -1);
+    ui->vehicleDirection->addItem("Other", -2);
 
     // TEST CODE
     QList<QChar> test;
@@ -108,7 +173,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
         blah.append(ch);
     }
     blah.append(test[NESW]);
-    ui->statusBar->showMessage(blah);
+    //ui->statusBar->showMessage(blah);
 
     bool active[10][10];
     for (int i = 0; i < 10; i++)
@@ -151,19 +216,24 @@ void BuildingEditor::ZLevelSliderChanged(int value)
 
 void BuildingEditor::NewBuilding()
 {
-
-//    int dimension = 3;
-
-//    if(NULL == _currentBuilding)
-//    {
-//        _currentBuilding = new Building(dimension);
-//    }
-//    else
-//    {
-//        // check for dirty, prompt to save, proceed
-//    }
-
-//    ui->tableView->setModel(_currentBuilding->_model);
+    if (QMessageBox::critical(this, "Create new building", "Are you sure you want to continue?\n"
+                              "This will delete all unsaved changes!",
+                              QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel)
+    {
+        return;
+    }
+    bool active[10][10];
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            active[i][j] = false;
+        }
+    }
+    active[0][0] = true;
+    delete m;
+    m = new BuildingModel(active);
+    ui->tableView->setModel(m);
 }
 
 void BuildingEditor::NewTerrain(Terrain t, QString mod)
@@ -173,7 +243,14 @@ void BuildingEditor::NewTerrain(Terrain t, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1 - %2%3").arg(t.GetSymbol()).arg(t.GetDescription()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->terrainWidget);
-    item->setToolTip(t.GetID());
+    if (mod.isEmpty())
+    {
+        item->setToolTip(t.GetID());
+    }
+    else
+    {
+        item->setToolTip(QString("%1 - %2").arg(t.GetID()).arg(mod));
+    }
     item->setData(Qt::UserRole, t.GetID());
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Terrain));
 }
@@ -185,7 +262,14 @@ void BuildingEditor::NewFurniture(Furniture f, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1 - %2%3").arg(f.GetSymbol()).arg(f.GetDescription()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->furnitureWidget);
-    item->setToolTip(f.GetID());
+    if (mod.isEmpty())
+    {
+        item->setToolTip(f.GetID());
+    }
+    else
+    {
+        item->setToolTip(QString("%1 - %2").arg(f.GetID()).arg(mod));
+    }
     item->setData(Qt::UserRole, f.GetID());
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Furniture));
 }
@@ -197,7 +281,14 @@ void BuildingEditor::NewTrap(Trap tr, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1 - %2%3").arg(tr.GetSymbol()).arg(tr.GetDescription()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->trapWidget);
-    item->setToolTip(tr.GetID());
+    if (mod.isEmpty())
+    {
+        item->setToolTip(tr.GetID());
+    }
+    else
+    {
+        item->setToolTip(QString("%1 - %2").arg(tr.GetID()).arg(mod));
+    }
     item->setData(Qt::UserRole, tr.GetID());
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Trap));
 }
@@ -207,7 +298,14 @@ void BuildingEditor::NewItem(QString name, QString id, QChar symbol, QString mod
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1 - %2%3").arg(symbol).arg(name).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->itemWidget);
-    item->setToolTip(id);
+    if (mod.isEmpty())
+    {
+        item->setToolTip(id);
+    }
+    else
+    {
+        item->setToolTip(QString("%1 - %2").arg(id).arg(mod));
+    }
     item->setData(Qt::UserRole, id);
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Item));
 }
@@ -217,6 +315,10 @@ void BuildingEditor::NewItemGroup(ItemGroup ig, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1%2").arg(ig.GetID()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->itemGroupWidget);
+    if (!mod.isEmpty())
+    {
+        item->setToolTip(mod);
+    }
     item->setData(Qt::UserRole, QVariant::fromValue(ig));
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_ItemGroup));
 }
@@ -226,7 +328,14 @@ void BuildingEditor::NewMonster(QString name, QString id, QChar symbol, QString 
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1 - %2%3").arg(symbol).arg(name).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->monsterWidget);
-    item->setToolTip(id);
+    if (mod.isEmpty())
+    {
+        item->setToolTip(id);
+    }
+    else
+    {
+        item->setToolTip(QString("%1 - %2").arg(id).arg(mod));
+    }
     item->setData(Qt::UserRole, id);
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Monster));
 }
@@ -236,6 +345,10 @@ void BuildingEditor::NewMonsterGroup(MonsterGroup mg, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1%2").arg(mg.GetID()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->monsterGroupWidget);
+    if (!mod.isEmpty())
+    {
+        item->setToolTip(mod);
+    }
     item->setData(Qt::UserRole, QVariant::fromValue(mg));
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_MonsterGroup));
 }
@@ -245,7 +358,14 @@ void BuildingEditor::NewVehicle(Vehicle veh, QString mod)
     QString modded = (mod == "") ? "" : " *";
     QString displayText = QString("%1%2").arg(veh.GetName()).arg(modded);
     QListWidgetItem* item = new QListWidgetItem(displayText, ui->vehicleWidget);
-    item->setToolTip(veh.GetID());
+    if (mod.isEmpty())
+    {
+        item->setToolTip(veh.GetID());
+    }
+    else
+    {
+        item->setToolTip(QString("%1 - %2").arg(veh.GetID()).arg(mod));
+    }
     item->setData(Qt::UserRole, QVariant::fromValue(veh));
     item->setData(FeatureTypeRole, QVariant::fromValue(F_Vehicle));
 }
@@ -320,19 +440,31 @@ void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
             break;
         case F_Item:
         {
-            ui->itemEditor->setVisible(true);
+            //ui->itemEditor->setVisible(true);
             break;
         }
         case F_Monster:
             break;
         case F_Vehicle:
+        {
             ui->vehicleEditor->setVisible(true);
             ui->vehicleID->setText(v.value<Vehicle>().GetID());
             ui->vehicleName->setText(v.value<Vehicle>().GetName());
             ui->vehicleChance->setValue(v.value<Vehicle>().GetChance());
             ui->vehicleStatus->setCurrentIndex(ui->vehicleStatus->findData(v.value<Vehicle>().GetStatus()));
-            ui->vehicleDirection->setCurrentIndex(ui->vehicleDirection->findData(v.value<Vehicle>().GetDirection()));
+            int index = ui->vehicleDirection->findData(v.value<Vehicle>().GetDirection());
+            if (index != -1)
+            {
+                ui->vehicleDirection->setCurrentIndex(index);
+            }
+            else
+            {
+                ui->vehicleDirection->setCurrentIndex(ui->vehicleDirection->findData(-2));
+                ui->vehicleCustomDirection->setValue(v.value<Vehicle>().GetDirection());
+            }
+            ui->vehicleFuel->setValue(v.value<Vehicle>().GetFuel());
             break;
+        }
         default:
             break;
     }
@@ -344,6 +476,16 @@ void BuildingEditor::ObjectEditorModified()
     {
         return;
     }
+
+    if (ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt() == -2)
+    {
+        ui->vehicleCustomDirection->setEnabled(true);
+    }
+    else
+    {
+        ui->vehicleCustomDirection->setEnabled(false);
+    }
+
     Feature f = _currentItem->data(FeatureTypeRole).value<Feature>();
     QVariant v = _currentItem->data(Qt::UserRole);
 
@@ -381,7 +523,15 @@ void BuildingEditor::ObjectEditorModified()
             Vehicle veh = v.value<Vehicle>();
             veh.SetChance(ui->vehicleChance->value());
             veh.SetStatus(ui->vehicleStatus->itemData(ui->vehicleStatus->currentIndex()).toInt());
-            veh.SetDirection(ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt());
+            if (ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt() != -2)
+            {
+                veh.SetDirection(ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt());
+            }
+            else
+            {
+                veh.SetDirection(ui->vehicleCustomDirection->value());
+            }
+            veh.SetFuel(ui->vehicleFuel->value());
             _currentItem->setData(Qt::UserRole, QVariant::fromValue(veh));
             emit CurrentFeatureChanged(_currentItem);
             break;

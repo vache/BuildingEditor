@@ -8,7 +8,8 @@
 #include "tripoint.h"
 
 enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, FurnitureRole,
-                   TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole };
+                   TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
+                   ToiletRole };
 
 class BuildingModel : public QAbstractTableModel
 {

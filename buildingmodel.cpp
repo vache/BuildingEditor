@@ -140,6 +140,11 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
+    case ToiletRole:
+        t.SetToilet(value.toBool());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        return true;
     default:
         return false;
     }
