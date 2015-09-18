@@ -33,6 +33,8 @@ private:
 
 uint qHash(MonsterGroup);
 
+static MonsterGroup null_monster_group("", 0, 0.0);
+
 Q_DECLARE_METATYPE(MonsterGroup)
 
 #endif // MONSTERGROUP_H

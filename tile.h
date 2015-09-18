@@ -25,8 +25,10 @@ public:
     QColor GetForegroundColor() const;
     QColor GetBackgroundColor() const;
 
-    inline void SetTerrain(QString terrain) { _terrain = terrain; }
-    inline void SetFurniture(QString furniture) { _furniture = furniture; }
+    //inline void SetTerrain(QString terrain) { _terrain = terrain; }
+    void SetTerrain(QString terrain);
+    //inline void SetFurniture(QString furniture) { _furniture = furniture; }
+    void SetFurniture(QString furniture);
     inline void SetTrap(QString trap) { _trap = trap; }
     inline void SetMonsterGroup(MonsterGroup monGroup) { _monsterGroup = monGroup; }
     void AddItem(QString item);

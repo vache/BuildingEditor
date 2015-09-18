@@ -38,6 +38,8 @@ private:
     int _fuel;
 };
 
+static Vehicle null_vehicle("", "", 0, -1, 0, -1);
+
 Q_DECLARE_METATYPE(Vehicle)
 
 #endif // VEHICLE_H

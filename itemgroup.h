@@ -28,6 +28,8 @@ private:
 
 uint qHash(ItemGroup);
 
+static ItemGroup null_item_group("", 0);
+
 Q_DECLARE_METATYPE(ItemGroup)
 
 #endif // ITEMGROUP_H

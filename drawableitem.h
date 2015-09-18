@@ -5,12 +5,14 @@
 #include <QColor>
 #include <QList>
 #include <QSet>
+#include <QMetaType>
 #include "colors.h"
 
 class DrawableItem
 {
 public:
     DrawableItem();
+
     DrawableItem(QString id, QString desc, QChar sym, nc_color color, QSet<QString> flags);
     inline QChar GetSymbol() const { return _symbol; }
     inline QString GetDescription() const { return _description; }
@@ -35,6 +37,10 @@ private:
 typedef DrawableItem Terrain;
 typedef DrawableItem Furniture;
 typedef DrawableItem Trap;
+
+static Terrain null_terrain("t_null", "", QChar(' '), color_from_string("black"), QSet<QString>());
+static Furniture null_furniture("f_null", "", QChar(' '), color_from_string("black"), QSet<QString>());
+static Trap null_trap("tr_null", "", QChar(' '), color_from_string("black"), QSet<QString>());
 
 Q_DECLARE_METATYPE(DrawableItem)
 
