@@ -111,6 +111,13 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
 
     if (object.value("type").toString() == "terrain")
     {
+        if (object["move_cost"].toInt() == 0)
+        {
+            flags.insert("NO_MONSTERS");
+            flags.insert("NO_TRAPS");
+            flags.insert("NO_FURNITURE");
+        }
+
         Terrain t(id, description, symbol, color, flags);
 
         qDebug() << "Terrain" << id << "belongs to" << _currentMod;
@@ -119,6 +126,12 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
     }
     else if (object.value("type").toString() == "furniture")
     {
+        flags.insert("NO_TRAPS");
+        if (object["move_cost_mod"].toInt() == -1)
+        {
+            flags.insert("NO_MONSTERS");
+        }
+
         Furniture f(id, description, symbol, color, flags);
 
         qDebug() << "Furniture" << id << "belongs to" << _currentMod;
@@ -127,6 +140,12 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
     }
     else if(object.value("type").toString() == "trap")
     {
+        flags.insert("NO_FURNITURE");
+        if (object.value("benign").toBool(false) == false)
+        {
+            flags.insert("NO_MONSTERS");
+        }
+
         Trap tr(id, description, symbol, color, flags);
 
         qDebug() << "Trap" << id << "belongs to" << _currentMod;
@@ -156,6 +175,13 @@ void JsonParser::ParseTerrain(QJsonObject &object)
         color = bgcolor_from_string(object.value("bgcolor").toString());
     }
     QSet<QString> flags;
+
+    if (object["move_cost"].toInt() == 0)
+    {
+        flags.insert("NO_MONSTERS");
+        flags.insert("NO_TRAPS");
+        flags.insert("NO_FURNITURE");
+    }
 
     if (object.contains("flags"))
     {
@@ -187,6 +213,12 @@ void JsonParser::ParseFurniture(QJsonObject &object)
         color = bgcolor_from_string(object.value("bgcolor").toString());
     }
     QSet<QString> flags;
+
+    if (object["move_cost_mod"].toInt() == -1)
+    {
+        flags.insert("NO_TRAPS");
+        flags.insert("NO_MONSTERS");
+    }
 
     if (object.contains("flags"))
     {
