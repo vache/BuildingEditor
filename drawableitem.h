@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QList>
 #include <QSet>
+#include <QMetaType>
 #include "colors.h"
 
 class DrawableItem
