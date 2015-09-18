@@ -146,15 +146,16 @@ QColor Tile::GetBackgroundColor() const
 
 void Tile::SetTerrain(QString terrain)
 {
+    _terrain = terrain;
     if (Features::GetTerrain(terrain).HasFlag("NO_FURNITURE"))
     {
         _furniture = null_furniture.GetID();
     }
-    if (Features::GetTerrain(terrain).HasFlag("NO_TRAP"))
+    if (Features::GetTerrain(terrain).HasFlag("NO_TRAPS"))
     {
         _trap = null_trap.GetID();
     }
-    if (Features::GetTerrain(terrain).HasFlag("NO_MONSTER"))
+    if (Features::GetTerrain(terrain).HasFlag("NO_MONSTERS"))
     {
         _monster = "";
         _monsterGroup = null_monster_group;
@@ -178,9 +179,10 @@ void Tile::SetFurniture(QString furniture)
     {
         return;
     }
+    _furniture = furniture;
     _trap = null_trap.GetID();
 
-    if (Features::GetFurniture(furniture).HasFlag("NO_MONSTER"))
+    if (Features::GetFurniture(furniture).HasFlag("NO_MONSTERS"))
     {
         _monster = "";
         _monsterGroup = null_monster_group;
@@ -198,8 +200,31 @@ void Tile::SetFurniture(QString furniture)
     }
 }
 
+void Tile::SetTrap(QString trap)
+{
+    if (Features::GetTerrain(_terrain).HasFlag("NO_TRAPS") ||
+        _furniture != null_furniture.GetID())
+    {
+        return;
+    }
+    _trap = trap;
+
+    if (Features::GetTrap(trap).HasFlag("NO_MONSTERS"))
+    {
+        _monsterGroup = null_monster_group;
+        _monster = "";
+    }
+}
+
 void Tile::AddItem(QString item)
 {
+    if (Features::GetTerrain(_terrain).HasFlag("NOITEM") ||
+        Features::GetTerrain(_terrain).HasFlag("DESTROY_ITEM") ||
+        Features::GetFurniture(_furniture).HasFlag("NOITEM") ||
+        Features::GetFurniture(_furniture).HasFlag("DESTROY_ITEM"))
+    {
+        return;
+    }
     if (!item.isEmpty())
     {
         _items.append(item);

@@ -29,7 +29,8 @@ public:
     void SetTerrain(QString terrain);
     //inline void SetFurniture(QString furniture) { _furniture = furniture; }
     void SetFurniture(QString furniture);
-    inline void SetTrap(QString trap) { _trap = trap; }
+    //inline void SetTrap(QString trap) { _trap = trap; }
+    void SetTrap(QString trap);
     inline void SetMonsterGroup(MonsterGroup monGroup) { _monsterGroup = monGroup; }
     void AddItem(QString item);
     inline void SetMonster(QString monster) { _monster = monster; }

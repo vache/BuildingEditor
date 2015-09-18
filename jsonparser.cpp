@@ -111,7 +111,7 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
 
     if (object.value("type").toString() == "terrain")
     {
-        if (object["move_cost"].toInt() == 0)
+        if (object["move_cost"].toInt() == 0 || object.contains("trap"))
         {
             flags.insert("NO_MONSTERS");
             flags.insert("NO_TRAPS");
