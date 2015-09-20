@@ -93,6 +93,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     QJsonArray items;
     QJsonArray vehicles;
     QJsonArray toilets;
+    QJsonArray npcs;
     // TODO in this loop, form the lists of monster/item groups, and possibly their respective locations?
     QHash<MonsterGroup, QVector<bool>> monsterGroupCollection;
     QHash<ItemGroup, QVector<bool>> itemGroupCollection;
@@ -230,6 +231,14 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
                 toilet["y"] = row;
                 toilets.append(toilet);
             }
+            if (tile.GetNPC() != "")
+            {
+                QJsonObject npc;
+                npc["x"] = col;
+                npc["y"] = row;
+                npc["clsss"] = tile.GetNPC();
+                npcs.append(npc);
+            }
         }
     }
     if (!traps.empty())
@@ -251,6 +260,10 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
     if (!toilets.empty())
     {
         object["place_toilets"] = toilets;
+    }
+    if (!npcs.empty())
+    {
+        object["place_npcs"] = npcs;
     }
 
     QHash<MonsterGroup, QRect> finalizedMonsterGroups;

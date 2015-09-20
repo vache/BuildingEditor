@@ -145,6 +145,11 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
+    case NpcRole:
+        t.SetNPC(value.toString());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        break;
     default:
         return false;
     }

@@ -41,6 +41,7 @@ private slots:
     void NewMonster(QString name, QString id, QChar symbol, QString mod);
     void NewMonsterGroup(MonsterGroup mg, QString mod);
     void NewVehicle(Vehicle veh, QString mod);
+    void NewNPC(QString id, QString name, QString faction, QString comment, QString mod);
 
     void Write();
 

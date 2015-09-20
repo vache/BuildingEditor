@@ -3,7 +3,8 @@
 #include <QDebug>
 
 Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup(MonsterGroup()),
-    _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false)
+    _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false),
+    _vending(""), _gasPump(0,0), _npc("")
 {
 }
 
@@ -235,6 +236,18 @@ void Tile::AddItem(QString item)
     }
 }
 
+void Tile::SetNPC(QString npc)
+{
+    if (Features::GetTerrain(_terrain).HasFlag("NO_MONSTERS") ||
+        Features::GetFurniture(_furniture).HasFlag("NO_MONSTERS") ||
+        Features::GetTrap(_trap).HasFlag("NO_MONSTERS") ||
+        !_monster.isEmpty())
+    {
+        return;
+    }
+    _npc = npc;
+}
+
 bool Tile::ExportEquivalent(const Tile &other) const
 {
     // TODO this will need more logic later
@@ -263,6 +276,9 @@ Tile & Tile::operator =(const Tile & other)
     _monsterGroup = other._monsterGroup;
     _vehicle = other._vehicle;
     _toilet = other._toilet;
+    _npc = other._npc;
+    _vending = other._vending;
+    _gasPump = other._gasPump;
 
     return *this;
 }

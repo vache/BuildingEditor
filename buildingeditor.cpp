@@ -36,6 +36,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(&p, SIGNAL(ParsedItemGroup(ItemGroup,QString)), this, SLOT(NewItemGroup(ItemGroup,QString)));
     connect(&p, SIGNAL(ParsedMonsterGroup(MonsterGroup,QString)), this, SLOT(NewMonsterGroup(MonsterGroup,QString)));
     connect(&p, SIGNAL(ParsedVehicle(Vehicle,QString)), this, SLOT(NewVehicle(Vehicle,QString)));
+    connect(&p, SIGNAL(ParsedNPC(QString,QString,QString,QString,QString)), this, SLOT(NewNPC(QString,QString,QString,QString,QString)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
 
@@ -48,6 +49,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->vehicleWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
+    connect(ui->npcWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
     connect(ui->specialsWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
 
     connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
@@ -58,6 +60,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->itemGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->monsterGroupWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->vehicleWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
+    connect(ui->npcWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
     connect(ui->specialsWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetObjectEditorMode(QListWidgetItem*)));
 
     connect(this, SIGNAL(CurrentFeatureChanged(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
@@ -110,6 +113,22 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     QListWidgetItem* rem_toilet = new QListWidgetItem("Remove Toilet Water", ui->specialsWidget);
     rem_toilet->setData(Qt::UserRole, false);
     rem_toilet->setData(FeatureTypeRole, QVariant::fromValue(F_Toilet));
+
+    QListWidgetItem* vending = new QListWidgetItem("Add Vending Machine", ui->specialsWidget);
+    vending->setData(Qt::UserRole, "vending_food");
+    vending->setData(FeatureTypeRole, QVariant::fromValue(F_Vending));
+
+    QListWidgetItem* rem_vending = new QListWidgetItem("Remove Vending Machine", ui->specialsWidget);
+    rem_vending->setData(Qt::UserRole, "");
+    rem_vending->setData(FeatureTypeRole, QVariant::fromValue(F_Vending));
+
+    QListWidgetItem* sign = new QListWidgetItem("Add Sign", ui->specialsWidget);
+    sign->setData(Qt::UserRole, "Sign Text");
+    sign->setData(FeatureTypeRole, QVariant::fromValue(F_Sign));
+
+    QListWidgetItem* rem_sign = new QListWidgetItem("Remove Sign", ui->specialsWidget);
+    rem_sign->setData(Qt::UserRole, "");
+    rem_sign->setData(FeatureTypeRole, QVariant::fromValue(F_Sign));
 
     QSettings settings;
 
@@ -370,6 +389,28 @@ void BuildingEditor::NewVehicle(Vehicle veh, QString mod)
     item->setData(FeatureTypeRole, QVariant::fromValue(F_Vehicle));
 }
 
+void BuildingEditor::NewNPC(QString id, QString name, QString faction, QString comment, QString mod)
+{
+    QString displayText = QString("%1 - %2 - %3").arg(id).arg(faction).arg(name);
+    QString toolTipText = "";
+    // comment and mod are both optional
+    if (!comment.isEmpty() && mod.isEmpty())
+    {
+        toolTipText = comment;
+    }
+    else if (!mod.isEmpty() && comment.isEmpty())
+    {
+        toolTipText = mod;
+    }
+    else if (!mod.isEmpty() && !comment.isEmpty())
+    {
+        toolTipText = QString("%1 - %2").arg(comment).arg(mod);
+    }
+    QListWidgetItem* item = new QListWidgetItem(displayText, ui->npcWidget);
+    item->setToolTip(toolTipText);
+    item->setData(Qt::UserRole, id);
+    item->setData(FeatureTypeRole, QVariant::fromValue(F_NPC));
+}
 
 void BuildingEditor::Write()
 {

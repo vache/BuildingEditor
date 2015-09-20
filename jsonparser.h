@@ -39,6 +39,7 @@ private:
     void ParseMonster(QJsonObject &object);
     void ParseVehicle(QJsonObject &object);
     void ParseVehicleGroup(QJsonObject &object);
+    void ParseNPC(QJsonObject& object);
 
     void ProcessObject(QJsonObject& object);
 
@@ -58,6 +59,7 @@ signals:
     void ParsedMonsterGroup(MonsterGroup, QString);
 
     void ParsedVehicle(Vehicle, QString);
+    void ParsedNPC(QString, QString, QString, QString, QString);
 };
 
 #endif // JSONPARSER_H

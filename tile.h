@@ -37,6 +37,7 @@ public:
     inline void SetItemGroup(ItemGroup itemGroup) { _itemGroup = itemGroup; }
     inline void SetVehicle(Vehicle vehicle) { _vehicle = vehicle; }
     inline void SetToilet(bool toilet) { _toilet = toilet; }
+    void SetNPC(QString npc);
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -47,6 +48,7 @@ public:
     inline ItemGroup GetItemGroup() const { return _itemGroup; }
     inline Vehicle GetVehicle() const { return _vehicle; }
     inline bool GetToilet() const { return _toilet; }
+    inline QString GetNPC() const { return _npc; }
 
     bool ExportEquivalent(const Tile& other) const;
     bool operator==(const Tile& other) const;
@@ -62,7 +64,11 @@ private:
     QString _monster;
     ItemGroup _itemGroup;
     Vehicle _vehicle;
+
     bool _toilet; // TODO this shouldnt be a bool for long, but it works for this release.
+    QString _vending;
+    QPair<int, int> _gasPump; // TODO this should be its own construct, since it should track at least: fueltype, min, max
+    QString _npc;
 };
 
 #endif // TILE_H

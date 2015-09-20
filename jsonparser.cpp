@@ -290,6 +290,21 @@ void JsonParser::ParseVehicleGroup(QJsonObject &object)
     Q_UNUSED(object)
 }
 
+void JsonParser::ParseNPC(QJsonObject &object)
+{
+    // Grab id for placement, comment, name+, and faction.  First entry has many "comment" fields, only grab the first?
+    QString id = object.value("id").toString("invalid_id");
+    QString name = object.value("name+").toString("<npcname>");
+    if (name[0] == ',')
+    {
+        name.prepend("<npcname>");
+    }
+    QString faction = object.value("faction").toString("invalid_faction");
+    QString comment = object.value("comment").toString("");
+
+    emit ParsedNPC(id, name, faction, comment, _currentMod);
+}
+
 // item types: AMMO, GENERIC, GUN, ARMOR, BIONIC_ITEM, BOOK, COMESTIBLE, CONTAINER, TOOL, GUNMOD, TOOL_ARMOR, VAR_VEH_PART, INSTRUMENT
 void JsonParser::JsonParser::ProcessObject(QJsonObject &object)
 {
@@ -302,18 +317,6 @@ void JsonParser::JsonParser::ProcessObject(QJsonObject &object)
     {
         QString type = object.value("type").toString("unknown");
 
-//        if (type == "terrain")
-//        {
-//            ParseTerrain(object);
-//        }
-//        else if (type == "furniture")
-//        {
-//            ParseFurniture(object);
-//        }
-//        else if (type == "trap")
-//        {
-//            ParseTrap(object);
-//        }
         if (drawableTypes.contains(type))
         {
             ParseDrawableItem(object);
@@ -341,6 +344,10 @@ void JsonParser::JsonParser::ProcessObject(QJsonObject &object)
         else if (type == "vehicle_group")
         {
             ParseVehicleGroup(object);
+        }
+        else if (type == "npc")
+        {
+            ParseNPC(object);
         }
     }
 }

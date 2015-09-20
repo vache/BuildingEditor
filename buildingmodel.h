@@ -9,7 +9,7 @@
 
 enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, FurnitureRole,
                    TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
-                   ToiletRole };
+                   ToiletRole, NpcRole, VendingRole, SignRole };
 
 class BuildingModel : public QAbstractTableModel
 {

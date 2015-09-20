@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1739</width>
     <height>768</height>
    </rect>
   </property>
@@ -56,8 +56,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -74,8 +74,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -92,8 +92,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -110,8 +110,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -128,8 +128,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -146,8 +146,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -164,8 +164,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -182,8 +182,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>400</width>
-         <height>390</height>
+         <width>98</width>
+         <height>91</height>
         </rect>
        </property>
        <attribute name="label">
@@ -195,7 +195,25 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="npcPage">
+       <attribute name="label">
+        <string>NPCs</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
+        <item>
+         <widget class="QListWidget" name="npcWidget"/>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="specialPage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>400</width>
+         <height>363</height>
+        </rect>
+       </property>
        <attribute name="label">
         <string>Special Features</string>
        </attribute>
@@ -287,7 +305,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1739</width>
      <height>21</height>
     </rect>
    </property>
