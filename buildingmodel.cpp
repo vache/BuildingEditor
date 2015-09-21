@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QDateTime>
+#include "features.h"
 
 BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
     QAbstractTableModel(parent), _rows(0), _cols(0)
@@ -78,7 +79,13 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
     switch(role)
     {
     case Qt::DisplayRole:
+    {
+        if (tile.IsLineDrawing())
+        {
+            return GetLineDrawingChar(index);
+        }
         return tile.GetDisplayChar();
+    }
     case Qt::BackgroundRole:
         return QBrush(tile.GetBackgroundColor());
     case Qt::ForegroundRole:
@@ -150,6 +157,12 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         break;
+    case SignRole:
+        qDebug() << value.toString();
+        t.SetSignage(value.toString());
+        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
+        emit dataChanged(index, index);
+        break;
     default:
         return false;
     }
@@ -163,30 +176,119 @@ QList<OvermapTerrain> BuildingModel::GetOvermapTerrains()
 
 Tripoint BuildingModel::GetOMTIndex(const QModelIndex& index) const
 {
+    return GetOMTIndex(index.row(), index.column());
+}
+
+Tripoint BuildingModel::GetOMTIndex(int row, int column) const
+{
     // for a 10x10, index will be 0-239, 0-239
-    int x = index.column() / OVERMAP_TERRAIN_WIDTH;
-    int y = index.row() / OVERMAP_TERRAIN_WIDTH;
+    int x = column / OVERMAP_TERRAIN_WIDTH;
+    int y = row / OVERMAP_TERRAIN_WIDTH;
     int z = 0; // TODO fill in
 
     return Tripoint(x, y, z);
 }
 
-OvermapTerrain BuildingModel::GetOMTFromIndex(const QModelIndex & index)
+OvermapTerrain BuildingModel::GetOMTFromIndex(const QModelIndex & index) const
 {
     return _omts[GetOMTIndex(index)];
 }
 
 Tripoint BuildingModel::GetTileIndex(const QModelIndex& index) const
 {
-    // for a 10x10, index will be 0-239, 0-239
-    int x = index.column() % OVERMAP_TERRAIN_WIDTH;
-    int y = index.row() % OVERMAP_TERRAIN_WIDTH;
-    int z = 0; // TODO fill in
+    return GetTileIndex(index.row(), index.column());
+}
+
+Tripoint BuildingModel::GetTileIndex(int row, int column) const
+{
+    int x = column % OVERMAP_TERRAIN_WIDTH;
+    int y = row % OVERMAP_TERRAIN_WIDTH;
+    int z = 0;
 
     return Tripoint(x, y, z);
 }
 
-Tile BuildingModel::GetTileFromIndex(const QModelIndex & index)
+Tile BuildingModel::GetTileFromIndex(const QModelIndex & index) const
 {
     return GetOMTFromIndex(index).GetTile(GetTileIndex(index));
+}
+
+QChar BuildingModel::GetLineDrawingChar(const QModelIndex & index) const
+{
+    // NS, EW, NE, NW, ES, SW, NES, NSW, NEW, ESW, NESW
+    static QList<QChar> lineDrawingChars = { 0x2502, 0x2500, 0x2514, 0x2518, 0x250C, 0x2510, 0x251C, 0x2524, 0x2534, 0x252C, 0x253C };
+
+    int neighbors = 0;
+    QModelIndex adjacent = this->index(index.row(), index.column()+1);
+    if (adjacent.isValid())
+    {
+        QString terrain = GetTileFromIndex(adjacent).GetTerrainID();
+        if (Features::GetTerrain(terrain).HasFlag("CONNECT_TO_WALL") || Features::GetTerrain(terrain).HasFlag("AUTO_WALL_SYMBOL"))
+        {
+            neighbors |= EAST;
+        }
+    }
+
+    adjacent = this->index(index.row(), index.column()-1);
+    if (adjacent.isValid())
+    {
+        QString terrain = GetTileFromIndex(adjacent).GetTerrainID();
+        if (Features::GetTerrain(terrain).HasFlag("CONNECT_TO_WALL") || Features::GetTerrain(terrain).HasFlag("AUTO_WALL_SYMBOL"))
+        {
+            neighbors |= WEST;
+        }
+    }
+
+    adjacent = this->index(index.row()-1, index.column());
+    if (adjacent.isValid())
+    {
+        QString terrain = GetTileFromIndex(adjacent).GetTerrainID();
+        if (Features::GetTerrain(terrain).HasFlag("CONNECT_TO_WALL") || Features::GetTerrain(terrain).HasFlag("AUTO_WALL_SYMBOL"))
+        {
+            neighbors |= NORTH;
+        }
+    }
+
+    adjacent = this->index(index.row()+1, index.column());
+    if (adjacent.isValid())
+    {
+        QString terrain = GetTileFromIndex(adjacent).GetTerrainID();
+        if (Features::GetTerrain(terrain).HasFlag("CONNECT_TO_WALL") || Features::GetTerrain(terrain).HasFlag("AUTO_WALL_SYMBOL"))
+        {
+            neighbors |= SOUTH;
+        }
+    }
+
+    switch(neighbors)
+    {
+    case 0:
+    case (NORTH | EAST | SOUTH | WEST):
+        return lineDrawingChars[NESW];
+    case (NORTH):
+    case (SOUTH):
+    case (NORTH | SOUTH):
+        return lineDrawingChars[NS];
+    case (EAST):
+    case (WEST):
+    case (EAST | WEST):
+        return lineDrawingChars[EW];
+    case (NORTH | EAST):
+        return lineDrawingChars[NE];
+    case (SOUTH | EAST):
+        return lineDrawingChars[SE];
+    case (NORTH | EAST | SOUTH):
+        return lineDrawingChars[NES];
+    case (NORTH | WEST):
+        return lineDrawingChars[NW];
+    case (NORTH | EAST | WEST):
+        return lineDrawingChars[NEW];
+    case (SOUTH | WEST):
+        return lineDrawingChars[SW];
+    case (NORTH | SOUTH | WEST):
+        return lineDrawingChars[NSW];
+    case (EAST | SOUTH | WEST):
+        return lineDrawingChars[ESW];
+    default:
+        return lineDrawingChars[NESW];
+    }
 }

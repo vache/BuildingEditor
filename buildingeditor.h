@@ -45,7 +45,6 @@ private slots:
 
     void Write();
 
-    void SetObjectEditorMode(Feature f);
     void SetObjectEditorMode(QListWidgetItem* i);
     void ObjectEditorModified();
 

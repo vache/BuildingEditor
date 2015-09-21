@@ -4,7 +4,7 @@
 
 Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup(MonsterGroup()),
     _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false),
-    _vending(""), _gasPump(0,0), _npc("")
+    _vending(""), _gasPump(0,0), _npc(""), _signage("")
 {
 }
 
@@ -248,6 +248,28 @@ void Tile::SetNPC(QString npc)
     _npc = npc;
 }
 
+void Tile::SetSignage(QString signage)
+{
+    // this will automatically overwrite whatever furniture is placed here with a sign, must allow furniture
+    if (Features::GetTerrain(_terrain).HasFlag("NO_FURNITURE"))
+    {
+        qDebug() << "Furniture does not allow for signs";
+        return;
+    }
+    // will force out traps if a trap is there, since furniture overrides traps
+    if (_trap != null_trap.GetID())
+    {
+        _trap = null_trap.GetID();
+    }
+    _signage = signage;
+    qDebug() << _signage;
+}
+
+bool Tile::IsLineDrawing() const
+{
+    return Features::GetTerrain(_terrain).HasFlag("AUTO_WALL_SYMBOL");
+}
+
 bool Tile::ExportEquivalent(const Tile &other) const
 {
     // TODO this will need more logic later
@@ -279,6 +301,21 @@ Tile & Tile::operator =(const Tile & other)
     _npc = other._npc;
     _vending = other._vending;
     _gasPump = other._gasPump;
+    _signage = other._signage;
 
     return *this;
+}
+
+void Tile::DumpTileData()
+{
+    qDebug() << "Terrain:" << _terrain;
+    qDebug() << "Furniture:" << _furniture;
+    qDebug() << "Trap" << _trap;
+    qDebug() << "Monster Group:" << _monsterGroup.GetID();
+    qDebug() << "Monster:" << _monster;
+    qDebug() << "Item Group:" << _itemGroup.GetID();
+    qDebug() << "First Item:" << _items.at(0);
+    qDebug() << "Vehicle:" << _vehicle.GetID();
+    qDebug() << "NPC:" << _npc;
+    qDebug() << "Signage:" << _signage;
 }

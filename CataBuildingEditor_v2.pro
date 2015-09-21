@@ -18,11 +18,6 @@ SOURCES += main.cpp\
     buildingeditorview.cpp \
     drawableitem.cpp \
     tile.cpp \
-    buildinginfodialog.cpp \
-    buildinginfo.cpp \
-#    terrain.cpp \
-#    furniture.cpp \
-#    trap.cpp \
     jsonparser.cpp \
     options.cpp \
     buildingmodel.cpp \
@@ -42,11 +37,6 @@ HEADERS  += buildingeditor.h \
     buildingeditorview.h \
     drawableitem.h \
     tile.h \
-    buildinginfodialog.h \
-    buildinginfo.h \
-#    terrain.h \
-#    furniture.h \
-#    trap.h \
     jsonparser.h \
     options.h \
     buildingmodel.h \
@@ -63,6 +53,5 @@ HEADERS  += buildingeditor.h \
     vehicle.h
 
 FORMS    += buildingeditor.ui \
-    buildinginfodialog.ui \
     generalwizardpage.ui \
     newbuildingwizard.ui

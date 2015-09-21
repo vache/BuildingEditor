@@ -9,9 +9,6 @@
 #include <QSettings>
 #include <QMessageBox>
 
-// convert to LINE_XXXX to match cata convention?
-enum DirectionalLine { NS = 0, EW, NE, NW, SE, SW, NES, NSW, NEW, ESW, NESW };
-
 BuildingEditor::BuildingEditor(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BuildingEditor), m(NULL), _currentItem(NULL)
@@ -74,6 +71,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->vehicleDirection, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->vehicleCustomDirection, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->vehicleFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->signageText, SIGNAL(textChanged(QString)), this, SLOT(ObjectEditorModified()));
 
     // TODO move all UI init to own methods.
 
@@ -164,10 +162,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     ui->mainToolBar->addActions(_tools->actions());
 
-    ui->itemGroupEditor->setVisible(false);
-    ui->monsterGroupEditor->setVisible(false);
-    ui->itemEditor->setVisible(false);
-    ui->vehicleEditor->setVisible(false);
+    ui->objectEditor->setVisible(false);
 
     ui->vehicleStatus->addItem("Undamaged", 0);
     ui->vehicleStatus->addItem("Lightly Damaged", -1);
@@ -180,20 +175,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     //ui->vehicleDirection->addItem("Random", -1);
     ui->vehicleDirection->addItem("Other", -2);
 
-    // TEST CODE
-    QList<QChar> test;
-    // NS, EW, NE, NW, ES, SW, NES, NSW, NEW, ESW, NESW
-    test << 0x2502 << 0x2500 << 0x2514 << 0x2518 << 0x250C << 0x2510 << 0x251C << 0x2524
-         << 0x2534 << 0x252C << 0x253C;
-
-    QString blah = "";
-    foreach (QChar ch, test)
-    {
-        blah.append(ch);
-    }
-    blah.append(test[NESW]);
-    //ui->statusBar->showMessage(blah);
-
+    // TEMP TEST CODE
     bool active[10][10];
     for (int i = 0; i < 10; i++)
     {
@@ -418,34 +400,6 @@ void BuildingEditor::Write()
     w.Write(m);
 }
 
-void BuildingEditor::SetObjectEditorMode(Feature f)
-{
-    ui->itemGroupEditor->setVisible(false);
-    ui->monsterGroupEditor->setVisible(false);
-    ui->itemEditor->setVisible(false);
-    switch(f)
-    {
-        case F_Terrain:
-            break;
-        case F_Furniture:
-            break;
-        case F_Trap:
-            break;
-        case F_ItemGroup:
-            ui->itemGroupEditor->setVisible(true);
-            break;
-        case F_MonsterGroup:
-            ui->monsterGroupEditor->setVisible(true);
-            break;
-        case F_Item:
-            break;
-        case F_Monster:
-            break;
-        default:
-            break;
-    }
-}
-
 void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
 {
     _currentItem = i;
@@ -453,61 +407,66 @@ void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
     Feature f = i->data(FeatureTypeRole).value<Feature>();
     QVariant v = i->data(Qt::UserRole);
 
-    ui->itemGroupEditor->setVisible(false);
-    ui->monsterGroupEditor->setVisible(false);
-    ui->itemEditor->setVisible(false);
-    ui->vehicleEditor->setVisible(false);
+    ui->objectEditor->setVisible(false);
 
     switch(f)
     {
-        case F_Terrain:
-            break;
-        case F_Furniture:
-            break;
-        case F_Trap:
-            break;
-        case F_ItemGroup:
+    case F_Terrain:
+        break;
+    case F_Furniture:
+        break;
+    case F_Trap:
+        break;
+    case F_ItemGroup:
+    {
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->itemGroupEditor);
+        ui->itemGroupName->setText(v.value<ItemGroup>().GetID());
+        ui->itemGroupChance->setValue(v.value<ItemGroup>().GetChance());
+        break;
+    }
+    case F_MonsterGroup:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->monsterGroupEditor);
+        ui->monsterGroupName->setText(v.value<MonsterGroup>().GetID());
+        ui->monsterGroupDensity->setValue(v.value<MonsterGroup>().GetDensity());
+        ui->monsterGroupChance->setValue(v.value<MonsterGroup>().GetChance());
+        break;
+    case F_Item:
+    {
+        //ui->itemEditor->setVisible(true);
+        break;
+    }
+    case F_Monster:
+        break;
+    case F_Vehicle:
+    {
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->vehicleEditor);
+        ui->vehicleID->setText(v.value<Vehicle>().GetID());
+        ui->vehicleName->setText(v.value<Vehicle>().GetName());
+        ui->vehicleChance->setValue(v.value<Vehicle>().GetChance());
+        ui->vehicleStatus->setCurrentIndex(ui->vehicleStatus->findData(v.value<Vehicle>().GetStatus()));
+        int index = ui->vehicleDirection->findData(v.value<Vehicle>().GetDirection());
+        if (index != -1)
         {
-            ui->itemGroupEditor->setVisible(true);
-            ui->itemGroupName->setText(v.value<ItemGroup>().GetID());
-            ui->itemGroupChance->setValue(v.value<ItemGroup>().GetChance());
-            break;
+            ui->vehicleDirection->setCurrentIndex(index);
         }
-        case F_MonsterGroup:
-            ui->monsterGroupEditor->setVisible(true);
-            ui->monsterGroupName->setText(v.value<MonsterGroup>().GetID());
-            ui->monsterGroupDensity->setValue(v.value<MonsterGroup>().GetDensity());
-            ui->monsterGroupChance->setValue(v.value<MonsterGroup>().GetChance());
-            break;
-        case F_Item:
+        else
         {
-            //ui->itemEditor->setVisible(true);
-            break;
+            ui->vehicleDirection->setCurrentIndex(ui->vehicleDirection->findData(-2));
+            ui->vehicleCustomDirection->setValue(v.value<Vehicle>().GetDirection());
         }
-        case F_Monster:
-            break;
-        case F_Vehicle:
-        {
-            ui->vehicleEditor->setVisible(true);
-            ui->vehicleID->setText(v.value<Vehicle>().GetID());
-            ui->vehicleName->setText(v.value<Vehicle>().GetName());
-            ui->vehicleChance->setValue(v.value<Vehicle>().GetChance());
-            ui->vehicleStatus->setCurrentIndex(ui->vehicleStatus->findData(v.value<Vehicle>().GetStatus()));
-            int index = ui->vehicleDirection->findData(v.value<Vehicle>().GetDirection());
-            if (index != -1)
-            {
-                ui->vehicleDirection->setCurrentIndex(index);
-            }
-            else
-            {
-                ui->vehicleDirection->setCurrentIndex(ui->vehicleDirection->findData(-2));
-                ui->vehicleCustomDirection->setValue(v.value<Vehicle>().GetDirection());
-            }
-            ui->vehicleFuel->setValue(v.value<Vehicle>().GetFuel());
-            break;
-        }
-        default:
-            break;
+        ui->vehicleFuel->setValue(v.value<Vehicle>().GetFuel());
+        break;
+    }
+    case F_Sign:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->signageEditor);
+        ui->signageText->setText(v.toString());
+        break;
+    default:
+        break;
     }
 }
 
@@ -532,52 +491,57 @@ void BuildingEditor::ObjectEditorModified()
 
     switch(f)
     {
-        case F_Terrain:
-            break;
-        case F_Furniture:
-            break;
-        case F_Trap:
-            break;
-        case F_ItemGroup:
+    case F_Terrain:
+        break;
+    case F_Furniture:
+        break;
+    case F_Trap:
+        break;
+    case F_ItemGroup:
+    {
+        ItemGroup ig = v.value<ItemGroup>();
+        ig.SetChance(ui->itemGroupChance->value());
+        _currentItem->setData(Qt::UserRole, QVariant::fromValue(ig));
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    }
+    case F_MonsterGroup:
+    {
+        MonsterGroup mg = v.value<MonsterGroup>();
+        mg.SetChance(ui->monsterGroupChance->value());
+        mg.SetDensity(ui->monsterGroupDensity->value());
+        _currentItem->setData(Qt::UserRole, QVariant::fromValue(mg));
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    }
+    case F_Item:
+        break;
+    case F_Monster:
+        break;
+    case F_Vehicle:
+    {
+        Vehicle veh = v.value<Vehicle>();
+        veh.SetChance(ui->vehicleChance->value());
+        veh.SetStatus(ui->vehicleStatus->itemData(ui->vehicleStatus->currentIndex()).toInt());
+        if (ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt() != -2)
         {
-            ItemGroup ig = v.value<ItemGroup>();
-            ig.SetChance(ui->itemGroupChance->value());
-            _currentItem->setData(Qt::UserRole, QVariant::fromValue(ig));
-            emit CurrentFeatureChanged(_currentItem);
-            break;
+            veh.SetDirection(ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt());
         }
-        case F_MonsterGroup:
+        else
         {
-            MonsterGroup mg = v.value<MonsterGroup>();
-            mg.SetChance(ui->monsterGroupChance->value());
-            mg.SetDensity(ui->monsterGroupDensity->value());
-            _currentItem->setData(Qt::UserRole, QVariant::fromValue(mg));
-            emit CurrentFeatureChanged(_currentItem);
-            break;
+            veh.SetDirection(ui->vehicleCustomDirection->value());
         }
-        case F_Item:
-            break;
-        case F_Monster:
-            break;
-        case F_Vehicle:
-        {
-            Vehicle veh = v.value<Vehicle>();
-            veh.SetChance(ui->vehicleChance->value());
-            veh.SetStatus(ui->vehicleStatus->itemData(ui->vehicleStatus->currentIndex()).toInt());
-            if (ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt() != -2)
-            {
-                veh.SetDirection(ui->vehicleDirection->itemData(ui->vehicleDirection->currentIndex()).toInt());
-            }
-            else
-            {
-                veh.SetDirection(ui->vehicleCustomDirection->value());
-            }
-            veh.SetFuel(ui->vehicleFuel->value());
-            _currentItem->setData(Qt::UserRole, QVariant::fromValue(veh));
-            emit CurrentFeatureChanged(_currentItem);
-            break;
-        }
-        default:
-            break;
+        veh.SetFuel(ui->vehicleFuel->value());
+        _currentItem->setData(Qt::UserRole, QVariant::fromValue(veh));
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    }
+    case F_Sign:
+        qDebug() << ui->signageText->text();
+        _currentItem->setData(Qt::UserRole, ui->signageText->text());
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    default:
+        break;
     }
 }

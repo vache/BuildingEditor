@@ -30,9 +30,6 @@ public:
 
 private:
     void ParseDrawableItem(QJsonObject &object);
-    void ParseTerrain(QJsonObject &object);
-    void ParseFurniture(QJsonObject &object);
-    void ParseTrap(QJsonObject &object);
     void ParseItemGroup(QJsonObject &object);
     void ParseItem(QJsonObject &object);
     void ParseMonsterGroup(QJsonObject &object);

@@ -55,6 +55,7 @@ void BuildingEditorView::FeatureSelected(QListWidgetItem* item)
 void BuildingEditorView::ToolChanged()
 {
     QAction* s = (QAction*)sender();
+    qDebug() << s->text() << s->data().toInt();
     _currentTool = s->data().value<Tool>();
 }
 

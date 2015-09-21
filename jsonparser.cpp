@@ -154,93 +154,6 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
     }
 }
 
-// Needs id, name, symbol, color, certain flags (NOITEM?), move cost?
-void JsonParser::ParseTerrain(QJsonObject &object)
-{
-    QString description = object.value("name").toString("invalid name");
-    QString id = object.value("id").toString("invalid_id");
-    QChar symbol = object.value("symbol").toString("#").at(0);
-    // line drawing terrain (walls)
-    if (object.value("symbol").toString().contains("LINE"))
-    {
-        symbol = 0x253C;
-    }
-    nc_color color = nc_color();
-    if (object.contains("color"))
-    {
-        color = color_from_string(object.value("color").toString());
-    }
-    else if (object.contains("bgcolor"))
-    {
-        color = bgcolor_from_string(object.value("bgcolor").toString());
-    }
-    QSet<QString> flags;
-
-    if (object["move_cost"].toInt() == 0)
-    {
-        flags.insert("NO_MONSTERS");
-        flags.insert("NO_TRAPS");
-        flags.insert("NO_FURNITURE");
-    }
-
-    if (object.contains("flags"))
-    {
-        foreach (QJsonValue v, object.value("flags").toArray())
-        {
-            flags.insert(v.toString());
-        }
-    }
-
-    Terrain t(id, description, symbol, color, flags);
-
-    qDebug() << "Terrain" << id << "belongs to" << _currentMod;
-
-    emit ParsedTerrain(t, _currentMod);
-}
-
-void JsonParser::ParseFurniture(QJsonObject &object)
-{
-    QString description = object.value("name").toString("invalid name");
-    QString id = object.value("id").toString("invalid_id");
-    QChar symbol = object.value("symbol").toString("#").at(0);
-    nc_color color = nc_color();
-    if (object.contains("color"))
-    {
-        color = color_from_string(object.value("color").toString());
-    }
-    else if (object.contains("bgcolor"))
-    {
-        color = bgcolor_from_string(object.value("bgcolor").toString());
-    }
-    QSet<QString> flags;
-
-    if (object["move_cost_mod"].toInt() == -1)
-    {
-        flags.insert("NO_TRAPS");
-        flags.insert("NO_MONSTERS");
-    }
-
-    if (object.contains("flags"))
-    {
-        foreach (QJsonValue v, object.value("flags").toArray())
-        {
-            flags.insert(v.toString());
-        }
-    }
-
-    Furniture f(id, description, symbol, color, flags);
-
-    qDebug() << "Furniture" << id << "belongs to" << _currentMod;
-
-    emit ParsedFurniture(f, _currentMod);
-}
-
-void JsonParser::ParseTrap(QJsonObject &object)
-{
-    //May be removed at any time
-    Q_UNUSED(object)
-}
-
 void JsonParser::ParseItemGroup(QJsonObject &object)
 {
     QString id = object.value("id").toString("invalid_id");
@@ -287,7 +200,11 @@ void JsonParser::ParseVehicle(QJsonObject &object)
 // json spawning from vehicle groups is unimplemented currently
 void JsonParser::ParseVehicleGroup(QJsonObject &object)
 {
-    Q_UNUSED(object)
+    QString id = object.value("id").toString("invalid_id");
+    QString name = QString("Group - %1").arg(id);
+    Vehicle vehicleGroup(id, name);
+
+    emit ParsedVehicle(vehicleGroup, _currentMod);
 }
 
 void JsonParser::ParseNPC(QJsonObject &object)
@@ -301,6 +218,8 @@ void JsonParser::ParseNPC(QJsonObject &object)
     }
     QString faction = object.value("faction").toString("invalid_faction");
     QString comment = object.value("comment").toString("");
+
+    //qDebug() << name << id << faction << comment;
 
     emit ParsedNPC(id, name, faction, comment, _currentMod);
 }

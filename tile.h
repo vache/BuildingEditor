@@ -38,6 +38,7 @@ public:
     inline void SetVehicle(Vehicle vehicle) { _vehicle = vehicle; }
     inline void SetToilet(bool toilet) { _toilet = toilet; }
     void SetNPC(QString npc);
+    void SetSignage(QString signage);
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -49,11 +50,16 @@ public:
     inline Vehicle GetVehicle() const { return _vehicle; }
     inline bool GetToilet() const { return _toilet; }
     inline QString GetNPC() const { return _npc; }
+    inline QString GetSignage() const { return _signage; }
+
+    bool IsLineDrawing() const;
 
     bool ExportEquivalent(const Tile& other) const;
     bool operator==(const Tile& other) const;
 
     Tile& operator=(const Tile& other);
+
+    void DumpTileData();
 
 private:
     QString _terrain;
@@ -69,6 +75,7 @@ private:
     QString _vending;
     QPair<int, int> _gasPump; // TODO this should be its own construct, since it should track at least: fueltype, min, max
     QString _npc;
+    QString _signage;
 };
 
 #endif // TILE_H
