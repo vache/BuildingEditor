@@ -24,6 +24,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     JsonParser p;
 
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(NewBuilding()));
+    connect(ui->actionShow, SIGNAL(triggered()), &_omtDialog, SLOT(show()));
 
     connect(&p, SIGNAL(ParsedTerrain(Terrain, QString)), this, SLOT(NewTerrain(Terrain, QString)));
     connect(&p, SIGNAL(ParsedFurniture(Furniture, QString)), this, SLOT(NewFurniture(Furniture, QString)));

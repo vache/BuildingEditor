@@ -442,7 +442,7 @@
            <x>0</x>
            <y>0</y>
            <width>400</width>
-           <height>379</height>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -459,8 +459,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -477,8 +477,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -495,8 +495,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -513,8 +513,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -531,8 +531,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -549,8 +549,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -567,8 +567,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -585,8 +585,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -603,8 +603,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>379</height>
+           <width>88</width>
+           <height>88</height>
           </rect>
          </property>
          <attribute name="label">
@@ -628,7 +628,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -637,7 +637,14 @@
     </property>
     <addaction name="actionNew"/>
    </widget>
+   <widget class="QMenu" name="menuOMT">
+    <property name="title">
+     <string>OMT</string>
+    </property>
+    <addaction name="actionShow"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuOMT"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -651,6 +658,11 @@
   <action name="actionNew">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="actionShow">
+   <property name="text">
+    <string>show</string>
    </property>
   </action>
  </widget>

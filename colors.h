@@ -2,6 +2,8 @@
 #define COLORS_H
 
 #include <QColor>
+#include <QList>
+#include <QString>
 
 struct nc_color {
     QColor fg;
@@ -22,6 +24,7 @@ struct nc_color {
 
 extern nc_color color_from_string(QString);
 extern nc_color bgcolor_from_string(QString);
+extern QStringList colorList;
 
 const nc_color c_white(QColor(Qt::white), QColor(Qt::black));
 const nc_color c_black(QColor(Qt::black), QColor(Qt::black));

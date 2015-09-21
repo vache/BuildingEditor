@@ -3,8 +3,6 @@
 
 #include <QMap>
 #include <QVariant>
-//#include "furniture.h"
-//#include "terrain.h"
 #include "drawableitem.h"
 #include "buildingmodel.h"
 

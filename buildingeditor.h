@@ -5,8 +5,7 @@
 #include <QMap>
 #include "buildingmodel.h"
 #include "buildingeditorview.h"
-//#include "terrain.h"
-//#include "furniture.h"
+#include "omtdialog.h"
 #include "drawableitem.h"
 #include "features.h"
 #include "itemgroup.h"
@@ -58,6 +57,8 @@ private:
     QMap<QString, QString> _modIDs;
 
     QListWidgetItem* _currentItem;
+
+    OMTDialog _omtDialog;
 
 signals:
     void CurrentFeatureChanged(QListWidgetItem*);

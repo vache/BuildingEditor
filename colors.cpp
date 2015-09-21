@@ -1,5 +1,11 @@
 #include "colors.h"
 
+QStringList colorList = { "red", "blue", "green", "light_cyan", "brown", "light_red", "white", "black",
+            "light_blue", "yellow", "magenta", "cyan", "light_gray", "dark_gray", "light_green",
+            "pink", "white_red", "light_gray_red", "dark_gray_red", "red_red", "green_red",
+            "blue_red", "cyan_red", "magenta_red", "brown_red", "light_red_red", "light_green_red",
+            "light_cyan_red", "pink_red", "yellow_red" };
+
 nc_color color_from_string(QString new_color){
     if("red"==new_color){
         return c_red;

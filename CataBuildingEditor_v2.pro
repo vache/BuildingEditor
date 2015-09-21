@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     generalwizardpage.cpp \
     newbuildingwizard.cpp \
     currentfeature.cpp \
-    vehicle.cpp
+    vehicle.cpp \
+    omtdialog.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -50,8 +51,10 @@ HEADERS  += buildingeditor.h \
     generalwizardpage.h \
     newbuildingwizard.h \
     currentfeature.h \
-    vehicle.h
+    vehicle.h \
+    omtdialog.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \
-    newbuildingwizard.ui
+    newbuildingwizard.ui \
+    omtdialog.ui

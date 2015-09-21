@@ -12,8 +12,9 @@ enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, 
                    TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
                    ToiletRole, NpcRole, VendingRole, SignRole };
 
-// convert to LINE_XXXX to match cata convention?
+// Used to index the line drawing character array
 enum DirectionalLine { NS = 0, EW, NE, NW, SE, SW, NES, NSW, NEW, ESW, NESW };
+// Used to track which direction a cell has neighbors in
 enum DirectionBits { NORTH=1, EAST=(1<<1), SOUTH=(1<<2), WEST=(1<<3) };
 
 class BuildingModel : public QAbstractTableModel
