@@ -20,7 +20,7 @@ class JsonWriter
 public:
     JsonWriter();
     void Write(BuildingModel* model);
-    void WriteOMT(OvermapTerrain t);
+    void WriteOMT(OvermapTerrain* t);
 };
 
 #endif // JSONWRITER_H

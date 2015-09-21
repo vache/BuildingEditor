@@ -2,8 +2,7 @@
 #define BUILDINGMODEL_H
 
 #include <QAbstractTableModel>
-#include <QMap>
-#include <QVector>
+#include <QList>
 #include "overmapterrain.h"
 #include "tile.h"
 #include "tripoint.h"
@@ -29,7 +28,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
-    QList<OvermapTerrain> GetOvermapTerrains();
+    QList<OvermapTerrain*> GetOvermapTerrains();
 
 signals:
 
@@ -38,16 +37,24 @@ public slots:
 private:
     int _rows;
     int _cols;
-    QMap<Tripoint, OvermapTerrain> _omts;
+
+    //int _z;
+    int _maxX;
+    int _maxY;
+    //int _maxZ;
+
+    QList<OvermapTerrain*> _omtv;
 
     Tripoint GetOMTIndex(const QModelIndex &index) const;
     Tripoint GetOMTIndex(int row, int column) const;
-    OvermapTerrain GetOMTFromIndex(const QModelIndex & index) const;
+    OvermapTerrain* GetOMTFromIndex(const QModelIndex & index) const;
     Tripoint GetTileIndex(const QModelIndex &index) const;
     Tripoint GetTileIndex(int row, int column) const;
-    Tile GetTileFromIndex(const QModelIndex & index) const;
+    Tile &GetTileFromIndex(const QModelIndex & index) const;
 
     QChar GetLineDrawingChar(const QModelIndex & index) const;
+
+    int OMTvIndex(const QModelIndex & index) const;
 };
 
 #endif // BUILDINGMODEL_H

@@ -6,7 +6,7 @@
 #include "features.h"
 
 BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
-    QAbstractTableModel(parent), _rows(0), _cols(0)
+    QAbstractTableModel(parent), _rows(0), _cols(0), _maxX(0), _maxY(0)
 {
     int maxX = 0;
     int maxY = 0;
@@ -14,9 +14,7 @@ BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
     {
         for (int col = 0; col < 10; col++)
         {
-            OvermapTerrain t;
-            t.SetActive(active[row][col]);
-            _omts[Tripoint(col, row, 0)] = t;
+            _omtv.append(new OvermapTerrain(active[row][col]));
 
             if (active[row][col])
             {
@@ -28,6 +26,9 @@ BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
 
     _rows = maxY * OVERMAP_TERRAIN_WIDTH;
     _cols = maxX * OVERMAP_TERRAIN_WIDTH;
+
+    _maxY = maxY;
+    _maxX = maxX;
 }
 
 int BuildingModel::rowCount(const QModelIndex &parent) const
@@ -42,9 +43,6 @@ int BuildingModel::columnCount(const QModelIndex &parent) const
     return _cols;
 }
 
-// this method ends up being very expensive, called many times on scroll, move, etc.
-// maybe consider making maps use pointers for values?
-// or do away with the maps in favor of basic lists?
 QVariant BuildingModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -52,12 +50,11 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    Tripoint p = GetOMTIndex(index);
     Tripoint tp = GetTileIndex(index);
-    OvermapTerrain omt = _omts[p];
+    OvermapTerrain* omt = _omtv[OMTvIndex(index)];
 
     // output if we have inactive tiles for disjointed specials, ex: O  O
-    if (!omt.IsActive())
+    if (!omt->IsActive())
     {
         switch(role)
         {
@@ -74,7 +71,7 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
         }
     }
 
-    Tile tile = omt.GetTile(tp);
+    Tile tile = omt->GetTile(tp);
 
     switch(role)
     {
@@ -99,68 +96,56 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
 
 bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    OvermapTerrain omt = GetOMTFromIndex(index);
-    if (!omt.IsActive())
+    OvermapTerrain* omt = _omtv[OMTvIndex(index)];
+    if (!omt->IsActive())
     {
         return false;
     }
-    Tile t = omt.GetTile(GetTileIndex(index));
+    Tile& t = omt->GetTile(GetTileIndex(index));
     switch(role)
     {
     case TerrainRole:
         t.SetTerrain(value.toString());
-        // TODO clunky way of doing this.  pointers would probably make this better as well
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case FurnitureRole:
         t.SetFurniture(value.toString());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case TrapRole:
         t.SetTrap(value.toString());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case MonsterGroupRole:
         t.SetMonsterGroup(value.value<MonsterGroup>());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case ItemGroupRole:
         t.SetItemGroup(value.value<ItemGroup>());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
     case MonsterRole:
         t.SetMonster(value.toString());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case ItemRole:
         t.AddItem(value.toString());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case VehicleRole:
         t.SetVehicle(value.value<Vehicle>());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case ToiletRole:
         t.SetToilet(value.toBool());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         return true;
     case NpcRole:
         t.SetNPC(value.toString());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         break;
     case SignRole:
         qDebug() << value.toString();
         t.SetSignage(value.toString());
-        _omts[GetOMTIndex(index)].SetTile(GetTileIndex(index), t);
         emit dataChanged(index, index);
         break;
     default:
@@ -169,9 +154,9 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
     return false;
 }
 
-QList<OvermapTerrain> BuildingModel::GetOvermapTerrains()
+QList<OvermapTerrain*> BuildingModel::GetOvermapTerrains()
 {
-    return _omts.values();
+    return _omtv;
 }
 
 Tripoint BuildingModel::GetOMTIndex(const QModelIndex& index) const
@@ -189,9 +174,9 @@ Tripoint BuildingModel::GetOMTIndex(int row, int column) const
     return Tripoint(x, y, z);
 }
 
-OvermapTerrain BuildingModel::GetOMTFromIndex(const QModelIndex & index) const
+OvermapTerrain* BuildingModel::GetOMTFromIndex(const QModelIndex & index) const
 {
-    return _omts[GetOMTIndex(index)];
+    return _omtv[OMTvIndex(index)];
 }
 
 Tripoint BuildingModel::GetTileIndex(const QModelIndex& index) const
@@ -208,9 +193,9 @@ Tripoint BuildingModel::GetTileIndex(int row, int column) const
     return Tripoint(x, y, z);
 }
 
-Tile BuildingModel::GetTileFromIndex(const QModelIndex & index) const
+Tile& BuildingModel::GetTileFromIndex(const QModelIndex & index) const
 {
-    return GetOMTFromIndex(index).GetTile(GetTileIndex(index));
+    return GetOMTFromIndex(index)->GetTile(GetTileIndex(index));
 }
 
 QChar BuildingModel::GetLineDrawingChar(const QModelIndex & index) const
@@ -291,4 +276,9 @@ QChar BuildingModel::GetLineDrawingChar(const QModelIndex & index) const
     default:
         return lineDrawingChars[NESW];
     }
+}
+
+int BuildingModel::OMTvIndex(const QModelIndex &index) const
+{
+    return (((index.row() / OVERMAP_TERRAIN_WIDTH) * _maxY) + (index.column() / OVERMAP_TERRAIN_WIDTH));
 }

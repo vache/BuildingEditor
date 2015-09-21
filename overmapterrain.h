@@ -11,12 +11,12 @@
 class OvermapTerrain
 {
 public:
-    OvermapTerrain();
+    OvermapTerrain(bool active = false);
 
     inline bool IsActive() const { return _active; }
     void SetActive(bool active);
     Tile GetTileAtIndex(int tileIndex);
-    Tile GetTile(Tripoint p);
+    Tile& GetTile(Tripoint p);
     void SetTile(Tripoint p, Tile t);
     QList<Tile> GetTiles();
 

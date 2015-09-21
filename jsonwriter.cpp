@@ -20,21 +20,21 @@ JsonWriter::JsonWriter()
 void JsonWriter::Write(BuildingModel *model)
 {
     // loop through the OMTs in model
-    foreach (OvermapTerrain omt, model->GetOvermapTerrains())
+    foreach (OvermapTerrain* omt, model->GetOvermapTerrains())
     {
-        if (omt.IsActive())
+        if (omt->IsActive())
         {
             WriteOMT(omt);
         }
     }
 }
 
-void JsonWriter::WriteOMT(OvermapTerrain t)
+void JsonWriter::WriteOMT(OvermapTerrain *t)
 {
     // this is a single 24x24 OMT.  we want to loop through, determine the pairs of items, and
     // create the json, then save to file.
     // sanity check to make sure we dont process inactive OMTs
-    if (!t.IsActive())
+    if (!t->IsActive())
     {
         return;
     }
@@ -103,7 +103,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
         for (int col = 0; col < OVERMAP_TERRAIN_WIDTH; col++)
         {
             Tripoint p = Tripoint(col, row, 0);
-            Tile tile = t.GetTile(p);
+            Tile tile = t->GetTile(p);
 
             int tileIndex = tiles.indexOf(tile);
             if (tileIndex != -1)
@@ -545,7 +545,7 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
         QString rowString = "";
         for (int col = 0; col < OVERMAP_TERRAIN_WIDTH; col++)
         {
-            Tile tile = t.GetTile(Tripoint(col, row, 0));
+            Tile tile = t->GetTile(Tripoint(col, row, 0));
 
             QChar exportChar = exportMap.key(tile);
 
@@ -583,14 +583,6 @@ void JsonWriter::WriteOMT(OvermapTerrain t)
         jsonFurnitureMap.insert(QString(mapping.first), mapping.second);
     }
     object["furniture"] = jsonFurnitureMap;
-
-    for (int y = 0; y < OVERMAP_TERRAIN_WIDTH; y++)
-    {
-        for (int x = 0; x < OVERMAP_TERRAIN_WIDTH; x++)
-        {
-            Tile tile = t.GetTile(Tripoint(x, y, 0));
-        }
-    }
 
     mapgenObject["object"] = object;
     doc.setObject(mapgenObject);
