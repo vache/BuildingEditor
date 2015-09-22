@@ -159,6 +159,23 @@ QList<OvermapTerrain*> BuildingModel::GetOvermapTerrains()
     return _omtv;
 }
 
+void BuildingModel::OnOmtLoaded(OvermapTerrain* omt)
+{
+    for (int row = 0; row < OVERMAP_TERRAIN_WIDTH; row++)
+    {
+        QString rowString = "";
+        for (int col = 0; col < OVERMAP_TERRAIN_WIDTH; col++)
+        {
+            Tripoint p(col, row, 0);
+            rowString.append(omt->GetTile(p).GetDisplayChar());
+        }
+        qDebug() << rowString.replace(QChar(0x253C), "|");
+    }
+    _omtv[0] = omt;
+
+    emit dataChanged(this->index(0, 0), this->index(23, 23));
+}
+
 Tripoint BuildingModel::GetOMTIndex(const QModelIndex& index) const
 {
     return GetOMTIndex(index.row(), index.column());

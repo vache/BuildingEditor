@@ -33,6 +33,7 @@ public:
 signals:
 
 public slots:
+    void OnOmtLoaded(OvermapTerrain* omt);
 
 private:
     int _rows;

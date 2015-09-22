@@ -88,28 +88,51 @@ void JsonLoader::ParseMapgen(QJsonObject &object)
     QJsonObject mapgenObject;
     mapgenObject = object.value("object").toObject();
 
-    QJsonArray rowsArray = mapgenObject.value("rows").toArray();
-    QString rows = "";
-    for (QJsonArray::const_iterator it = rowsArray.constBegin(); it != rowsArray.constEnd(); it++)
-    {
-        rows.append((*it).toString());
-        qDebug() << (*it).toString();
-    }
-
+    QHash<QChar, QString> terrainMappings;
     QJsonObject terrainObject;
     terrainObject = mapgenObject.value("terrain").toObject();
     foreach (QString key, terrainObject.keys())
     {
         qDebug() << key << terrainObject[key].toString();
+        terrainMappings[key[0]] = terrainObject[key].toString();
     }
 
+    QHash<QChar, QString> furnitureMappings;
     QJsonObject furnitureObject;
     furnitureObject = mapgenObject.value("furniture").toObject();
     foreach (QString key, furnitureObject.keys())
     {
         qDebug() << key << furnitureObject[key].toString();
+        furnitureMappings[key[0]] = furnitureObject[key].toString();
     }
 
+    QJsonArray rowsArray = mapgenObject.value("rows").toArray();
+    if (rowsArray.count() != OVERMAP_TERRAIN_WIDTH)
+    {
+        qDebug() << "Sanity check failed, \"rows\" does not have" << OVERMAP_TERRAIN_WIDTH << "rows";
+        return;
+    }
+
+    OvermapTerrain* omt = new OvermapTerrain(true);
+    for (int row = 0; row < rowsArray.count(); row++)
+    {
+        QString rowString = rowsArray[row].toString();
+        qDebug() << rowString;
+        if (rowString.length() != OVERMAP_TERRAIN_WIDTH)
+        {
+            qDebug() << "Sanity check failed, row" << row << "is not" << OVERMAP_TERRAIN_WIDTH << "characters";
+            return;
+        }
+        for (int col = 0; col < rowString.length(); col++)
+        {
+            Tile t;
+            t.SetTerrain(terrainMappings[rowString[col]]);
+            t.SetFurniture(furnitureMappings[rowString[col]]);
+            omt->SetTile(Tripoint(col, row, 0), t);
+        }
+    }
+
+    emit OmtLoaded(omt);
 }
 
 void JsonLoader::ParseOvermapTerrain(QJsonObject &object)

@@ -246,6 +246,7 @@ void BuildingEditor::Open()
     QString filename = QFileDialog::getOpenFileName(this, "Select a JSON file to open", settings.value("cataclysm_dir", "").toString(), "JSON (*.json)");
 
     JsonLoader l;
+    connect(&l, SIGNAL(OmtLoaded(OvermapTerrain*)), m, SLOT(OnOmtLoaded(OvermapTerrain*)));
     l.Load(filename);
 }
 

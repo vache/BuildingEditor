@@ -20,7 +20,7 @@ public:
     void Load(QString filename);
 
 signals:
-    void OmtLoaded(OvermapTerrain);
+    void OmtLoaded(OvermapTerrain*);
 public slots:
 
 private:
