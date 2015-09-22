@@ -127,7 +127,11 @@ void JsonLoader::ParseMapgen(QJsonObject &object)
         {
             Tile t;
             t.SetTerrain(terrainMappings[rowString[col]]);
-            t.SetFurniture(furnitureMappings[rowString[col]]);
+            if (furnitureMappings.contains(rowString[col]))
+            {
+                t.SetFurniture(furnitureMappings[rowString[col]]);
+            }
+
             omt->SetTile(Tripoint(col, row, 0), t);
         }
     }
