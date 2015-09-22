@@ -75,6 +75,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->vehicleCustomDirection, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->vehicleFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->signageText, SIGNAL(textChanged(QString)), this, SLOT(ObjectEditorModified()));
+    connect(ui->radiationAmount, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
 
     // TODO move all UI init to own methods.
 
@@ -123,13 +124,13 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     rem_vending->setData(Qt::UserRole, "");
     rem_vending->setData(FeatureTypeRole, QVariant::fromValue(F_Vending));
 
-    QListWidgetItem* sign = new QListWidgetItem("Add Sign", ui->specialsWidget);
+    QListWidgetItem* sign = new QListWidgetItem("Set Signage", ui->specialsWidget);
     sign->setData(Qt::UserRole, "Sign Text");
     sign->setData(FeatureTypeRole, QVariant::fromValue(F_Sign));
 
-    QListWidgetItem* rem_sign = new QListWidgetItem("Remove Sign", ui->specialsWidget);
-    rem_sign->setData(Qt::UserRole, "");
-    rem_sign->setData(FeatureTypeRole, QVariant::fromValue(F_Sign));
+    QListWidgetItem* radiation = new QListWidgetItem("Set Radiation", ui->specialsWidget);
+    radiation->setData(Qt::UserRole, 0);
+    radiation->setData(FeatureTypeRole, QVariant::fromValue(F_Radiation));
 
     QSettings settings;
 
@@ -478,6 +479,10 @@ void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
         ui->objectEditor->setCurrentWidget(ui->signageEditor);
         ui->signageText->setText(v.toString());
         break;
+    case F_Radiation:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->radiationEditor);
+        ui->radiationAmount->setValue(v.toInt());
     default:
         break;
     }
@@ -552,6 +557,10 @@ void BuildingEditor::ObjectEditorModified()
     case F_Sign:
         qDebug() << ui->signageText->text();
         _currentItem->setData(Qt::UserRole, ui->signageText->text());
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    case F_Radiation:
+        _currentItem->setData(Qt::UserRole, ui->radiationAmount->value());
         emit CurrentFeatureChanged(_currentItem);
         break;
     default:

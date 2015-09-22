@@ -31,6 +31,14 @@ BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
     _maxX = maxX;
 }
 
+BuildingModel::~BuildingModel()
+{
+    foreach (OvermapTerrain* omt, _omtv)
+    {
+        delete omt;
+    }
+}
+
 int BuildingModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
@@ -64,8 +72,6 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
             return QBrush(Qt::gray);
         case Qt::ForegroundRole:
             return QBrush(Qt::gray);
-        case ExportRole:
-            return QChar(' ');
         default:
             return QVariant();
         }
@@ -148,6 +154,10 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         t.SetSignage(value.toString());
         emit dataChanged(index, index);
         break;
+    case RadiationRole:
+        t.SetRadiation(value.toInt());
+        emit dataChanged(index, index);
+        break;
     default:
         return false;
     }
@@ -171,6 +181,7 @@ void BuildingModel::OnOmtLoaded(OvermapTerrain* omt)
         }
         qDebug() << rowString.replace(QChar(0x253C), "|");
     }
+    delete _omtv[0]; // dont want to leave that little bugger hanging, i think...
     _omtv[0] = omt;
 
     emit dataChanged(this->index(0, 0), this->index(23, 23));

@@ -19,6 +19,11 @@ void OvermapTerrain::SetTile(Tripoint p, Tile t)
     _tiles[p] = t;
 }
 
+void OvermapTerrain::SetTile(int row, int col, Tile t)
+{
+    _tiles[Tripoint(row, col, 0)] = t;
+}
+
 QList<Tile> OvermapTerrain::GetTiles()
 {
     return _tiles.values();

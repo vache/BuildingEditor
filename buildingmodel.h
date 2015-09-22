@@ -9,7 +9,7 @@
 
 enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, FurnitureRole,
                    TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
-                   ToiletRole, NpcRole, VendingRole, SignRole };
+                   ToiletRole, NpcRole, VendingRole, SignRole, RadiationRole };
 
 // Used to index the line drawing character array
 enum DirectionalLine { NS = 0, EW, NE, NW, SE, SW, NES, NSW, NEW, ESW, NESW };
@@ -21,6 +21,7 @@ class BuildingModel : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit BuildingModel(bool active[][10], QObject *parent = 0);
+    ~BuildingModel() override;
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;

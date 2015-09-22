@@ -24,7 +24,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="itemGroupEditor">
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -323,6 +323,37 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="radiationEditor">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Radiation Amount:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="radiationAmount">
+          <property name="maximum">
+           <number>320</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -442,7 +473,7 @@
            <x>0</x>
            <y>0</y>
            <width>400</width>
-           <height>379</height>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -459,8 +490,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -477,8 +508,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -495,8 +526,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -513,8 +544,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -531,8 +562,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -549,8 +580,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -567,8 +598,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -585,8 +616,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -603,8 +634,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>91</width>
-           <height>91</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -628,7 +659,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

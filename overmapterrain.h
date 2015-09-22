@@ -18,6 +18,7 @@ public:
     Tile GetTileAtIndex(int tileIndex);
     Tile& GetTile(Tripoint p);
     void SetTile(Tripoint p, Tile t);
+    void SetTile(int row, int col, Tile t);
     QList<Tile> GetTiles();
 
 private:

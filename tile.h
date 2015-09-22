@@ -39,6 +39,7 @@ public:
     inline void SetToilet(bool toilet) { _toilet = toilet; }
     void SetNPC(QString npc);
     void SetSignage(QString signage);
+    inline void SetRadiation(int radiation) { _radiation = radiation; }
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -51,6 +52,7 @@ public:
     inline bool GetToilet() const { return _toilet; }
     inline QString GetNPC() const { return _npc; }
     inline QString GetSignage() const { return _signage; }
+    inline int GetRadiation() const { return _radiation; }
 
     bool IsLineDrawing() const;
 
@@ -76,6 +78,7 @@ private:
     QPair<int, int> _gasPump; // TODO this should be its own construct, since it should track at least: fueltype, min, max
     QString _npc;
     QString _signage;
+    int _radiation;
 };
 
 #endif // TILE_H

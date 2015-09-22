@@ -95,6 +95,7 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     QJsonArray toilets;
     QJsonArray npcs;
     QJsonArray signs;
+    QJsonArray radiations;
     // TODO in this loop, form the lists of monster/item groups, and possibly their respective locations?
     QHash<MonsterGroup, QVector<bool>> monsterGroupCollection;
     QHash<ItemGroup, QVector<bool>> itemGroupCollection;
@@ -137,14 +138,6 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
                     monsterGroupCollection[tile.GetMonsterGroup()].fill(false);
                     monsterGroupCollection[tile.GetMonsterGroup()][index(p)] = true;
                 }
-
-//                QJsonObject monsterGroup;
-//                monsterGroup["y"] = row;
-//                monsterGroup["x"] = col;
-//                monsterGroup["monster"] = tile.GetMonsterGroup().GetID();
-//                monsterGroup["chance"] = tile.GetMonsterGroup().GetChance();
-//                monsterGroup["density"] = tile.GetMonsterGroup().GetDensity();
-//                monsterGroups.append(monsterGroup);
             }
             if (tile.GetItemGroup().GetID() != "")
             {
@@ -159,13 +152,6 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
                     itemGroupCollection[tile.GetItemGroup()].fill(false);
                     itemGroupCollection[tile.GetItemGroup()][index(p)] = true;
                 }
-
-//                QJsonObject itemGroup;
-//                itemGroup["y"] = row;
-//                itemGroup["x"] = col;
-//                itemGroup["item"] = tile.GetItemGroup().GetID();
-//                itemGroup["chance"] = tile.GetItemGroup().GetChance();
-//                itemGroups.append(itemGroup);
             }
             if (!tile.GetItems().isEmpty())
             {
@@ -249,6 +235,15 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
                 sign["signage"] = tile.GetSignage();
                 signs.append(sign);
             }
+            if (tile.GetRadiation() != 0)
+            {
+                QJsonObject radiation;
+                radiation["point"] = "radiation";
+                radiation["x"] = col;
+                radiation["y"] = row;
+                radiation["amount"] = tile.GetRadiation();
+                radiations.append(radiation);
+            }
         }
     }
     if (!traps.empty())
@@ -278,6 +273,10 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     if (!signs.empty())
     {
         object["place_signs"] = signs;
+    }
+    if (!radiations.empty())
+    {
+        object["set"] = radiations;
     }
 
     QHash<MonsterGroup, QRect> finalizedMonsterGroups;

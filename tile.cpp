@@ -4,7 +4,7 @@
 
 Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup(MonsterGroup()),
     _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false),
-    _vending(""), _gasPump(0,0), _npc(""), _signage("")
+    _vending(""), _gasPump(0,0), _npc(""), _signage(""), _radiation(0)
 {
 }
 
@@ -302,6 +302,7 @@ Tile & Tile::operator =(const Tile & other)
     _vending = other._vending;
     _gasPump = other._gasPump;
     _signage = other._signage;
+    _radiation = other._radiation;
 
     return *this;
 }
@@ -318,4 +319,5 @@ void Tile::DumpTileData()
     qDebug() << "Vehicle:" << _vehicle.GetID();
     qDebug() << "NPC:" << _npc;
     qDebug() << "Signage:" << _signage;
+    qDebug() << "Radiation:" << _radiation;
 }
