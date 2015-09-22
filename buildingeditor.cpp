@@ -3,6 +3,7 @@
 
 #include "jsonparser.h"
 #include "jsonwriter.h"
+#include "jsonloader.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -25,6 +26,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(NewBuilding()));
     connect(ui->actionShow, SIGNAL(triggered()), &_omtDialog, SLOT(show()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(Open()));
 
     connect(&p, SIGNAL(ParsedTerrain(Terrain, QString)), this, SLOT(NewTerrain(Terrain, QString)));
     connect(&p, SIGNAL(ParsedFurniture(Furniture, QString)), this, SLOT(NewFurniture(Furniture, QString)));
@@ -236,6 +238,15 @@ void BuildingEditor::NewBuilding()
     delete m;
     m = new BuildingModel(active);
     ui->tableView->setModel(m);
+}
+
+void BuildingEditor::Open()
+{
+    QSettings settings;
+    QString filename = QFileDialog::getOpenFileName(this, "Select a JSON file to open", settings.value("cataclysm_dir", "").toString(), "JSON (*.json)");
+
+    JsonLoader l;
+    l.Load(filename);
 }
 
 void BuildingEditor::NewTerrain(Terrain t, QString mod)

@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     newbuildingwizard.cpp \
     currentfeature.cpp \
     vehicle.cpp \
-    omtdialog.cpp
+    omtdialog.cpp \
+    jsonloader.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -52,7 +53,8 @@ HEADERS  += buildingeditor.h \
     newbuildingwizard.h \
     currentfeature.h \
     vehicle.h \
-    omtdialog.h
+    omtdialog.h \
+    jsonloader.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \

@@ -31,6 +31,7 @@ private slots:
     void ZLevelSliderChanged(int value);
 
     void NewBuilding();
+    void Open();
 
     void NewTerrain(Terrain t, QString mod);
     void NewFurniture(Furniture f, QString mod);
