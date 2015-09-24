@@ -5,6 +5,8 @@
 #include "jsonwriter.h"
 #include "jsonloader.h"
 
+#include "gaspump.h"
+
 #include <QDebug>
 #include <QFileDialog>
 #include <QSettings>
@@ -76,6 +78,10 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->vehicleFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->signageText, SIGNAL(textChanged(QString)), this, SLOT(ObjectEditorModified()));
     connect(ui->radiationAmount, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->vending, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->minFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->maxFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->fuelType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
 
     // TODO move all UI init to own methods.
 
@@ -120,10 +126,6 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     vending->setData(Qt::UserRole, "vending_food");
     vending->setData(FeatureTypeRole, QVariant::fromValue(F_Vending));
 
-    QListWidgetItem* rem_vending = new QListWidgetItem("Remove Vending Machine", ui->specialsWidget);
-    rem_vending->setData(Qt::UserRole, "");
-    rem_vending->setData(FeatureTypeRole, QVariant::fromValue(F_Vending));
-
     QListWidgetItem* sign = new QListWidgetItem("Set Signage", ui->specialsWidget);
     sign->setData(Qt::UserRole, "Sign Text");
     sign->setData(FeatureTypeRole, QVariant::fromValue(F_Sign));
@@ -131,6 +133,10 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     QListWidgetItem* radiation = new QListWidgetItem("Set Radiation", ui->specialsWidget);
     radiation->setData(Qt::UserRole, 0);
     radiation->setData(FeatureTypeRole, QVariant::fromValue(F_Radiation));
+
+    QListWidgetItem* gasPump = new QListWidgetItem("Set Gas Pump", ui->specialsWidget);
+    gasPump->setData(Qt::UserRole, QVariant::fromValue(GasPump()));
+    gasPump->setData(FeatureTypeRole, QVariant::fromValue(F_GasPump));
 
     QSettings settings;
 
@@ -178,6 +184,13 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     ui->vehicleDirection->addItem("West", 180);
     //ui->vehicleDirection->addItem("Random", -1);
     ui->vehicleDirection->addItem("Other", -2);
+
+    ui->vending->addItem("none", "");
+
+    ui->fuelType->addItem("none", "");
+    ui->fuelType->addItem("gasoline", "gasoline");
+    ui->fuelType->addItem("diesel", "diesel");
+    ui->fuelType->addItem("random", "random");
 
     // TEMP TEST CODE
     bool active[10][10];
@@ -336,6 +349,8 @@ void BuildingEditor::NewItemGroup(ItemGroup ig, QString mod)
     }
     item->setData(Qt::UserRole, QVariant::fromValue(ig));
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_ItemGroup));
+
+    ui->vending->addItem(displayText, ig.GetID());
 }
 
 void BuildingEditor::NewMonster(QString name, QString id, QChar symbol, QString mod)
@@ -483,6 +498,19 @@ void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
         ui->objectEditor->setVisible(true);
         ui->objectEditor->setCurrentWidget(ui->radiationEditor);
         ui->radiationAmount->setValue(v.toInt());
+        break;
+    case F_Vending:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->vendingEditor);
+        ui->vending->setCurrentText(v.toString());
+        break;
+    case F_GasPump:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->gasPumpEditor);
+        ui->fuelType->setCurrentIndex(ui->fuelType->findData(v.value<GasPump>().GetFuel()));
+        ui->minFuel->setValue(v.value<GasPump>().GetMinAmount());
+        ui->maxFuel->setValue(v.value<GasPump>().GetMaxAmount());
+        break;
     default:
         break;
     }
@@ -563,6 +591,20 @@ void BuildingEditor::ObjectEditorModified()
         _currentItem->setData(Qt::UserRole, ui->radiationAmount->value());
         emit CurrentFeatureChanged(_currentItem);
         break;
+    case F_Vending:
+        _currentItem->setData(Qt::UserRole, ui->vending->currentData());
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    case F_GasPump:
+    {
+        GasPump gasPump = v.value<GasPump>();
+        gasPump.SetFuel(ui->fuelType->currentData().toString());
+        gasPump.SetMinAmount(ui->minFuel->value());
+        gasPump.SetMaxAmount(ui->maxFuel->value());
+        _currentItem->setData(Qt::UserRole, QVariant::fromValue(gasPump));
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    }
     default:
         break;
     }

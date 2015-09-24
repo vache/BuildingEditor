@@ -158,6 +158,14 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         t.SetRadiation(value.toInt());
         emit dataChanged(index, index);
         break;
+    case VendingRole:
+        t.SetVending(value.toString());
+        emit dataChanged(index, index);
+        break;
+    case GasPumpRole:
+        t.SetGasPump(value.value<GasPump>());
+        emit dataChanged(index, index);
+        break;
     default:
         return false;
     }

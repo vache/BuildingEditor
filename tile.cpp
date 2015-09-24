@@ -2,9 +2,11 @@
 #include "features.h"
 #include <QDebug>
 
+// TODO review all placement to ensure still valid.  double check with added specals
+
 Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup(MonsterGroup()),
     _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false),
-    _vending(""), _gasPump(0,0), _npc(""), _signage(""), _radiation(0)
+    _vending(""), _npc(""), _signage(""), _radiation(0), _gasPump(GasPump())
 {
 }
 
@@ -54,7 +56,7 @@ QList<QChar> Tile::GetExportChars() const
         temp = _terrain;
         temp.remove("t_");
         Terrain t = Features::GetTerrain(_terrain);
-        if (t.HasFlag("WALL") || t.HasFlag("AUTO_WALL_SYMBOL"))
+        if (t.HasFlag("AUTO_WALL_SYMBOL"))
         {
             preferredChars.append('|');
             preferredChars.append('-');
@@ -253,7 +255,7 @@ void Tile::SetSignage(QString signage)
     // this will automatically overwrite whatever furniture is placed here with a sign, must allow furniture
     if (Features::GetTerrain(_terrain).HasFlag("NO_FURNITURE"))
     {
-        qDebug() << "Furniture does not allow for signs";
+        qDebug() << "Terrain does not allow for signs";
         return;
     }
     // will force out traps if a trap is there, since furniture overrides traps
@@ -262,7 +264,44 @@ void Tile::SetSignage(QString signage)
         _trap = null_trap.GetID();
     }
     _signage = signage;
-    qDebug() << _signage;
+}
+
+void Tile::SetVending(QString vending)
+{
+    // this will automatically overwrite whatever furniture is placed here with a vending machine, must allow furniture
+    if (Features::GetTerrain(_terrain).HasFlag("NO_FURNITURE"))
+    {
+        qDebug() << "Terrain does not allow for vending machines";
+        return;
+    }
+    // will force out traps if a trap is there, since furniture overrides traps
+    if (_trap != null_trap.GetID())
+    {
+        _trap = null_trap.GetID();
+    }
+    _vending = vending;
+}
+
+void Tile::SetGasPump(GasPump gasPump)
+{
+    // only erase the terrain on tiles that actually have a gas pump
+    if (gasPump.GetFuel() == "" && _gasPump.GetFuel() == "")
+    {
+        return;
+    }
+    else if (gasPump.GetFuel() == "" && _gasPump.GetFuel() != "")
+    {
+        SetTerrain(null_terrain.GetID());
+    }
+    else if (gasPump.GetFuel() == "diesel")
+    {
+        SetTerrain("t_diesel_pump");
+    }
+    else
+    {
+        SetTerrain("t_gas_pump");
+    }
+    _gasPump = gasPump;
 }
 
 bool Tile::IsLineDrawing() const
@@ -287,25 +326,25 @@ bool Tile::operator ==(const Tile & other) const
     return ExportEquivalent(other);
 }
 
-Tile & Tile::operator =(const Tile & other)
-{
-    _terrain = other._terrain;
-    _furniture = other._furniture;
-    _trap = other._trap;
-    _items = other._items;
-    _itemGroup = other._itemGroup;
-    _monster = other._monster;
-    _monsterGroup = other._monsterGroup;
-    _vehicle = other._vehicle;
-    _toilet = other._toilet;
-    _npc = other._npc;
-    _vending = other._vending;
-    _gasPump = other._gasPump;
-    _signage = other._signage;
-    _radiation = other._radiation;
+//Tile & Tile::operator =(const Tile & other)
+//{
+//    _terrain = other._terrain;
+//    _furniture = other._furniture;
+//    _trap = other._trap;
+//    _items = other._items;
+//    _itemGroup = other._itemGroup;
+//    _monster = other._monster;
+//    _monsterGroup = other._monsterGroup;
+//    _vehicle = other._vehicle;
+//    _toilet = other._toilet;
+//    _npc = other._npc;
+//    _vending = other._vending;
+//    _gasPump = other._gasPump;
+//    _signage = other._signage;
+//    _radiation = other._radiation;
 
-    return *this;
-}
+//    return *this;
+//}
 
 void Tile::DumpTileData()
 {

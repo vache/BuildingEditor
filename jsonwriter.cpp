@@ -96,6 +96,8 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     QJsonArray npcs;
     QJsonArray signs;
     QJsonArray radiations;
+    QJsonArray vendingMachines;
+    QJsonArray gasPumps;
     // TODO in this loop, form the lists of monster/item groups, and possibly their respective locations?
     QHash<MonsterGroup, QVector<bool>> monsterGroupCollection;
     QHash<ItemGroup, QVector<bool>> itemGroupCollection;
@@ -244,6 +246,36 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
                 radiation["amount"] = tile.GetRadiation();
                 radiations.append(radiation);
             }
+            if (tile.GetVending() != "")
+            {
+                QJsonObject vendingMachine;
+                vendingMachine["x"] = col;
+                vendingMachine["y"] = row;
+                vendingMachine["item_group"] = tile.GetVending();
+                vendingMachines.append(vendingMachine);
+            }
+            if (tile.GetGasPump().GetFuel() != "")
+            {
+                QJsonObject gasPump;
+                gasPump["x"] = col;
+                gasPump["y"] = row;
+                if (tile.GetGasPump().GetFuel() != "random")
+                {
+                    gasPump["fuel"] = tile.GetGasPump().GetFuel();
+                }
+                if (tile.GetGasPump().GetMinAmount() < tile.GetGasPump().GetMaxAmount())
+                {
+                    QJsonArray amount;
+                    amount.append(tile.GetGasPump().GetMinAmount());
+                    amount.append(tile.GetGasPump().GetMaxAmount());
+                    gasPump["amount"] = amount;
+                }
+                else if (tile.GetGasPump().GetMinAmount() == tile.GetGasPump().GetMaxAmount() && tile.GetGasPump().GetMaxAmount() != 0)
+                {
+                    gasPump["amount"] = tile.GetGasPump().GetMinAmount();
+                }
+                gasPumps.append(gasPump);
+            }
         }
     }
     if (!traps.empty())
@@ -277,6 +309,14 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     if (!radiations.empty())
     {
         object["set"] = radiations;
+    }
+    if (!vendingMachines.empty())
+    {
+        object["place_vendingmachines"] = vendingMachines;
+    }
+    if (!gasPumps.empty())
+    {
+        object["place_gaspumps"] = gasPumps;
     }
 
     QHash<MonsterGroup, QRect> finalizedMonsterGroups;

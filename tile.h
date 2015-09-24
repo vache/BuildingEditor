@@ -7,6 +7,7 @@
 #include "itemgroup.h"
 #include "monstergroup.h"
 #include "vehicle.h"
+#include "gaspump.h"
 #include <QDebug>
 
 class Tile
@@ -40,6 +41,8 @@ public:
     void SetNPC(QString npc);
     void SetSignage(QString signage);
     inline void SetRadiation(int radiation) { _radiation = radiation; }
+    void SetVending(QString vending);
+    void SetGasPump(GasPump gasPump);
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -53,13 +56,15 @@ public:
     inline QString GetNPC() const { return _npc; }
     inline QString GetSignage() const { return _signage; }
     inline int GetRadiation() const { return _radiation; }
+    inline QString GetVending() const { return _vending; }
+    inline GasPump GetGasPump() const { return _gasPump; }
 
     bool IsLineDrawing() const;
 
     bool ExportEquivalent(const Tile& other) const;
     bool operator==(const Tile& other) const;
 
-    Tile& operator=(const Tile& other);
+    //Tile& operator=(const Tile& other);
 
     void DumpTileData();
 
@@ -75,10 +80,10 @@ private:
 
     bool _toilet; // TODO this shouldnt be a bool for long, but it works for this release.
     QString _vending;
-    QPair<int, int> _gasPump; // TODO this should be its own construct, since it should track at least: fueltype, min, max
     QString _npc;
     QString _signage;
     int _radiation;
+    GasPump _gasPump;
 };
 
 #endif // TILE_H

@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     currentfeature.cpp \
     vehicle.cpp \
     omtdialog.cpp \
-    jsonloader.cpp
+    jsonloader.cpp \
+    gaspump.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -54,7 +55,8 @@ HEADERS  += buildingeditor.h \
     currentfeature.h \
     vehicle.h \
     omtdialog.h \
-    jsonloader.h
+    jsonloader.h \
+    gaspump.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \
