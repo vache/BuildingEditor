@@ -8,6 +8,7 @@
 #include "monstergroup.h"
 #include "vehicle.h"
 #include "gaspump.h"
+#include "rubble.h"
 #include <QDebug>
 
 class Tile
@@ -43,6 +44,7 @@ public:
     inline void SetRadiation(int radiation) { _radiation = radiation; }
     void SetVending(QString vending);
     void SetGasPump(GasPump gasPump);
+    void SetRubble(Rubble rubble);
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -58,6 +60,7 @@ public:
     inline int GetRadiation() const { return _radiation; }
     inline QString GetVending() const { return _vending; }
     inline GasPump GetGasPump() const { return _gasPump; }
+    inline Rubble GetRubble() const { return _rubble; }
 
     bool IsLineDrawing() const;
 
@@ -84,6 +87,7 @@ private:
     QString _signage;
     int _radiation;
     GasPump _gasPump;
+    Rubble _rubble;
 };
 
 #endif // TILE_H

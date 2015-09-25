@@ -11,7 +11,7 @@ enum Feature { F_Terrain = TerrainRole, F_Furniture = FurnitureRole, F_Trap = Tr
                F_MonsterGroup = MonsterGroupRole, F_Item = ItemRole, F_Monster = MonsterRole,
                F_ItemGroup = ItemGroupRole, F_Vehicle = VehicleRole, F_Toilet = ToiletRole,
                F_NPC = NpcRole, F_Vending = VendingRole, F_Sign = SignRole,
-               F_Radiation = RadiationRole, F_GasPump = GasPumpRole };
+               F_Radiation = RadiationRole, F_GasPump = GasPumpRole, F_Rubble = RubbleRole };
 Q_DECLARE_METATYPE(Feature)
 
 class Features

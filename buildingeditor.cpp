@@ -82,6 +82,10 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->minFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->maxFuel, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->fuelType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->rubbleType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->floorType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->overwrite, SIGNAL(clicked(bool)), this, SLOT(ObjectEditorModified()));
+    connect(ui->placeItems, SIGNAL(clicked(bool)), this, SLOT(ObjectEditorModified()));
 
     // TODO move all UI init to own methods.
 
@@ -138,6 +142,31 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     gasPump->setData(Qt::UserRole, QVariant::fromValue(GasPump()));
     gasPump->setData(FeatureTypeRole, QVariant::fromValue(F_GasPump));
 
+    QListWidgetItem* rubble = new QListWidgetItem("Set Rubble", ui->specialsWidget);
+    rubble->setData(Qt::UserRole, QVariant::fromValue(Rubble()));
+    rubble->setData(FeatureTypeRole, QVariant::fromValue(F_Rubble));
+
+    ui->vehicleStatus->addItem("Undamaged", 0);
+    ui->vehicleStatus->addItem("Lightly Damaged", -1);
+    ui->vehicleStatus->addItem("Disabled", 1);
+
+    ui->vehicleDirection->addItem("North", 270);
+    ui->vehicleDirection->addItem("East", 0);
+    ui->vehicleDirection->addItem("South", 90);
+    ui->vehicleDirection->addItem("West", 180);
+    //ui->vehicleDirection->addItem("Random", -1);
+    ui->vehicleDirection->addItem("Other", -2);
+
+    ui->vending->addItem("none", "");
+
+    ui->fuelType->addItem("none", "");
+    ui->fuelType->addItem("gasoline", "gasoline");
+    ui->fuelType->addItem("diesel", "diesel");
+    ui->fuelType->addItem("random", "random");
+
+    ui->rubbleType->addItem("default", "");
+    ui->floorType->addItem("default", "");
+
     QSettings settings;
 
     QString dataDir = settings.value("cataclysm_dir", "").toString();
@@ -181,24 +210,6 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     ui->mainToolBar->addActions(_tools->actions());
 
     ui->objectEditor->setVisible(false);
-
-    ui->vehicleStatus->addItem("Undamaged", 0);
-    ui->vehicleStatus->addItem("Lightly Damaged", -1);
-    ui->vehicleStatus->addItem("Disabled", 1);
-
-    ui->vehicleDirection->addItem("North", 270);
-    ui->vehicleDirection->addItem("East", 0);
-    ui->vehicleDirection->addItem("South", 90);
-    ui->vehicleDirection->addItem("West", 180);
-    //ui->vehicleDirection->addItem("Random", -1);
-    ui->vehicleDirection->addItem("Other", -2);
-
-    ui->vending->addItem("none", "");
-
-    ui->fuelType->addItem("none", "");
-    ui->fuelType->addItem("gasoline", "gasoline");
-    ui->fuelType->addItem("diesel", "diesel");
-    ui->fuelType->addItem("random", "random");
 
     // TEMP TEST CODE
     bool active[10][10];
@@ -289,6 +300,8 @@ void BuildingEditor::NewTerrain(Terrain t, QString mod)
     }
     item->setData(Qt::UserRole, t.GetID());
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Terrain));
+
+    ui->floorType->addItem(displayText, t.GetID());
 }
 
 void BuildingEditor::NewFurniture(Furniture f, QString mod)
@@ -308,6 +321,8 @@ void BuildingEditor::NewFurniture(Furniture f, QString mod)
     }
     item->setData(Qt::UserRole, f.GetID());
     item->setData(FeatureTypeRole, QVariant::fromValue<Feature>(F_Furniture));
+
+    ui->rubbleType->addItem(displayText, f.GetID());
 }
 
 void BuildingEditor::NewTrap(Trap tr, QString mod)
@@ -519,6 +534,13 @@ void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
         ui->minFuel->setValue(v.value<GasPump>().GetMinAmount());
         ui->maxFuel->setValue(v.value<GasPump>().GetMaxAmount());
         break;
+    case F_Rubble:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->rubbleEditor);
+        ui->rubbleType->setCurrentIndex(ui->rubbleType->findData(v.value<Rubble>().GetRubbleType()));
+        ui->floorType->setCurrentIndex(ui->floorType->findData(v.value<Rubble>().GetFloorType()));
+        ui->placeItems->setChecked(v.value<Rubble>().GetCreateItems());
+        ui->overwrite->setChecked(v.value<Rubble>().GetOverwrite());
     default:
         break;
     }
@@ -610,6 +632,17 @@ void BuildingEditor::ObjectEditorModified()
         gasPump.SetMinAmount(ui->minFuel->value());
         gasPump.SetMaxAmount(ui->maxFuel->value());
         _currentItem->setData(Qt::UserRole, QVariant::fromValue(gasPump));
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    }
+    case F_Rubble:
+    {
+        Rubble rubble = v.value<Rubble>();
+        rubble.SetRubbleType(ui->rubbleType->currentData().toString());
+        rubble.SetFloorType(ui->floorType->currentData().toString());
+        rubble.SetCreateItems(ui->placeItems->isChecked());
+        rubble.SetOverwrite(ui->overwrite->isChecked());
+        _currentItem->setData(Qt::UserRole, QVariant::fromValue(rubble));
         emit CurrentFeatureChanged(_currentItem);
         break;
     }

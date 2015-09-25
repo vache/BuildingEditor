@@ -31,4 +31,6 @@ private:
 
 Q_DECLARE_METATYPE(Rubble)
 
+static Rubble null_rubble("null");
+
 #endif // RUBBLE_H

@@ -4,9 +4,10 @@
 
 // TODO review all placement to ensure still valid.  double check with added specals
 
-Tile::Tile() : _terrain("t_null"), _furniture("f_null"), _trap("tr_null"), _monsterGroup(MonsterGroup()),
-    _items(QStringList()),_monster(""), _itemGroup(ItemGroup()), _vehicle(Vehicle()), _toilet(false),
-    _vending(""), _npc(""), _signage(""), _radiation(0), _gasPump(GasPump())
+Tile::Tile() : _terrain(null_terrain.GetID()), _furniture(null_furniture.GetID()), _trap(null_trap.GetID()),
+    _monsterGroup(null_monster_group), _items(QStringList()),_monster(""), _itemGroup(null_item_group),
+    _vehicle(null_vehicle), _toilet(false), _vending(""), _npc(""), _signage(""), _radiation(0), _gasPump(GasPump()),
+    _rubble(null_rubble)
 {
 }
 
@@ -302,6 +303,11 @@ void Tile::SetGasPump(GasPump gasPump)
         SetTerrain("t_gas_pump");
     }
     _gasPump = gasPump;
+}
+
+void Tile::SetRubble(Rubble rubble)
+{
+    _rubble = rubble;
 }
 
 bool Tile::IsLineDrawing() const

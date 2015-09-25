@@ -98,6 +98,7 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     QJsonArray radiations;
     QJsonArray vendingMachines;
     QJsonArray gasPumps;
+    QJsonArray rubbles;
     // TODO in this loop, form the lists of monster/item groups, and possibly their respective locations?
     QHash<MonsterGroup, QVector<bool>> monsterGroupCollection;
     QHash<ItemGroup, QVector<bool>> itemGroupCollection;
@@ -276,6 +277,29 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
                 }
                 gasPumps.append(gasPump);
             }
+            if (tile.GetRubble().GetRubbleType() != "null")
+            {
+                QJsonObject rubble;
+                rubble["x"] = col;
+                rubble["y"] = row;
+                if (tile.GetRubble().GetRubbleType() != "")
+                {
+                    rubble["rubble_type"] = tile.GetRubble().GetRubbleType();
+                }
+                if (tile.GetRubble().GetFloorType() != "")
+                {
+                    rubble["floor_type"] = tile.GetRubble().GetFloorType();
+                }
+                if (tile.GetRubble().GetCreateItems())
+                {
+                    rubble["items"] = tile.GetRubble().GetCreateItems();
+                }
+                if (tile.GetRubble().GetOverwrite())
+                {
+                    rubble["overwrite"] = tile.GetRubble().GetOverwrite();
+                }
+                rubbles.append(rubble);
+            }
         }
     }
     if (!traps.empty())
@@ -317,6 +341,10 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     if (!gasPumps.empty())
     {
         object["place_gaspumps"] = gasPumps;
+    }
+    if (!rubbles.empty())
+    {
+        object["place_rubble"] = rubbles;
     }
 
     QHash<MonsterGroup, QRect> finalizedMonsterGroups;
