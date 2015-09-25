@@ -153,6 +153,14 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     ui->mainToolBar->addAction("Write", this, SLOT(Write()));
     ui->mainToolBar->addSeparator();
 
+    QAction* eraseAction = ui->mainToolBar->addAction("Erase");
+    eraseAction->setCheckable(true);
+    eraseAction->setChecked(false);
+
+    connect(eraseAction, SIGNAL(toggled(bool)), ui->tableView, SLOT(SetEraseMode(bool)));
+
+    ui->mainToolBar->addSeparator();
+
     _tools =  new QActionGroup(ui->mainToolBar);
     QAction* penAction = new QAction("Pen", _tools);
     penAction->setData(QVariant::fromValue<Tool>(Pen));

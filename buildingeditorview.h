@@ -28,6 +28,7 @@ public slots:
     void SetFeature(Feature featureType, QVariant feature);
     void FeatureSelected(QListWidgetItem* item);
     void ToolChanged();
+    void SetEraseMode(bool erase);
 
 private slots:
     void OnClicked(const QModelIndex & index);
@@ -39,6 +40,8 @@ private:
 
     QRubberBand* _rubberBand;
     QPoint _rubberBandOrigin;
+
+    bool _eraseMode;
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

@@ -4,7 +4,8 @@
 #include "buildingeditor.h"
 
 BuildingEditorView::BuildingEditorView(QWidget *parent) :
-    QTableView(parent), _currentTool(Pen), _currentFeature ("t_null"), _currentFeatureType(F_Terrain)
+    QTableView(parent), _currentTool(Pen), _currentFeature ("t_null"), _currentFeatureType(F_Terrain),
+    _rubberBand(NULL), _rubberBandOrigin(QPoint()), _eraseMode(false)
 {
     connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(OnClicked(QModelIndex)));
     connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(OnClicked(QModelIndex)));
@@ -59,6 +60,11 @@ void BuildingEditorView::ToolChanged()
     _currentTool = s->data().value<Tool>();
 }
 
+void BuildingEditorView::SetEraseMode(bool erase)
+{
+    _eraseMode = erase;
+}
+
 void BuildingEditorView::mousePressEvent(QMouseEvent *event)
 {
     switch (_currentTool)
@@ -94,8 +100,21 @@ void BuildingEditorView::mouseMoveEvent(QMouseEvent *event)
         switch (_currentTool)
         {
         case Pen:
-            model()->setData(indexAt(event->pos()), _currentFeature, _currentFeatureType);
+        {
+            if (!_eraseMode)
+            {
+                model()->setData(indexAt(event->pos()), _currentFeature, _currentFeatureType);
+            }
+            else
+            {
+                BuildingModel* m = dynamic_cast<BuildingModel*>(model());
+                if (m != NULL)
+                {
+                    m->Erase(indexAt(event->pos()), _currentFeatureType);
+                }
+            }
             break;
+        }
         case FilledRectangle:
         case HollowRectangle:
         {
@@ -119,8 +138,21 @@ void BuildingEditorView::mouseReleaseEvent(QMouseEvent *event)
     switch (_currentTool)
     {
     case Pen:
-        model()->setData(indexAt(event->pos()), _currentFeature, _currentFeatureType);
+    {
+        if (!_eraseMode)
+        {
+            model()->setData(indexAt(event->pos()), _currentFeature, _currentFeatureType);
+        }
+        else
+        {
+            BuildingModel* m = dynamic_cast<BuildingModel*>(model());
+            if (m != NULL)
+            {
+                m->Erase(indexAt(event->pos()), _currentFeatureType);
+            }
+        }
         break;
+    }
     case FilledRectangle:
     case HollowRectangle:
     {
@@ -140,13 +172,26 @@ void BuildingEditorView::mouseReleaseEvent(QMouseEvent *event)
         QModelIndex topLeft = this->indexAt(selection.topLeft());
         QModelIndex bottomRight = this->indexAt(selection.bottomRight());
 
+        BuildingModel* m = NULL;
+        if (_eraseMode)
+        {
+            m = dynamic_cast<BuildingModel*>(model());
+        }
+
         if (_currentTool == FilledRectangle)
         {
             for (int i = topLeft.column(); i <= bottomRight.column(); i++)
             {
                 for (int j = topLeft.row(); j <= bottomRight.row(); j++)
                 {
-                    model()->setData(model()->index(j, i), _currentFeature, _currentFeatureType);
+                    if (!_eraseMode)
+                    {
+                        model()->setData(model()->index(j, i), _currentFeature, _currentFeatureType);
+                    }
+                    else if (m != NULL)
+                    {
+                        m->Erase(model()->index(j, i), _currentFeatureType);
+                    }
                 }
             }
         }
@@ -154,13 +199,29 @@ void BuildingEditorView::mouseReleaseEvent(QMouseEvent *event)
         {
             for (int i = topLeft.column(); i <= bottomRight.column(); i++)
             {
-                model()->setData(model()->index(topLeft.row(), i), _currentFeature, _currentFeatureType);
-                model()->setData(model()->index(bottomRight.row(), i), _currentFeature, _currentFeatureType);
+                if (!_eraseMode)
+                {
+                    model()->setData(model()->index(topLeft.row(), i), _currentFeature, _currentFeatureType);
+                    model()->setData(model()->index(bottomRight.row(), i), _currentFeature, _currentFeatureType);
+                }
+                else if (m != NULL)
+                {
+                    m->Erase(model()->index(topLeft.row(), i), _currentFeatureType);
+                    m->Erase(model()->index(bottomRight.row(), i), _currentFeatureType);
+                }
             }
             for (int j = topLeft.row(); j <= bottomRight.row(); j++)
             {
-                model()->setData(model()->index(j, topLeft.column()), _currentFeature, _currentFeatureType);
-                model()->setData(model()->index(j, bottomRight.column()), _currentFeature, _currentFeatureType);
+                if (!_eraseMode)
+                {
+                    model()->setData(model()->index(j, topLeft.column()), _currentFeature, _currentFeatureType);
+                    model()->setData(model()->index(j, bottomRight.column()), _currentFeature, _currentFeatureType);
+                }
+                else if (m != NULL)
+                {
+                    m->Erase(model()->index(j, topLeft.column()), _currentFeatureType);
+                    m->Erase(model()->index(j, bottomRight.column()), _currentFeatureType);
+                }
             }
         }
         break;

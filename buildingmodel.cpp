@@ -172,6 +172,65 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
     return false;
 }
 
+void BuildingModel::Erase(const QModelIndex& index, int role)
+{
+    OvermapTerrain* omt = _omtv[OMTvIndex(index)];
+    if (!omt->IsActive())
+    {
+        return;
+    }
+    Tile& t = omt->GetTile(GetTileIndex(index));
+
+    switch(role)
+    {
+    case TerrainRole:
+        t.SetTerrain(null_terrain.GetID());
+        break;
+    case FurnitureRole:
+        t.SetFurniture(null_furniture.GetID());
+        break;
+    case TrapRole:
+        t.SetTrap(null_trap.GetID());
+        break;
+    case MonsterGroupRole:
+        t.SetMonsterGroup(MonsterGroup());
+        break;
+    case ItemGroupRole:
+        t.SetItemGroup(ItemGroup());
+        break;
+    case MonsterRole:
+        t.SetMonster("");
+        break;
+    case ItemRole:
+        t.AddItem("");
+        break;
+    case VehicleRole:
+        t.SetVehicle(Vehicle());
+        break;
+    case ToiletRole:
+        t.SetToilet(false);
+        break;
+    case NpcRole:
+        t.SetNPC("");
+        break;
+    case SignRole:
+        t.SetSignage("");
+        break;
+    case RadiationRole:
+        t.SetRadiation(0);
+        break;
+    case VendingRole:
+        t.SetVending("");
+        break;
+    case GasPumpRole:
+        t.SetGasPump(GasPump());
+        break;
+    default:
+        return;
+    }
+    emit dataChanged(index, index);
+}
+
 QList<OvermapTerrain*> BuildingModel::GetOvermapTerrains()
 {
     return _omtv;
