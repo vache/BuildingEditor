@@ -27,6 +27,6 @@ private:
 
 Q_DECLARE_METATYPE(Field)
 
-static Field null_field();
+static Field null_field = Field();
 
 #endif // FIELD_H

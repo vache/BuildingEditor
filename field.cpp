@@ -1,6 +1,6 @@
 #include "field.h"
 
-Field::Field() : _fieldName("fd_null"), _age(0), _density(0)
+Field::Field() : _fieldName("fd_null"), _age(0), _density(1)
 {
 
 }

@@ -87,8 +87,13 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->floorType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
     connect(ui->overwrite, SIGNAL(clicked(bool)), this, SLOT(ObjectEditorModified()));
     connect(ui->placeItems, SIGNAL(clicked(bool)), this, SLOT(ObjectEditorModified()));
+    connect(ui->fieldName, SIGNAL(currentIndexChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->fieldAge, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
+    connect(ui->fieldDensity, SIGNAL(valueChanged(int)), this, SLOT(ObjectEditorModified()));
 
     // TODO move all UI init to own methods.
+
+    SetupFields();
 
     // Erasers need to go in before the parser does its thing!
     // NOTE: for some reason, tr_null is defined in traps.json (unlike everything else) so skip it here
@@ -146,6 +151,10 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     QListWidgetItem* rubble = new QListWidgetItem("Set Rubble", ui->specialsWidget);
     rubble->setData(Qt::UserRole, QVariant::fromValue(Rubble()));
     rubble->setData(FeatureTypeRole, QVariant::fromValue(F_Rubble));
+
+    QListWidgetItem* field = new QListWidgetItem("Set Field", ui->specialsWidget);
+    field->setData(Qt::UserRole, QVariant::fromValue(Field()));
+    field->setData(FeatureTypeRole, QVariant::fromValue(F_Field));
 
     ui->vehicleStatus->addItem("Undamaged", 0);
     ui->vehicleStatus->addItem("Lightly Damaged", -1);
@@ -542,6 +551,14 @@ void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)
         ui->floorType->setCurrentIndex(ui->floorType->findData(v.value<Rubble>().GetFloorType()));
         ui->placeItems->setChecked(v.value<Rubble>().GetCreateItems());
         ui->overwrite->setChecked(v.value<Rubble>().GetOverwrite());
+        break;
+    case F_Field:
+        ui->objectEditor->setVisible(true);
+        ui->objectEditor->setCurrentWidget(ui->fieldEditor);
+        ui->fieldName->setCurrentText(v.value<Field>().GetName());
+        ui->fieldAge->setValue(v.value<Field>().GetAge());
+        ui->fieldDensity->setValue(v.value<Field>().GetDensity());
+        break;
     default:
         break;
     }
@@ -647,6 +664,16 @@ void BuildingEditor::ObjectEditorModified()
         emit CurrentFeatureChanged(_currentItem);
         break;
     }
+    case F_Field:
+    {
+        Field field = v.value<Field>();
+        field.SetName(ui->fieldName->currentText());
+        field.SetAge(ui->fieldAge->value());
+        field.SetDensity(ui->fieldDensity->value());
+        _currentItem->setData(Qt::UserRole, QVariant::fromValue(field));
+        emit CurrentFeatureChanged(_currentItem);
+        break;
+    }
     default:
         break;
     }
@@ -667,6 +694,6 @@ void BuildingEditor::SetupFields()
 
     foreach (QString fieldID, fieldIDs)
     {
-        ui->fieldName->addItem(fieldID, QVariant::fromValue(Field(fieldID, 0, 0)));
+        ui->fieldName->addItem(fieldID, QVariant::fromValue(Field(fieldID, 0, 1)));
     }
 }

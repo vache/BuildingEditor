@@ -7,7 +7,7 @@
 Tile::Tile() : _terrain(null_terrain.GetID()), _furniture(null_furniture.GetID()), _trap(null_trap.GetID()),
     _monsterGroup(null_monster_group), _items(QStringList()),_monster(""), _itemGroup(null_item_group),
     _vehicle(null_vehicle), _toilet(false), _vending(""), _npc(""), _signage(""), _radiation(0), _gasPump(GasPump()),
-    _rubble(null_rubble)
+    _rubble(null_rubble), _field(null_field)
 {
 }
 
@@ -308,6 +308,11 @@ void Tile::SetGasPump(GasPump gasPump)
 void Tile::SetRubble(Rubble rubble)
 {
     _rubble = rubble;
+}
+
+void Tile::SetField(Field field)
+{
+    _field = field;
 }
 
 bool Tile::IsLineDrawing() const

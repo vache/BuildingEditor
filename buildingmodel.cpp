@@ -170,6 +170,10 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         t.SetRubble(value.value<Rubble>());
         emit dataChanged(index, index);
         break;
+    case FieldRole:
+        t.SetField(value.value<Field>());
+        emit dataChanged(index, index);
+        break;
     default:
         return false;
     }
@@ -231,6 +235,9 @@ void BuildingModel::Erase(const QModelIndex& index, int role)
         break;
     case RubbleRole:
         t.SetRubble(null_rubble);
+        break;
+    case FieldRole:
+        t.SetField(null_field);
         break;
     default:
         return;
