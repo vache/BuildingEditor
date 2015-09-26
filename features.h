@@ -8,10 +8,11 @@
 
 //TODO im tired of this thing, its a duplicate of the custom roles.  get rid of it.
 enum Feature { F_Terrain = TerrainRole, F_Furniture = FurnitureRole, F_Trap = TrapRole,
-               F_MonsterGroup = MonsterGroupRole, F_Item = ItemRole, F_Monster = MonsterRole,
-               F_ItemGroup = ItemGroupRole, F_Vehicle = VehicleRole, F_Toilet = ToiletRole,
-               F_NPC = NpcRole, F_Vending = VendingRole, F_Sign = SignRole,
-               F_Radiation = RadiationRole, F_GasPump = GasPumpRole, F_Rubble = RubbleRole };
+             F_MonsterGroup = MonsterGroupRole, F_Item = ItemRole, F_Monster = MonsterRole,
+             F_ItemGroup = ItemGroupRole, F_Vehicle = VehicleRole, F_Toilet = ToiletRole,
+             F_NPC = NpcRole, F_Vending = VendingRole, F_Sign = SignRole,
+             F_Radiation = RadiationRole, F_GasPump = GasPumpRole, F_Rubble = RubbleRole,
+             F_Field = FieldRole };
 Q_DECLARE_METATYPE(Feature)
 
 class Features

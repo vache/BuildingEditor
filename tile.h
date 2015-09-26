@@ -9,6 +9,7 @@
 #include "vehicle.h"
 #include "gaspump.h"
 #include "rubble.h"
+#include "field.h"
 #include <QDebug>
 
 class Tile
@@ -45,6 +46,7 @@ public:
     void SetVending(QString vending);
     void SetGasPump(GasPump gasPump);
     void SetRubble(Rubble rubble);
+    void SetField(Field field);
 
     inline QString GetTerrainID() const { return _terrain; }
     inline QString GetFurnitureID() const { return _furniture; }
@@ -61,6 +63,7 @@ public:
     inline QString GetVending() const { return _vending; }
     inline GasPump GetGasPump() const { return _gasPump; }
     inline Rubble GetRubble() const { return _rubble; }
+    inline Field GetField() const { return _field; }
 
     bool IsLineDrawing() const;
 
@@ -88,6 +91,7 @@ private:
     int _radiation;
     GasPump _gasPump;
     Rubble _rubble;
+    Field _field;
 };
 
 #endif // TILE_H

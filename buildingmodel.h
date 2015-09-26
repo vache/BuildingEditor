@@ -8,8 +8,9 @@
 #include "tripoint.h"
 
 enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, FurnitureRole,
-                   TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
-                   ToiletRole, NpcRole, VendingRole, SignRole, RadiationRole, GasPumpRole, RubbleRole };
+                 TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
+                 ToiletRole, NpcRole, VendingRole, SignRole, RadiationRole, GasPumpRole, RubbleRole,
+                 FieldRole };
 
 // Used to index the line drawing character array
 enum DirectionalLine { NS = 0, EW, NE, NW, SE, SW, NES, NSW, NEW, ESW, NESW };

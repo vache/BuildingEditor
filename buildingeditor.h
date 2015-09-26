@@ -61,6 +61,8 @@ private:
 
     OMTDialog _omtDialog;
 
+    void SetupFields();
+
 signals:
     void CurrentFeatureChanged(QListWidgetItem*);
 };
