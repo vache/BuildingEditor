@@ -688,3 +688,12 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     jsonFile.flush();
     jsonFile.close();
 }
+
+void JsonWriter::WriteOMTData(OMTData data)
+{
+    if (data.IsReadOnly())
+    {
+        qDebug() << "OMTData is Read Only, would have written:";
+    }
+    qDebug() << QJsonDocument(data.ToJson()).toJson();
+}

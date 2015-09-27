@@ -224,6 +224,13 @@ void JsonParser::ParseNPC(QJsonObject &object)
     emit ParsedNPC(id, name, faction, comment, _currentMod);
 }
 
+void JsonParser::ParseOvermapTerrain(QJsonObject &object)
+{
+    OMTData data = OMTData::FromJson(object);
+    qDebug() << "Found:" << data.GetID();
+    emit ParsedOMT(data);
+}
+
 // item types: AMMO, GENERIC, GUN, ARMOR, BIONIC_ITEM, BOOK, COMESTIBLE, CONTAINER, TOOL, GUNMOD, TOOL_ARMOR, VAR_VEH_PART, INSTRUMENT
 void JsonParser::JsonParser::ProcessObject(QJsonObject &object)
 {
@@ -267,6 +274,10 @@ void JsonParser::JsonParser::ProcessObject(QJsonObject &object)
         else if (type == "npc")
         {
             ParseNPC(object);
+        }
+        else if (type == "overmap_terrain")
+        {
+            ParseOvermapTerrain(object);
         }
     }
 }

@@ -40,6 +40,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(&p, SIGNAL(ParsedMonsterGroup(MonsterGroup,QString)), this, SLOT(NewMonsterGroup(MonsterGroup,QString)));
     connect(&p, SIGNAL(ParsedVehicle(Vehicle,QString)), this, SLOT(NewVehicle(Vehicle,QString)));
     connect(&p, SIGNAL(ParsedNPC(QString,QString,QString,QString,QString)), this, SLOT(NewNPC(QString,QString,QString,QString,QString)));
+    connect(&p, SIGNAL(ParsedOMT(OMTData)), &_omtDialog, SLOT(AddOMTData(OMTData)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
 
@@ -212,7 +213,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 //    active[1][1] = true;
 
     m = new BuildingModel(active);
-
+    _omtDialog.SetModel(m);
     ui->tableView->setModel(m);
 
     foreach (QString mod, Features::ModList())
@@ -252,6 +253,7 @@ void BuildingEditor::NewBuilding()
     delete m;
     m = new BuildingModel(active);
     ui->tableView->setModel(m);
+    _omtDialog.SetModel(m);
 }
 
 void BuildingEditor::Open()
@@ -430,6 +432,10 @@ void BuildingEditor::NewNPC(QString id, QString name, QString faction, QString c
 void BuildingEditor::Write()
 {
     JsonWriter w;
+    if (!_omtDialog.GetOMTData().IsReadOnly())
+    {
+        w.WriteOMTData(_omtDialog.GetOMTData());
+    }
     w.Write(m);
 }
 

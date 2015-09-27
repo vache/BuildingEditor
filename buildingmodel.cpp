@@ -14,12 +14,12 @@ BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
     {
         for (int col = 0; col < 10; col++)
         {
-            _omtv.append(new OvermapTerrain(active[row][col]));
-
             if (active[row][col])
             {
                 maxX = qMax(maxX, col+1);
                 maxY = qMax(maxY, row+1);
+
+                _omtv.append(new OvermapTerrain(active[row][col]));
             }
         }
     }
