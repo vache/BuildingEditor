@@ -3,7 +3,7 @@
 
 OMTDialog::OMTDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::OMTDialog), _data(OMTData())
+    ui(new Ui::OMTDialog), _data(OMTData()), _currentOmtIndex(0)
 {
     ui->setupUi(this);
 
@@ -20,6 +20,9 @@ OMTDialog::OMTDialog(QWidget *parent) :
 
     connect(ui->omtList, SIGNAL(currentIndexChanged(int)), this, SLOT(OnOMTListChanged()));
 
+    connect(ui->prev, SIGNAL(clicked(bool)), this, SLOT(OnPrevOMT()));
+    connect(ui->next, SIGNAL(clicked(bool)), this, SLOT(OnNextOMT()));
+
     InitColorList();
 }
 
@@ -34,6 +37,7 @@ void OMTDialog::SetOMTData(OMTData omtData)
 
     SetReadOnly(_data.IsReadOnly());
 
+    ui->omtList->setCurrentIndex(0);
     ui->omtID->setText(_data.GetID());
     ui->omtName->setText(_data.GetName());
     ui->rotate->setChecked(_data.GetRotates());
@@ -82,4 +86,32 @@ void OMTDialog::InitColorList()
         ui->color->setItemData(index, QBrush(color_from_string(colorName).bg), Qt::BackgroundRole);
         index++;
     }
+}
+
+void OMTDialog::OnPrevOMT()
+{
+    int count = _model->GetOvermapTerrains().count();
+
+    _currentOmtIndex--;
+    if (_currentOmtIndex == -1)
+    {
+        _currentOmtIndex = count - 1;
+    }
+    ui->currentOMT->setText(QString("(%1/%2)").arg(_currentOmtIndex + 1).arg(count));
+
+    SetOMTData(_model->GetOvermapTerrains().at(_currentOmtIndex)->GetData());
+}
+
+void OMTDialog::OnNextOMT()
+{
+    int count = _model->GetOvermapTerrains().count();
+
+    _currentOmtIndex++;
+    if (_currentOmtIndex == _model->GetOvermapTerrains().count())
+    {
+        _currentOmtIndex = 0;
+    }
+    ui->currentOMT->setText(QString("(%1/%2)").arg(_currentOmtIndex + 1).arg(count));
+
+    SetOMTData(_model->GetOvermapTerrains().at(_currentOmtIndex)->GetData());
 }

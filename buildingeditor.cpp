@@ -242,7 +242,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 //    active[1][1] = true;
 
     m = new BuildingModel(active);
-
+    _omtDialog.SetModel(m);
     ui->tableView->setModel(m);
 
     foreach (QString mod, Features::ModList())
@@ -282,6 +282,7 @@ void BuildingEditor::NewBuilding()
     delete m;
     m = new BuildingModel(active);
     ui->tableView->setModel(m);
+    _omtDialog.SetModel(m);
 }
 
 void BuildingEditor::Open()
