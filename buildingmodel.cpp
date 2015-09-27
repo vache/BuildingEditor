@@ -201,10 +201,10 @@ void BuildingModel::Erase(const QModelIndex& index, int role)
         t.SetTrap(null_trap.GetID());
         break;
     case MonsterGroupRole:
-        t.SetMonsterGroup(MonsterGroup());
+        t.SetMonsterGroup(null_monster_group);
         break;
     case ItemGroupRole:
-        t.SetItemGroup(ItemGroup());
+        t.SetItemGroup(null_item_group);
         break;
     case MonsterRole:
         t.SetMonster("");
@@ -213,7 +213,7 @@ void BuildingModel::Erase(const QModelIndex& index, int role)
         t.AddItem("");
         break;
     case VehicleRole:
-        t.SetVehicle(Vehicle());
+        t.SetVehicle(null_vehicle);
         break;
     case ToiletRole:
         t.SetToilet(false);
