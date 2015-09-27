@@ -690,7 +690,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>0</number>
         </property>
         <property name="tabSpacing">
          <number>6</number>
@@ -700,8 +700,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>373</height>
           </rect>
          </property>
          <attribute name="label">
@@ -718,8 +718,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -736,8 +736,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -754,8 +754,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -772,8 +772,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -790,8 +790,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -808,8 +808,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -826,8 +826,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -844,8 +844,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>88</width>
-           <height>88</height>
+           <width>400</width>
+           <height>346</height>
           </rect>
          </property>
          <attribute name="label">
@@ -854,24 +854,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
            <widget class="QListWidget" name="npcWidget"/>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="fieldPage">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>88</width>
-           <height>88</height>
-          </rect>
-         </property>
-         <attribute name="label">
-          <string>Fields</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_13">
-          <item>
-           <widget class="QListWidget" name="fieldWidget"/>
           </item>
          </layout>
         </widget>

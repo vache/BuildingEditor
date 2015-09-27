@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include "overmapterrain.h"
+#include "omtdata.h"
 #include "tile.h"
 #include "tripoint.h"
 
@@ -32,6 +33,9 @@ public:
 
     void Erase(const QModelIndex &index, int role);
     QList<OvermapTerrain*> GetOvermapTerrains();
+
+//    void SetDataAt(Tripoint p, OMTData data);
+//    OMTData GetDataAt(Tripoint p);
 
 signals:
 

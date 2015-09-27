@@ -16,6 +16,7 @@
 #include "monstergroup.h"
 #include "itemgroup.h"
 #include "vehicle.h"
+#include "omtdata.h"
 
 /*
  * This class pulls data needed to make a mapgen file from the game's relevant json files
@@ -37,6 +38,7 @@ private:
     void ParseVehicle(QJsonObject &object);
     void ParseVehicleGroup(QJsonObject &object);
     void ParseNPC(QJsonObject& object);
+    void ParseOvermapTerrain(QJsonObject & object);
 
     void ProcessObject(QJsonObject& object);
 
@@ -57,6 +59,8 @@ signals:
 
     void ParsedVehicle(Vehicle, QString);
     void ParsedNPC(QString, QString, QString, QString, QString);
+
+    void ParsedOMT(OMTData);
 };
 
 #endif // JSONPARSER_H

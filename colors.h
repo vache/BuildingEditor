@@ -20,10 +20,18 @@ struct nc_color {
         fg = f;
         bg = b;
     }
+
+    bool operator == (const nc_color & other) const
+    {
+        return ((fg == other.fg) && (bg == other.bg));
+    }
 };
 
 extern nc_color color_from_string(QString);
 extern nc_color bgcolor_from_string(QString);
+extern QString string_from_color(nc_color color);
+extern QString string_from_bgcolor(nc_color color);
+extern QString string_from_any_color(nc_color color);
 extern QStringList colorList;
 
 const nc_color c_white(QColor(Qt::white), QColor(Qt::black));

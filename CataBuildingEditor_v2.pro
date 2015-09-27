@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     jsonloader.cpp \
     gaspump.cpp \
     rubble.cpp \
-    field.cpp
+    field.cpp \
+    omtdata.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -60,7 +61,8 @@ HEADERS  += buildingeditor.h \
     jsonloader.h \
     gaspump.h \
     rubble.h \
-    field.h
+    field.h \
+    omtdata.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \

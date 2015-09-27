@@ -8,6 +8,7 @@
 
 #include "overmapterrain.h"
 #include "buildingmodel.h"
+#include "omtdata.h"
 
 int index(Tripoint p);
 
@@ -21,6 +22,7 @@ public:
     JsonWriter();
     void Write(BuildingModel* model);
     void WriteOMT(OvermapTerrain* t);
+    void WriteOMTData(OMTData data);
 };
 
 #endif // JSONWRITER_H
