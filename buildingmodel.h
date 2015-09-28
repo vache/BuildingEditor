@@ -33,6 +33,7 @@ public:
 
     void Erase(const QModelIndex &index, int role);
     QList<OvermapTerrain*> GetOvermapTerrains();
+    QList<OvermapTerrain*> GetActiveOvermapTerrains();
 
 //    void SetDataAt(Tripoint p, OMTData data);
 //    OMTData GetDataAt(Tripoint p);

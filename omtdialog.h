@@ -30,6 +30,8 @@ private slots:
     void OnOMTListChanged();
     void SetReadOnly(bool readOnly);
 
+    void OnApplyClicked();
+
     void OnIDChanged(QString id) { _data.SetID(id); }
     void OnNameChanged(QString name) { _data.SetName(name); }
     void OnRotateChanged(bool rotate) { _data.SetRotate(rotate); }
@@ -38,6 +40,8 @@ private slots:
     void OnExtrasChanged(QString extras) { _data.SetExtras(extras); }
     void OnSeeCostChanged(int seeCost) { _data.SetSeeCost(seeCost); }
     void OnColorIndexChanged();
+    void OnSidewalkChanged(bool sidewalk) { _data.SetSidewalk(sidewalk); }
+    void OnAllowRoadChanged(bool allowRoad) { _data.SetAllowRoads(allowRoad); }
 
     void OnPrevOMT();
     void OnNextOMT();

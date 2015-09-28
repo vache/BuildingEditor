@@ -14,12 +14,12 @@ BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
     {
         for (int col = 0; col < 10; col++)
         {
+            _omtv.append(new OvermapTerrain(active[row][col]));
+
             if (active[row][col])
             {
                 maxX = qMax(maxX, col+1);
                 maxY = qMax(maxY, row+1);
-
-                _omtv.append(new OvermapTerrain(active[row][col]));
             }
         }
     }
@@ -248,6 +248,21 @@ void BuildingModel::Erase(const QModelIndex& index, int role)
 QList<OvermapTerrain*> BuildingModel::GetOvermapTerrains()
 {
     return _omtv;
+}
+
+QList<OvermapTerrain*> BuildingModel::GetActiveOvermapTerrains()
+{
+    QList<OvermapTerrain*> omts;
+
+    foreach (OvermapTerrain* omt, _omtv)
+    {
+        if (omt->IsActive())
+        {
+            omts.append(omt);
+        }
+    }
+
+    return omts;
 }
 
 void BuildingModel::OnOmtLoaded(OvermapTerrain* omt)

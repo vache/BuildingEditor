@@ -17,11 +17,18 @@ OMTDialog::OMTDialog(QWidget *parent) :
     connect(ui->extras, SIGNAL(currentTextChanged(QString)), this, SLOT(OnExtrasChanged(QString)));
     connect(ui->seeCost, SIGNAL(valueChanged(int)), this, SLOT(OnSeeCostChanged(int)));
     connect(ui->color, SIGNAL(currentIndexChanged(int)), this, SLOT(OnColorIndexChanged()));
+    connect(ui->sidewalk, SIGNAL(toggled(bool)), this, SLOT(OnSidewalkChanged(bool)));
+    connect(ui->allowRoad, SIGNAL(toggled(bool)), this, SLOT(OnAllowRoadChanged(bool)));
 
     connect(ui->omtList, SIGNAL(currentIndexChanged(int)), this, SLOT(OnOMTListChanged()));
 
     connect(ui->prev, SIGNAL(clicked(bool)), this, SLOT(OnPrevOMT()));
     connect(ui->next, SIGNAL(clicked(bool)), this, SLOT(OnNextOMT()));
+
+    connect(ui->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked(bool)),
+        this, SLOT(OnApplyClicked()));
+    connect(ui->buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked(bool)),
+        this, SLOT(OnApplyClicked()));
 
     InitColorList();
 }
@@ -37,7 +44,11 @@ void OMTDialog::SetOMTData(OMTData omtData)
 
     SetReadOnly(_data.IsReadOnly());
 
-    ui->omtList->setCurrentIndex(0);
+    if (_data.IsReadOnly())
+    {
+        ui->omtList->setCurrentText(_data.GetID());
+    }
+
     ui->omtID->setText(_data.GetID());
     ui->omtName->setText(_data.GetName());
     ui->rotate->setChecked(_data.GetRotates());
@@ -45,6 +56,8 @@ void OMTDialog::SetOMTData(OMTData omtData)
     ui->knownDown->setChecked(_data.GetKnownDown());
     ui->knownUp->setChecked(_data.GetKnownUp());
     ui->color->setCurrentIndex(ui->color->findData(_data.GetColor()));
+    ui->sidewalk->setChecked(_data.GetSidewalk());
+    ui->allowRoad->setCheckable(_data.GetAllowedRoad());
 }
 
 void OMTDialog::AddOMTData(OMTData data)
@@ -67,6 +80,13 @@ void OMTDialog::SetReadOnly(bool readOnly)
     ui->seeCost->setDisabled(readOnly);
     ui->knownDown->setDisabled(readOnly);
     ui->knownUp->setDisabled(readOnly);
+    ui->allowRoad->setDisabled(readOnly);
+    ui->sidewalk->setDisabled(readOnly);
+}
+
+void OMTDialog::OnApplyClicked()
+{
+    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
 }
 
 void OMTDialog::OnColorIndexChanged()
@@ -90,7 +110,9 @@ void OMTDialog::InitColorList()
 
 void OMTDialog::OnPrevOMT()
 {
-    int count = _model->GetOvermapTerrains().count();
+    int count = _model->GetActiveOvermapTerrains().count();
+
+    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
 
     _currentOmtIndex--;
     if (_currentOmtIndex == -1)
@@ -99,19 +121,21 @@ void OMTDialog::OnPrevOMT()
     }
     ui->currentOMT->setText(QString("(%1/%2)").arg(_currentOmtIndex + 1).arg(count));
 
-    SetOMTData(_model->GetOvermapTerrains().at(_currentOmtIndex)->GetData());
+    SetOMTData(_model->GetActiveOvermapTerrains().at(_currentOmtIndex)->GetData());
 }
 
 void OMTDialog::OnNextOMT()
 {
-    int count = _model->GetOvermapTerrains().count();
+    int count = _model->GetActiveOvermapTerrains().count();
+
+    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
 
     _currentOmtIndex++;
-    if (_currentOmtIndex == _model->GetOvermapTerrains().count())
+    if (_currentOmtIndex == count)
     {
         _currentOmtIndex = 0;
     }
     ui->currentOMT->setText(QString("(%1/%2)").arg(_currentOmtIndex + 1).arg(count));
 
-    SetOMTData(_model->GetOvermapTerrains().at(_currentOmtIndex)->GetData());
+    SetOMTData(_model->GetActiveOvermapTerrains().at(_currentOmtIndex)->GetData());
 }

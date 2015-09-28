@@ -1,6 +1,8 @@
 #include "omtdata.h"
 
-OMTData::OMTData() : _readOnly(false)
+OMTData::OMTData() : _readOnly(false), _id(""), _name(""), _rotate(true), _symbols(QList<QChar>()),
+    _knownUp(false), _knownDown(false), _color("black"), _seeCost(0), _extras("none"), _sidewalk(true),
+    _allowRoad(false)
 {
 
 }
@@ -28,6 +30,7 @@ QJsonObject OMTData::ToJson()
 {
     QJsonObject out;
 
+    out["type"] = "overmap_terrain";
     out["id"] = _id;
     out["name"] = _name;
     out["rotate"] = _rotate;

@@ -43,10 +43,19 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     QJsonDocument doc;
     QFile jsonFile;
 
+    QJsonArray docArray;
+
+    QJsonObject omtObject;
+    if (t->GetData().GetID() != "")
+    {
+        omtObject = t->GetData().ToJson();
+    }
+
     bool ok;
     QJsonObject mapgenObject;
     mapgenObject["type"] = QString("mapgen");
-    QString omter = QInputDialog::getText(0, "Enter Overmap Terrain", "Enter the ID of the overmap terrain this mapgen is for", QLineEdit::Normal, "house", &ok); // TODO pull this from settings
+    QString defaultOmter = t->GetData().GetID();
+    QString omter = QInputDialog::getText(0, "Enter Overmap Terrain", "Enter the ID of the overmap terrain this mapgen is for", QLineEdit::Normal, defaultOmter, &ok); // TODO pull this from settings
     if (!ok)
     {
         return;
@@ -667,7 +676,14 @@ void JsonWriter::WriteOMT(OvermapTerrain *t)
     object["furniture"] = jsonFurnitureMap;
 
     mapgenObject["object"] = object;
-    doc.setObject(mapgenObject);
+
+    if (!t->GetData().IsReadOnly() && t->GetData().GetID() != "")
+    {
+        docArray.append(omtObject);
+    }
+    docArray.append(mapgenObject);
+
+    doc.setArray(docArray);
 
     qDebug() << doc.toJson();
 
