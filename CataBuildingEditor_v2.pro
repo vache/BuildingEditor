@@ -37,7 +37,9 @@ SOURCES += main.cpp\
     gaspump.cpp \
     rubble.cpp \
     field.cpp \
-    omtdata.cpp
+    omtdata.cpp \
+    searchmodel.cpp \
+    common.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -62,9 +64,14 @@ HEADERS  += buildingeditor.h \
     gaspump.h \
     rubble.h \
     field.h \
-    omtdata.h
+    omtdata.h \
+    searchmodel.h \
+    common.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \
     newbuildingwizard.ui \
     omtdialog.ui
+
+DISTFILES += \
+    fields.json

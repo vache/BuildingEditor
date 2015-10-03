@@ -31,7 +31,6 @@ public slots:
     void SetEraseMode(bool erase);
 
 private slots:
-    void OnClicked(const QModelIndex & index);
 
 private:
     Tool _currentTool;

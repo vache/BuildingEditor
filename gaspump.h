@@ -27,4 +27,6 @@ private:
 
 Q_DECLARE_METATYPE(GasPump)
 
+static GasPump null_gas_pump = GasPump("null");
+
 #endif // GASPUMP_H

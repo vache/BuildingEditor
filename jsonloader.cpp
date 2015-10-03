@@ -88,13 +88,22 @@ void JsonLoader::ParseMapgen(QJsonObject &object)
     QJsonObject mapgenObject;
     mapgenObject = object.value("object").toObject();
 
+    QString fillID = mapgenObject.value("fill_ter").toString("t_null");
+
     QHash<QChar, QString> terrainMappings;
     QJsonObject terrainObject;
     terrainObject = mapgenObject.value("terrain").toObject();
     foreach (QString key, terrainObject.keys())
     {
         qDebug() << key << terrainObject[key].toString();
-        terrainMappings[key[0]] = terrainObject[key].toString();
+        if (terrainObject[key].toString() != "t_null")
+        {
+            terrainMappings[key[0]] = terrainObject[key].toString();
+        }
+        else
+        {
+            terrainMappings[key[0]] = fillID;
+        }
     }
 
     QHash<QChar, QString> furnitureMappings;
@@ -133,6 +142,64 @@ void JsonLoader::ParseMapgen(QJsonObject &object)
             }
 
             omt->SetTile(Tripoint(col, row, 0), t);
+        }
+    }
+
+    if (mapgenObject.contains("place_traps"))
+    {
+        QJsonArray trapArray = mapgenObject["place_traps"].toArray();
+        for (int i = 0; i < trapArray.count(); i++)
+        {
+            QJsonObject trapObject = trapArray[i].toObject();
+
+            int x = trapObject["x"].toInt();
+            int y = trapObject["y"].toInt();
+            QString trap = trapObject["trap"].toString();
+
+            omt->GetTile(Tripoint(x, y, 0)).SetTrap(trap);
+        }
+    }
+
+    if (mapgenObject.contains("place_items"))
+    {
+        QJsonArray itemsArray = mapgenObject["place_items"].toArray();
+        for (int i = 0; i < itemsArray.count(); i++)
+        {
+            QJsonObject itemsObject = itemsArray[i].toObject();
+
+            QPair<int, int> x;
+            QPair<int, int> y;
+            if (itemsObject["x"].isArray())
+            {
+                x.first = itemsObject["x"].toArray()[0].toInt();
+                x.second = itemsObject["x"].toArray()[1].toInt();
+            }
+            else
+            {
+                x.first = itemsObject["x"].toInt();
+                x.second = itemsObject["x"].toInt();
+            }
+
+            if (itemsObject["y"].isArray())
+            {
+                y.first = itemsObject["y"].toArray()[0].toInt();
+                y.second = itemsObject["y"].toArray()[1].toInt();
+            }
+            else
+            {
+                y.first = itemsObject["y"].toInt();
+                y.second = itemsObject["y"].toInt();
+            }
+            QString group = itemsObject["item"].toString();
+            int chance = itemsObject["chance"].toInt();
+
+            for (int xx = x.first; xx <= x.second; xx++)
+            {
+                for (int yy = y.first; yy <= y.second; yy++)
+                {
+                    omt->GetTile(Tripoint(xx, yy, 0)).SetItemGroup(ItemGroup(group, chance));
+                }
+            }
         }
     }
 

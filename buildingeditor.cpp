@@ -15,7 +15,7 @@
 
 BuildingEditor::BuildingEditor(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::BuildingEditor), m(NULL), _currentItem(NULL)
+    ui(new Ui::BuildingEditor), m(NULL), _searchModel(NULL), _currentItem(NULL)
 {
     ui->setupUi(this);
 
@@ -24,6 +24,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     ui->zLevelLE->setHidden(true);
     ui->zLevelSlider->setHidden(true);
+    ui->searchFrame->setHidden(true);
 
     JsonParser p;
 
@@ -43,6 +44,9 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(&p, SIGNAL(ParsedOMT(OMTData)), &_omtDialog, SLOT(AddOMTData(OMTData)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
+    connect(ui->search, SIGNAL(clicked(bool)), this, SLOT(Search()));
+    connect(ui->searchSelect, SIGNAL(clicked(bool)), this, SLOT(OnSearchSelect()));
+    connect(ui->searchHide, SIGNAL(clicked(bool)), this, SLOT(HideSearchArea()));
 
     // TODO simplify!
     connect(ui->terrainWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->tableView, SLOT(FeatureSelected(QListWidgetItem*)));
@@ -96,10 +100,6 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     SetupFields();
 
-    // Erasers need to go in before the parser does its thing!
-    // NOTE: for some reason, tr_null is defined in traps.json (unlike everything else) so skip it here
-    // though we may want to actually add it for the sake of consistency
-    // NOTE: also note, terrain should never be null, so dont let them change it back to null.
     QListWidgetItem* toilet = new QListWidgetItem("Place Toilet Water", ui->specialsWidget);
     toilet->setData(Qt::UserRole, true);
     toilet->setData(FeatureTypeRole, QVariant::fromValue(F_Toilet));
@@ -221,11 +221,102 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
         qDebug() << mod;
     }
     // END TEST CODE
+
+    _searchModel = new SearchModel();
+    ui->searchResults->setModel(_searchModel);
 }
 
 BuildingEditor::~BuildingEditor()
 {
     delete ui;
+}
+
+void BuildingEditor::Search()
+{
+    QString searchTerm = ui->searchField->text();
+
+    QList<QListWidgetItem*> items;
+
+    items.append(ui->terrainWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->furnitureWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->monsterGroupWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->itemGroupWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->trapWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->monsterWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->itemWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->vehicleWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->npcWidget->findItems(searchTerm, Qt::MatchContains));
+    items.append(ui->specialsWidget->findItems(searchTerm, Qt::MatchContains));
+
+    _searchModel->SetSearchResults(items);
+
+    ui->searchFrame->setVisible(true);
+}
+
+void BuildingEditor::OnSearchSelect()
+{
+    QListWidgetItem* item = _searchModel->GetItem(ui->searchResults->currentIndex());
+
+    item->setSelected(true);
+
+    SetObjectEditorMode(item);
+
+    emit CurrentFeatureChanged(item);
+
+    item->listWidget()->scrollToItem(item);
+
+    SetCurrentPage(item);
+}
+
+void BuildingEditor::HideSearchArea()
+{
+    ui->searchFrame->setVisible(false);
+}
+
+void BuildingEditor::SetCurrentPage(QListWidgetItem *item)
+{
+    Feature f = item->data(FeatureTypeRole).value<Feature>();
+    switch(f)
+    {
+    case F_Terrain:
+        ui->toolBox->setCurrentIndex(0);
+        break;
+    case F_Furniture:
+        ui->toolBox->setCurrentIndex(1);
+        break;
+    case F_Trap:
+        ui->toolBox->setCurrentIndex(6);
+        break;
+    case F_MonsterGroup:
+        ui->toolBox->setCurrentIndex(3);
+        break;
+    case F_Item:
+        ui->toolBox->setCurrentIndex(4);
+        break;
+    case F_Monster:
+        ui->toolBox->setCurrentIndex(2);
+        break;
+    case F_ItemGroup:
+        ui->toolBox->setCurrentIndex(5);
+        break;
+    case F_Vehicle:
+        ui->toolBox->setCurrentIndex(7);
+        break;
+    case F_NPC:
+        ui->toolBox->setCurrentIndex(8);
+        break;
+    case F_Toilet:
+    case F_Vending:
+    case F_Sign:
+    case F_Radiation:
+    case F_GasPump:
+    case F_Rubble:
+    case F_Field:
+        ui->toolBox->setCurrentIndex(9);
+        break;
+    default:
+        break;
+    }
 }
 
 void BuildingEditor::ZLevelSliderChanged(int value)

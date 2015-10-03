@@ -137,13 +137,25 @@ QColor Tile::GetBackgroundColor() const
     {
         return QColor(Qt::red);
     }
-    else if (_furniture != "f_null")
+    else if (_furniture != null_furniture.GetID())
     {
         return Features::GetFurniture(_furniture).GetBackground();
     }
     else if (_trap != "tr_null")
     {
         return Features::GetTrap(_trap).GetBackground();
+    }
+    else if (!_npc.isEmpty())
+    {
+        return QColor(Qt::magenta);
+    }
+    else if (_field.GetName() != null_field.GetName() || _radiation != 0)
+    {
+        return QColor(Qt::yellow);
+    }
+    else if (_gasPump.GetFuel() != "" || !_vending.isEmpty() || !_signage.isEmpty())
+    {
+        return QColor(Qt::gray);
     }
     return Features::GetTerrain(_terrain).GetBackground();
 }

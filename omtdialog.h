@@ -30,8 +30,6 @@ private slots:
     void OnOMTListChanged();
     void SetReadOnly(bool readOnly);
 
-    void OnApplyClicked();
-
     void OnIDChanged(QString id) { _data.SetID(id); }
     void OnNameChanged(QString name) { _data.SetName(name); }
     void OnRotateChanged(bool rotate) { _data.SetRotate(rotate); }
@@ -43,6 +41,8 @@ private slots:
     void OnSidewalkChanged(bool sidewalk) { _data.SetSidewalk(sidewalk); }
     void OnAllowRoadChanged(bool allowRoad) { _data.SetAllowRoads(allowRoad); }
 
+    void ApplyDataToModel();
+
     void OnPrevOMT();
     void OnNextOMT();
 
@@ -50,6 +50,7 @@ private:
     Ui::OMTDialog *ui;
 
     void InitColorList();
+    void InitSymList();
 
     OMTData _data;
 

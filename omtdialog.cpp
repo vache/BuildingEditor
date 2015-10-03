@@ -9,6 +9,10 @@ OMTDialog::OMTDialog(QWidget *parent) :
 
     ui->omtList->addItem("New OMT", QVariant::fromValue(OMTData()));
 
+    connect(ui->rotate, SIGNAL(toggled(bool)), ui->symbol2, SLOT(setEnabled(bool)));
+    connect(ui->rotate, SIGNAL(toggled(bool)), ui->symbol3, SLOT(setEnabled(bool)));
+    connect(ui->rotate, SIGNAL(toggled(bool)), ui->symbol4, SLOT(setEnabled(bool)));
+
     connect(ui->omtID, SIGNAL(textChanged(QString)), this, SLOT(OnIDChanged(QString)));
     connect(ui->omtName, SIGNAL(textChanged(QString)), this, SLOT(OnNameChanged(QString)));
     connect(ui->rotate, SIGNAL(toggled(bool)), this, SLOT(OnRotateChanged(bool)));
@@ -26,11 +30,12 @@ OMTDialog::OMTDialog(QWidget *parent) :
     connect(ui->next, SIGNAL(clicked(bool)), this, SLOT(OnNextOMT()));
 
     connect(ui->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked(bool)),
-        this, SLOT(OnApplyClicked()));
+        this, SLOT(ApplyDataToModel()));
     connect(ui->buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked(bool)),
-        this, SLOT(OnApplyClicked()));
+        this, SLOT(ApplyDataToModel()));
 
     InitColorList();
+    InitSymList();
 }
 
 OMTDialog::~OMTDialog()
@@ -82,11 +87,10 @@ void OMTDialog::SetReadOnly(bool readOnly)
     ui->knownUp->setDisabled(readOnly);
     ui->allowRoad->setDisabled(readOnly);
     ui->sidewalk->setDisabled(readOnly);
-}
-
-void OMTDialog::OnApplyClicked()
-{
-    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
+    ui->symbol1->setDisabled(readOnly);
+    ui->symbol2->setDisabled(readOnly);
+    ui->symbol3->setDisabled(readOnly);
+    ui->symbol4->setDisabled(readOnly);
 }
 
 void OMTDialog::OnColorIndexChanged()
@@ -107,12 +111,41 @@ void OMTDialog::InitColorList()
         index++;
     }
 }
+/*
+line drawing values:
+SE: 4194412
+NE: 4194413
+SW: 4194411
+NW: 4194410
+horizontal line: 4194417
+vertical line: 4194424
+cross: 4194414
+NSW: 4194421
+NES: 4194420
+WES: 4194423
+NEW: 4194422
+*/
+void OMTDialog::InitSymList()
+{
+    for (int i = 32; i < 127; i++)
+    {
+        ui->symbol1->addItem(QChar(i), i);
+        ui->symbol2->addItem(QChar(i), i);
+        ui->symbol3->addItem(QChar(i), i);
+        ui->symbol4->addItem(QChar(i), i);
+    }
+}
+
+void OMTDialog::ApplyDataToModel()
+{
+    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
+}
 
 void OMTDialog::OnPrevOMT()
 {
     int count = _model->GetActiveOvermapTerrains().count();
 
-    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
+    ApplyDataToModel();
 
     _currentOmtIndex--;
     if (_currentOmtIndex == -1)
@@ -128,7 +161,7 @@ void OMTDialog::OnNextOMT()
 {
     int count = _model->GetActiveOvermapTerrains().count();
 
-    _model->GetActiveOvermapTerrains()[_currentOmtIndex]->SetData(GetOMTData());
+    ApplyDataToModel();
 
     _currentOmtIndex++;
     if (_currentOmtIndex == count)

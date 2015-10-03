@@ -13,6 +13,7 @@
 #include <QActionGroup>
 // test...
 #include <QListWidgetItem>
+#include "searchmodel.h"
 
 namespace Ui {
 class BuildingEditor;
@@ -48,10 +49,17 @@ private slots:
     void SetObjectEditorMode(QListWidgetItem* i);
     void ObjectEditorModified();
 
+    void Search();
+    void OnSearchSelect();
+    void HideSearchArea();
+
+    void SetCurrentPage(QListWidgetItem* item);
+
 private:
     Ui::BuildingEditor *ui;
 
     BuildingModel* m;
+    SearchModel* _searchModel;
     QActionGroup* _tools;
 
     QStringList _allIDs;

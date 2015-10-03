@@ -122,3 +122,44 @@ QStringList Features::ModList()
     // the double conversion removes non-unique values
     return Features::_belongsToMod.values().toSet().toList();
 }
+
+QString Features::TypeName(Feature f)
+{
+    switch (f)
+    {
+    case F_Terrain:
+        return "terrain";
+    case F_Furniture:
+        return "furniture";
+    case F_Trap:
+        return "trap";
+    case F_MonsterGroup:
+        return "monster group";
+    case F_Item:
+        return "item";
+    case F_Monster:
+        return "monster";
+    case F_ItemGroup:
+        return "item group";
+    case F_Vehicle:
+        return "vehicle";
+    case F_Toilet:
+        return "toilet";
+    case F_NPC:
+        return "npc";
+    case F_Vending:
+        return "vending";
+    case F_Sign:
+        return "sign";
+    case F_Radiation:
+        return "radiation";
+    case F_GasPump:
+        return "gas pump";
+    case F_Rubble:
+        return "rubble";
+    case F_Field:
+        return "field";
+    default:
+        return "";
+    }
+}

@@ -120,8 +120,6 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
 
         Terrain t(id, description, symbol, color, flags);
 
-        qDebug() << "Terrain" << id << "belongs to" << _currentMod;
-
         emit ParsedTerrain(t, _currentMod);
     }
     else if (object.value("type").toString() == "furniture")
@@ -134,8 +132,6 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
 
         Furniture f(id, description, symbol, color, flags);
 
-        qDebug() << "Furniture" << id << "belongs to" << _currentMod;
-
         emit ParsedFurniture(f, _currentMod);
     }
     else if(object.value("type").toString() == "trap")
@@ -147,8 +143,6 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
         }
 
         Trap tr(id, description, symbol, color, flags);
-
-        qDebug() << "Trap" << id << "belongs to" << _currentMod;
 
         emit ParsedTrap(tr, _currentMod);
     }
@@ -219,15 +213,12 @@ void JsonParser::ParseNPC(QJsonObject &object)
     QString faction = object.value("faction").toString("invalid_faction");
     QString comment = object.value("comment").toString("");
 
-    //qDebug() << name << id << faction << comment;
-
     emit ParsedNPC(id, name, faction, comment, _currentMod);
 }
 
 void JsonParser::ParseOvermapTerrain(QJsonObject &object)
 {
     OMTData data = OMTData::FromJson(object);
-    qDebug() << "Found:" << data.GetID();
     emit ParsedOMT(data);
 }
 

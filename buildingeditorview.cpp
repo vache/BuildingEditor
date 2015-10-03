@@ -7,8 +7,7 @@ BuildingEditorView::BuildingEditorView(QWidget *parent) :
     QTableView(parent), _currentTool(Pen), _currentFeature ("t_null"), _currentFeatureType(F_Terrain),
     _rubberBand(NULL), _rubberBandOrigin(QPoint()), _eraseMode(false)
 {
-    connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(OnClicked(QModelIndex)));
-    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(OnClicked(QModelIndex)));
+
 }
 
 void BuildingEditorView::SetTool(Tool tool)
@@ -20,16 +19,6 @@ void BuildingEditorView::SetFeature(Feature featureType, QVariant feature)
 {
     _currentFeatureType = featureType;
     _currentFeature = feature;
-}
-
-void BuildingEditorView::OnClicked(const QModelIndex &index)
-{
-    // perform tool checking actions here
-
-    if (_currentTool == Pen)
-    {
-        model()->setData(index, _currentFeature, _currentFeatureType);
-    }
 }
 
 void BuildingEditorView::FeatureSelected(QListWidgetItem* item)

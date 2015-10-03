@@ -34,6 +34,8 @@ public:
     static QString BelongsToMod(QString id);
     static QStringList ModList();
 
+    static QString TypeName(Feature);
+
 private:
     static QMap<QString, Terrain> _terrains;
     static QMap<QString, Furniture> _furnitures;
