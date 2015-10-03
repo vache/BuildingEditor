@@ -40,6 +40,7 @@ private slots:
     void OnColorIndexChanged();
     void OnSidewalkChanged(bool sidewalk) { _data.SetSidewalk(sidewalk); }
     void OnAllowRoadChanged(bool allowRoad) { _data.SetAllowRoads(allowRoad); }
+    void OnSymbolChanged();
 
     void ApplyDataToModel();
 

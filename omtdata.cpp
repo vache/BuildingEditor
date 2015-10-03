@@ -1,6 +1,7 @@
 #include "omtdata.h"
+#include <QJsonArray>
 
-OMTData::OMTData() : _readOnly(false), _id(""), _name(""), _rotate(true), _symbols(QList<QChar>()),
+OMTData::OMTData() : _readOnly(false), _id(""), _name(""), _rotate(true), _symbols(QList<int>()),
     _knownUp(false), _knownDown(false), _color("black"), _seeCost(0), _extras("none"), _sidewalk(true),
     _allowRoad(false)
 {
@@ -22,6 +23,20 @@ OMTData OMTData::FromJson(QJsonObject &object)
     data.SetExtras(object.value("extras").toString());
     data.SetSidewalk(object.value("sidewalk").toBool(false));
     data.SetAllowRoads(object.value("allow_road").toBool(false));
+    QList<int> symbols;
+    if (object.value("sym").isArray())
+    {
+        QJsonArray jsonSymbols = object.value("sym").toArray();
+        foreach (QJsonValue symbol, jsonSymbols)
+        {
+            symbols.append(symbol.toInt());
+        }
+    }
+    else
+    {
+        symbols.append(object.value("sym").toInt());
+    }
+    data.SetSymbols(symbols);
 
     return data;
 }
@@ -34,7 +49,19 @@ QJsonObject OMTData::ToJson()
     out["id"] = _id;
     out["name"] = _name;
     out["rotate"] = _rotate;
-    out["sym"] = _symbols[0].unicode();
+    if (_symbols.count() == 1)
+    {
+        out["sym"] = _symbols[0];
+    }
+    else
+    {
+        QJsonArray symArray;
+        symArray.append(_symbols[0]);
+        symArray.append(_symbols[1]);
+        symArray.append(_symbols[2]);
+        symArray.append(_symbols[3]);
+        out["sym"] = symArray;
+    }
     out["known_up"] = _knownUp;
     out["known_down"] = _knownDown;
     out["color"] = _color;

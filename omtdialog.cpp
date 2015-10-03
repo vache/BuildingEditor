@@ -9,9 +9,9 @@ OMTDialog::OMTDialog(QWidget *parent) :
 
     ui->omtList->addItem("New OMT", QVariant::fromValue(OMTData()));
 
-    connect(ui->rotate, SIGNAL(toggled(bool)), ui->symbol2, SLOT(setEnabled(bool)));
-    connect(ui->rotate, SIGNAL(toggled(bool)), ui->symbol3, SLOT(setEnabled(bool)));
-    connect(ui->rotate, SIGNAL(toggled(bool)), ui->symbol4, SLOT(setEnabled(bool)));
+    connect(ui->rotate, SIGNAL(clicked(bool)), ui->symbol2, SLOT(setEnabled(bool)));
+    connect(ui->rotate, SIGNAL(clicked(bool)), ui->symbol3, SLOT(setEnabled(bool)));
+    connect(ui->rotate, SIGNAL(clicked(bool)), ui->symbol4, SLOT(setEnabled(bool)));
 
     connect(ui->omtID, SIGNAL(textChanged(QString)), this, SLOT(OnIDChanged(QString)));
     connect(ui->omtName, SIGNAL(textChanged(QString)), this, SLOT(OnNameChanged(QString)));
@@ -23,6 +23,10 @@ OMTDialog::OMTDialog(QWidget *parent) :
     connect(ui->color, SIGNAL(currentIndexChanged(int)), this, SLOT(OnColorIndexChanged()));
     connect(ui->sidewalk, SIGNAL(toggled(bool)), this, SLOT(OnSidewalkChanged(bool)));
     connect(ui->allowRoad, SIGNAL(toggled(bool)), this, SLOT(OnAllowRoadChanged(bool)));
+    connect(ui->symbol1, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSymbolChanged()));
+    connect(ui->symbol2, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSymbolChanged()));
+    connect(ui->symbol3, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSymbolChanged()));
+    connect(ui->symbol4, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSymbolChanged()));
 
     connect(ui->omtList, SIGNAL(currentIndexChanged(int)), this, SLOT(OnOMTListChanged()));
 
@@ -49,11 +53,6 @@ void OMTDialog::SetOMTData(OMTData omtData)
 
     SetReadOnly(_data.IsReadOnly());
 
-    if (_data.IsReadOnly())
-    {
-        ui->omtList->setCurrentText(_data.GetID());
-    }
-
     ui->omtID->setText(_data.GetID());
     ui->omtName->setText(_data.GetName());
     ui->rotate->setChecked(_data.GetRotates());
@@ -63,6 +62,20 @@ void OMTDialog::SetOMTData(OMTData omtData)
     ui->color->setCurrentIndex(ui->color->findData(_data.GetColor()));
     ui->sidewalk->setChecked(_data.GetSidewalk());
     ui->allowRoad->setCheckable(_data.GetAllowedRoad());
+    ui->symbol1->setCurrentIndex(ui->symbol1->findData(_data.GetSymbols()[0]));
+    if (_data.GetSymbols().count() == 4)
+    {
+        ui->symbol2->setCurrentIndex(ui->symbol1->findData(_data.GetSymbols()[1]));
+        ui->symbol3->setCurrentIndex(ui->symbol1->findData(_data.GetSymbols()[2]));
+        ui->symbol4->setCurrentIndex(ui->symbol1->findData(_data.GetSymbols()[3]));
+    }
+    else
+    {
+        ui->symbol2->setCurrentIndex(0);
+        ui->symbol3->setCurrentIndex(0);
+        ui->symbol4->setCurrentIndex(0);
+    }
+
 }
 
 void OMTDialog::AddOMTData(OMTData data)
@@ -99,6 +112,31 @@ void OMTDialog::OnColorIndexChanged()
     _data.SetColor(color);
 }
 
+void OMTDialog::OnSymbolChanged()
+{
+    QList<int> symbols;
+    int symbol1 = ui->symbol1->currentData().toInt();
+    int symbol2 = ui->symbol2->currentData().toInt();
+    int symbol3 = ui->symbol3->currentData().toInt();
+    int symbol4 = ui->symbol4->currentData().toInt();
+
+    // first symbol is required
+    if (symbol1 == 32)
+    {
+        return;
+    }
+    symbols.append(symbol1);
+
+    // if it rotates, it can either have 1 or 4 symbols
+    if (_data.GetRotates() && symbol2 != 32 && symbol3 != 32 && symbol4 != 32)
+    {
+        symbols.append(symbol2);
+        symbols.append(symbol3);
+        symbols.append(symbol4);
+    }
+    _data.SetSymbols(symbols);
+}
+
 void OMTDialog::InitColorList()
 {
     ui->color->clear();
@@ -133,6 +171,17 @@ void OMTDialog::InitSymList()
         ui->symbol2->addItem(QChar(i), i);
         ui->symbol3->addItem(QChar(i), i);
         ui->symbol4->addItem(QChar(i), i);
+    }
+    // drawing characters
+    static QList<QChar> lineDrawingChars = { 0x2502, 0x2500, 0x2514, 0x2518, 0x250C, 0x2510, 0x251C, 0x2524, 0x2534, 0x252C, 0x253C };
+    // values needed for the sym entry in overmap_terrain
+    static QList<int> lineDrawingSyms = { 4194424, 4194417, 4194413, 4194410, 4194412, 4194411, 4194420, 4194421, 4194422, 4194423, 4194414 };
+    for (int i = 0; i < lineDrawingChars.count(); i++)
+    {
+        ui->symbol1->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+        ui->symbol2->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+        ui->symbol3->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+        ui->symbol4->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
     }
 }
 

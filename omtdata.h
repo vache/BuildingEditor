@@ -20,7 +20,7 @@ public:
     QString GetID() const { return _id; }
     QString GetName() const { return _name; }
     bool GetRotates() const { return _rotate; }
-    QList<QChar> GetSymbols() const { return _symbols; }
+    QList<int> GetSymbols() const { return _symbols; }
     bool GetKnownUp() const { return _knownUp; }
     bool GetKnownDown() const { return _knownDown; }
     QString GetColor() const { return _color; }
@@ -32,7 +32,7 @@ public:
     void SetID(QString id) { _id = id; }
     void SetName(QString name) { _name = name; }
     void SetRotate(bool rotate) { _rotate = rotate; }
-
+    void SetSymbols(QList<int> symbols) { _symbols = symbols ; }
     void SetKnownUp(bool knownUp) { _knownUp = knownUp; }
     void SetKnownDown(bool knownDown) { _knownDown = knownDown; }
     void SetColor(QString color) { _color = color; }
@@ -48,7 +48,7 @@ private:
     QString _id;
     QString _name;
     bool _rotate;
-    QList<QChar> _symbols;
+    QList<int> _symbols;
     bool _knownUp;
     bool _knownDown;
     QString _color;
