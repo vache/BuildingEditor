@@ -5,14 +5,14 @@
 #include <QDateTime>
 #include "features.h"
 
-BuildingModel::BuildingModel(bool active[][10], QObject *parent) :
+BuildingModel::BuildingModel(bool active[][9], QObject *parent) :
     QAbstractTableModel(parent), _rows(0), _cols(0), _maxX(0), _maxY(0)
 {
     int maxX = 0;
     int maxY = 0;
-    for (int row = 0; row < 10; row++)
+    for (int row = 0; row < 9; row++)
     {
-        for (int col = 0; col < 10; col++)
+        for (int col = 0; col < 9; col++)
         {
             _omtv.append(new OvermapTerrain(active[row][col]));
 
@@ -404,5 +404,5 @@ QChar BuildingModel::GetLineDrawingChar(const QModelIndex & index) const
 
 int BuildingModel::OMTvIndex(const QModelIndex &index) const
 {
-    return (((index.row() / OVERMAP_TERRAIN_WIDTH) * _maxY) + (index.column() / OVERMAP_TERRAIN_WIDTH));
+    return (((index.row() / OVERMAP_TERRAIN_WIDTH) * 9) + (index.column() / OVERMAP_TERRAIN_WIDTH));
 }

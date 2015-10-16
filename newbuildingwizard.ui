@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Wizard</string>
   </property>
-  <widget class="QWizardPage" name="wizardPage"/>
-  <widget class="QWizardPage" name="wizardPage1"/>
-  <widget class="QWizardPage" name="wizardPage2"/>
  </widget>
  <resources/>
  <connections/>

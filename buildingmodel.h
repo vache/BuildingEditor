@@ -22,7 +22,7 @@ class BuildingModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit BuildingModel(bool active[][10], QObject *parent = 0);
+    explicit BuildingModel(bool active[][9], QObject *parent = 0);
     ~BuildingModel() override;
 
     int rowCount(const QModelIndex &parent) const;

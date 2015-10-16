@@ -8,6 +8,8 @@
 #include "gaspump.h"
 #include "field.h"
 
+#include "newbuildingwizard.h"
+
 #include <QDebug>
 #include <QFileDialog>
 #include <QSettings>
@@ -152,14 +154,15 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     QSettings settings;
 
     QString dataDir = settings.value("cataclysm_dir", "").toString();
-    QString cataclysmDir = QFileDialog::getExistingDirectory(this, "Select Your Cataclysm Data Directory", dataDir);
-    if (cataclysmDir.isEmpty())
-    {
-        // TODO this should show an error terminate the application, this is just for testing...
-        cataclysmDir = "c:/code/Cataclysm-DDA/data";
-    }
-    settings.setValue("cataclysm_dir", cataclysmDir);
-    p.Parse(cataclysmDir);
+    p.Parse(dataDir);
+//    QString cataclysmDir = QFileDialog::getExistingDirectory(this, "Select Your Cataclysm Data Directory", dataDir);
+//    if (cataclysmDir.isEmpty())
+//    {
+//        // TODO this should show an error terminate the application, this is just for testing...
+//        cataclysmDir = "c:/code/Cataclysm-DDA/data";
+//    }
+//    settings.setValue("cataclysm_dir", cataclysmDir);
+//    p.Parse(cataclysmDir);
 
     ui->mainToolBar->addAction("Write", this, SLOT(Write()));
     ui->mainToolBar->addSeparator();
@@ -193,24 +196,19 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     ui->objectEditor->setVisible(false);
 
+    NewBuildingWizard w;
+    w.exec();
+
     // TEMP TEST CODE
-    bool active[10][10];
-    for (int i = 0; i < 10; i++)
+    bool active[9][9];
+    for (int i = 0; i < 9; i++)
     {
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < 9; j++)
         {
-            if (i == 0 && j == 0)
-            {
-                active[i][j] = true;
-            }
-            else
-            {
-                active[i][j] = false;
-            }
+            active[i][j] = w.GetLayout().at(i * 9 + j);
+            //active[i][j] = false;
         }
     }
-//    active[0][1] = true;
-//    active[1][1] = true;
 
     m = new BuildingModel(active);
     _omtDialog.SetModel(m);
@@ -332,10 +330,10 @@ void BuildingEditor::NewBuilding()
     {
         return;
     }
-    bool active[10][10];
-    for (int i = 0; i < 10; i++)
+    bool active[9][9];
+    for (int i = 0; i < 9; i++)
     {
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < 9; j++)
         {
             active[i][j] = false;
         }

@@ -74,6 +74,19 @@ void JsonParser::Parse(QString directory)
     emit ParsingFinished();
 }
 
+// Assumes directory is the data directory
+// TODO: doesn't do any actual json parsing.  move elsewhere?
+QStringList JsonParser::FindMods(QString directory)
+{
+    QDir dir(directory);
+
+    if (dir.cd("mods"))
+    {
+        return dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    }
+    return QStringList();
+}
+
 void JsonParser::ParseDrawableItem(QJsonObject &object)
 {
     QString description = object.value("name").toString("invalid name");

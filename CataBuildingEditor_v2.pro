@@ -39,7 +39,10 @@ SOURCES += main.cpp\
     field.cpp \
     omtdata.cpp \
     searchmodel.cpp \
-    common.cpp
+    common.cpp \
+    overmapspeciallayout.cpp \
+    specialwizardpage.cpp \
+    overmapspecialdata.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -66,12 +69,14 @@ HEADERS  += buildingeditor.h \
     field.h \
     omtdata.h \
     searchmodel.h \
-    common.h
+    common.h \
+    overmapspeciallayout.h \
+    specialwizardpage.h \
+    overmapspecialdata.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \
     newbuildingwizard.ui \
-    omtdialog.ui
-
-DISTFILES += \
-    fields.json
+    omtdialog.ui \
+    overmapspeciallayout.ui \
+    specialwizardpage.ui

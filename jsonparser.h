@@ -28,6 +28,7 @@ Q_OBJECT
 public:
     JsonParser();
     void Parse(QString directory);
+    static QStringList FindMods(QString directory);
 
 private:
     void ParseDrawableItem(QJsonObject &object);
