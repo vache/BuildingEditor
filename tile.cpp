@@ -6,7 +6,7 @@
 
 Tile::Tile() : _terrain(null_terrain.GetID()), _furniture(null_furniture.GetID()), _trap(null_trap.GetID()),
     _monsterGroup(null_monster_group), _items(QStringList()),_monster(""), _itemGroup(null_item_group),
-    _vehicle(null_vehicle), _toilet(false), _vending(""), _npc(""), _signage(""), _radiation(0), _gasPump(GasPump()),
+    _vehicle(null_vehicle), _toilet(false), _vending(""), _npc(""), _signage(""), _radiation(0), _gasPump(null_gas_pump),
     _rubble(null_rubble), _field(null_field)
 {
 }
@@ -153,7 +153,7 @@ QColor Tile::GetBackgroundColor() const
     {
         return QColor(Qt::yellow);
     }
-    else if (_gasPump.GetFuel() != "" || !_vending.isEmpty() || !_signage.isEmpty())
+    else if (_gasPump.GetFuel() != null_gas_pump.GetFuel() || !_vending.isEmpty() || !_signage.isEmpty())
     {
         return QColor(Qt::gray);
     }
@@ -182,8 +182,8 @@ void Tile::SetTerrain(QString terrain)
         _items.clear();
         _itemGroup = null_item_group;
     }
-    if (Features::GetTerrain(terrain).HasFlag("FLAT") ||
-        Features::GetTerrain(terrain).HasFlag("TINY"))
+    if (!Features::GetTerrain(terrain).HasFlag("FLAT") ||
+        !Features::GetTerrain(terrain).HasFlag("TINY"))
     {
         _vehicle = null_vehicle;
     }
@@ -327,6 +327,28 @@ void Tile::SetField(Field field)
     _field = field;
 }
 
+void Tile::EraseAll()
+{
+    _terrain = null_terrain.GetID();
+    _furniture = null_furniture.GetID();
+    _trap = null_trap.GetID();
+    _monsterGroup = null_monster_group;
+    _items.clear();
+    _monster.clear();
+    _itemGroup = null_item_group;
+    _vehicle = null_vehicle;
+    _toilet = false;
+    _vending.clear();
+    _npc.clear();
+    _signage.clear();
+    _radiation = 0;
+    _gasPump = null_gas_pump;
+    _rubble = null_rubble;
+    _field = null_field;
+
+    DumpTileData();
+}
+
 bool Tile::IsLineDrawing() const
 {
     return Features::GetTerrain(_terrain).HasFlag("AUTO_WALL_SYMBOL");
@@ -377,9 +399,14 @@ void Tile::DumpTileData()
     qDebug() << "Monster Group:" << _monsterGroup.GetID();
     qDebug() << "Monster:" << _monster;
     qDebug() << "Item Group:" << _itemGroup.GetID();
-    qDebug() << "First Item:" << _items.at(0);
+    qDebug() << "Items Count:" << _items.count();
     qDebug() << "Vehicle:" << _vehicle.GetID();
     qDebug() << "NPC:" << _npc;
     qDebug() << "Signage:" << _signage;
     qDebug() << "Radiation:" << _radiation;
+    qDebug() << "Gas Pump:" << _gasPump.GetFuel();
+    qDebug() << "Rubble:" << _rubble.GetRubbleType();
+    qDebug() << "Vending:" << _vending;
+    qDebug() << "Toilet:" << _toilet;
+    qDebug() << "Field:" << _field.GetName();
 }

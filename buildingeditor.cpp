@@ -26,13 +26,15 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     ui->zLevelLE->setHidden(true);
     ui->zLevelSlider->setHidden(true);
-    ui->searchFrame->setHidden(true);
+    ui->lowerToolbar->setHidden(true);
 
     JsonParser p;
 
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(NewBuilding()));
     connect(ui->actionShow, SIGNAL(triggered()), &_omtDialog, SLOT(show()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(Open()));
+    connect(ui->actionExit, SIGNAL(triggered(bool)), this, SLOT(close()));
+    connect(ui->actionAbout, SIGNAL(triggered(bool)), this, SLOT(ShowAboutDialog()));
 
     connect(&p, SIGNAL(ParsedTerrain(Terrain, QString)), this, SLOT(NewTerrain(Terrain, QString)));
     connect(&p, SIGNAL(ParsedFurniture(Furniture, QString)), this, SLOT(NewFurniture(Furniture, QString)));
@@ -46,6 +48,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(&p, SIGNAL(ParsedOMT(OMTData)), &_omtDialog, SLOT(AddOMTData(OMTData)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
+
     connect(ui->search, SIGNAL(clicked(bool)), this, SLOT(Search()));
     connect(ui->searchSelect, SIGNAL(clicked(bool)), this, SLOT(OnSearchSelect()));
     connect(ui->searchHide, SIGNAL(clicked(bool)), this, SLOT(HideSearchArea()));
@@ -102,11 +105,11 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     SetupFields();
 
-    QListWidgetItem* toilet = new QListWidgetItem("Place Toilet Water", ui->specialsWidget);
+    QListWidgetItem* toilet = new QListWidgetItem("Set Toilet Water", ui->specialsWidget);
     toilet->setData(Qt::UserRole, true);
     toilet->setData(FeatureTypeRole, QVariant::fromValue(F_Toilet));
 
-    QListWidgetItem* vending = new QListWidgetItem("Add Vending Machine", ui->specialsWidget);
+    QListWidgetItem* vending = new QListWidgetItem("Set Vending Machine", ui->specialsWidget);
     vending->setData(Qt::UserRole, "vending_food");
     vending->setData(FeatureTypeRole, QVariant::fromValue(F_Vending));
 
@@ -214,6 +217,10 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     _omtDialog.SetModel(m);
     ui->tableView->setModel(m);
 
+    connect(ui->tableView, SIGNAL(EraseIndex(QModelIndex)), m, SLOT(OnEraseIndex(QModelIndex)));
+    connect(ui->tableView, SIGNAL(SelectedIndex(QModelIndex)), m, SLOT(OnSelectedIndex(QModelIndex)));
+    connect(m, SIGNAL(TileSelected(Tile&)), this, SLOT(SetEditTile(Tile&)));
+
     foreach (QString mod, Features::ModList())
     {
         qDebug() << mod;
@@ -248,7 +255,8 @@ void BuildingEditor::Search()
 
     _searchModel->SetSearchResults(items);
 
-    ui->searchFrame->setVisible(true);
+    ui->lowerToolbar->setVisible(true);
+    ui->lowerToolbar->setCurrentWidget(ui->searchWidget);
 }
 
 void BuildingEditor::OnSearchSelect()
@@ -268,7 +276,7 @@ void BuildingEditor::OnSearchSelect()
 
 void BuildingEditor::HideSearchArea()
 {
-    ui->searchFrame->setVisible(false);
+    ui->lowerToolbar->setVisible(false);
 }
 
 void BuildingEditor::SetCurrentPage(QListWidgetItem *item)
@@ -762,4 +770,11 @@ void BuildingEditor::SetupFields()
     {
         ui->fieldName->addItem(fieldID, QVariant::fromValue(Field(fieldID, 0, 1)));
     }
+}
+
+void BuildingEditor::ShowAboutDialog()
+{
+    QString about = "Built by vache using Qt 5.5\n\n"
+                    "For more info, see https://github.com/vache/BuildingEditor/";
+    QMessageBox::about(this, "Cataclysm Building Editor", about);
 }

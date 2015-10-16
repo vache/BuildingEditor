@@ -231,7 +231,7 @@ void BuildingModel::Erase(const QModelIndex& index, int role)
         t.SetVending("");
         break;
     case GasPumpRole:
-        t.SetGasPump(GasPump());
+        t.SetGasPump(null_gas_pump);
         break;
     case RubbleRole:
         t.SetRubble(null_rubble);
@@ -281,6 +281,21 @@ void BuildingModel::OnOmtLoaded(OvermapTerrain* omt)
     _omtv[0] = omt;
 
     emit dataChanged(this->index(0, 0), this->index(23, 23));
+}
+
+void BuildingModel::OnSelectedIndex(QModelIndex index)
+{
+    // find tile at index, send it to the editor
+    Tile& t = GetTileFromIndex(index);
+    emit TileSelected(t);
+}
+
+void BuildingModel::OnEraseIndex(QModelIndex index)
+{
+    qDebug() << "Erasing";
+    Tile& t = GetTileFromIndex(index);
+    t.EraseAll();
+    emit dataChanged(index, index);
 }
 
 Tripoint BuildingModel::GetOMTIndex(const QModelIndex& index) const

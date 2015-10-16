@@ -65,6 +65,8 @@ public:
     inline Rubble GetRubble() const { return _rubble; }
     inline Field GetField() const { return _field; }
 
+    void EraseAll();
+
     bool IsLineDrawing() const;
 
     bool ExportEquivalent(const Tile& other) const;

@@ -106,7 +106,14 @@ void JsonParser::ParseDrawableItem(QJsonObject &object)
     nc_color color = nc_color();
     if (object.contains("color"))
     {
-        color = color_from_string(object.value("color").toString());
+        if (object.value("color").isArray())
+        {
+            color = color_from_string(object.value("color").toArray()[0].toString());
+        }
+        else
+        {
+            color = color_from_string(object.value("color").toString());
+        }
     }
     else if (object.contains("bgcolor"))
     {

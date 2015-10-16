@@ -14,6 +14,7 @@
 // test...
 #include <QListWidgetItem>
 #include "searchmodel.h"
+#include "tile.h"
 
 namespace Ui {
 class BuildingEditor;
@@ -54,6 +55,8 @@ private slots:
     void HideSearchArea();
 
     void SetCurrentPage(QListWidgetItem* item);
+
+    void ShowAboutDialog();
 
 private:
     Ui::BuildingEditor *ui;

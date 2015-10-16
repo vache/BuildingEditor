@@ -39,9 +39,12 @@ public:
 //    OMTData GetDataAt(Tripoint p);
 
 signals:
+    void TileSelected(Tile&);
 
 public slots:
     void OnOmtLoaded(OvermapTerrain* omt);
+    void OnSelectedIndex(QModelIndex);
+    void OnEraseIndex(QModelIndex);
 
 private:
     int _rows;

@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QAction>
 #include "buildingeditor.h"
+#include <QMenu>
 
 BuildingEditorView::BuildingEditorView(QWidget *parent) :
     QTableView(parent), _currentTool(Pen), _currentFeature ("t_null"), _currentFeatureType(F_Terrain),
@@ -53,12 +54,59 @@ void BuildingEditorView::SetEraseMode(bool erase)
     _eraseMode = erase;
 }
 
+void BuildingEditorView::OnSelect()
+{
+    setCurrentIndex(_menuIndex);
+    emit SelectedIndex(_menuIndex);
+}
+
+void BuildingEditorView::OnErase()
+{
+    emit EraseIndex(_menuIndex);
+}
+
+void BuildingEditorView::contextMenuEvent(QContextMenuEvent *event)
+{
+    static QMenu* menu = NULL;
+    if (menu == NULL)
+    {
+        menu = new QMenu(this);
+        //menu->addAction("Select", this, SLOT(OnSelect()));
+        menu->addAction("Erase All Features", this, SLOT(OnErase()));
+    }
+    // select passes index to model, model passes tile back to editor
+    _menuIndex = indexAt(event->pos());
+    menu->popup(event->globalPos());
+}
+
 void BuildingEditorView::mousePressEvent(QMouseEvent *event)
 {
+    // reset the selection
+    setCurrentIndex(QModelIndex());
+
+    if (event->buttons().testFlag(Qt::RightButton))
+    {
+        return;
+    }
+
     switch (_currentTool)
     {
     case Pen:
+    {
+        if (!_eraseMode)
+        {
+            model()->setData(indexAt(event->pos()), _currentFeature, _currentFeatureType);
+        }
+        else
+        {
+            BuildingModel* m = dynamic_cast<BuildingModel*>(model());
+            if (m != NULL)
+            {
+                m->Erase(indexAt(event->pos()), _currentFeatureType);
+            }
+        }
         break;
+    }
     case FilledRectangle:
     case HollowRectangle:
     {
@@ -83,6 +131,11 @@ void BuildingEditorView::mousePressEvent(QMouseEvent *event)
 
 void BuildingEditorView::mouseMoveEvent(QMouseEvent *event)
 {
+    if (event->buttons().testFlag(Qt::RightButton))
+    {
+        return;
+    }
+
     if (this->rect().contains(event->pos()))
     {
         switch (_currentTool)
@@ -122,25 +175,15 @@ void BuildingEditorView::mouseMoveEvent(QMouseEvent *event)
 
 void BuildingEditorView::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event)
+    if (event->buttons().testFlag(Qt::RightButton))
+    {
+        return;
+    }
+
     switch (_currentTool)
     {
     case Pen:
-    {
-        if (!_eraseMode)
-        {
-            model()->setData(indexAt(event->pos()), _currentFeature, _currentFeatureType);
-        }
-        else
-        {
-            BuildingModel* m = dynamic_cast<BuildingModel*>(model());
-            if (m != NULL)
-            {
-                m->Erase(indexAt(event->pos()), _currentFeatureType);
-            }
-        }
         break;
-    }
     case FilledRectangle:
     case HollowRectangle:
     {

@@ -24,7 +24,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>9</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="itemGroupEditor">
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -84,7 +84,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="signageText"/>
+         <widget class="QLineEdit" name="signageText">
+          <property name="toolTip">
+           <string>The text to appear on the sign</string>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer">
@@ -334,6 +338,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="radiationAmount">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of radiation in the tile&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>320</number>
           </property>
@@ -364,7 +371,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="vending"/>
+         <widget class="QComboBox" name="vending">
+          <property name="toolTip">
+           <string>Item group to use as vending machine's contents</string>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_7">
@@ -391,7 +402,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="fuelType"/>
+         <widget class="QComboBox" name="fuelType">
+          <property name="toolTip">
+           <string>What fuel the pump will dispense</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_17">
@@ -402,6 +417,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="minFuel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Minimum amount of fuel to spawn&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>100000</number>
           </property>
@@ -419,6 +437,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="maxFuel">
+          <property name="toolTip">
+           <string>Maximum amount of fuel to spawn</string>
+          </property>
           <property name="maximum">
            <number>100000</number>
           </property>
@@ -466,6 +487,9 @@
             <height>0</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>What furniture should spawn as rubble</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -483,10 +507,16 @@
             <height>0</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>What floor terrain should appear under the rubble</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="placeItems">
+          <property name="toolTip">
+           <string>Should the rubble place items or not</string>
+          </property>
           <property name="text">
            <string>Place Items?</string>
           </property>
@@ -494,6 +524,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="overwrite">
+          <property name="toolTip">
+           <string>Overwrite existing features</string>
+          </property>
           <property name="text">
            <string>Overwrite?</string>
           </property>
@@ -531,7 +564,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="fieldName"/>
+         <widget class="QComboBox" name="fieldName">
+          <property name="toolTip">
+           <string>What field should spawn</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_24">
@@ -542,6 +579,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="fieldAge">
+          <property name="toolTip">
+           <string>Age in turns of the field</string>
+          </property>
           <property name="maximum">
            <number>10000</number>
           </property>
@@ -559,6 +599,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="fieldDensity">
+          <property name="toolTip">
+           <string>How dense the field should be</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -693,6 +736,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Feature to search for</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -702,6 +748,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string/>
             </property>
             <property name="text">
              <string>Search</string>
@@ -725,7 +774,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
@@ -736,7 +785,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -766,7 +815,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -796,7 +845,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -826,7 +875,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -844,7 +893,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -874,7 +923,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -904,7 +953,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -934,7 +983,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -964,7 +1013,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -994,7 +1043,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>171</height>
+             <height>173</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1025,90 +1074,70 @@
      </layout>
     </item>
     <item>
-     <widget class="QFrame" name="searchFrame">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QStackedWidget" name="lowerToolbar">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_17">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_15">
-         <item>
-          <widget class="QTableView" name="searchResults">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_16">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_14"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="searchSelect">
-             <property name="text">
-              <string>Select</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="searchHide">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Hide Results</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
+      <widget class="QWidget" name="searchWidget">
+       <layout class="QHBoxLayout" name="horizontalLayout_15">
+        <item>
+         <widget class="QTableView" name="searchResults">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_16">
+          <item>
+           <widget class="QPushButton" name="searchSelect">
+            <property name="text">
+             <string>Select</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="searchHide">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Hide Results</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1128,15 +1157,24 @@
     </property>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuOMT">
     <property name="title">
-     <string>OMT</string>
+     <string>Edit</string>
     </property>
     <addaction name="actionShow"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHow_to_Use"/>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOMT"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -1154,12 +1192,27 @@
   </action>
   <action name="actionShow">
    <property name="text">
-    <string>show</string>
+    <string>Set OMT Data</string>
    </property>
   </action>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open... (Incomplete)</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionHow_to_Use">
+   <property name="text">
+    <string>How to Use</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

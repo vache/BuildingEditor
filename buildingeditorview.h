@@ -22,6 +22,8 @@ public:
     explicit BuildingEditorView(QWidget *parent = 0);
 
 signals:
+    void EraseIndex(QModelIndex);
+    void SelectedIndex(QModelIndex);
 
 public slots:
     void SetTool(Tool tool);
@@ -31,6 +33,8 @@ public slots:
     void SetEraseMode(bool erase);
 
 private slots:
+    void OnSelect();
+    void OnErase();
 
 private:
     Tool _currentTool;
@@ -40,11 +44,15 @@ private:
     QRubberBand* _rubberBand;
     QPoint _rubberBandOrigin;
 
+    // TODO i dont like this implementation, revisit at some point
+    QModelIndex _menuIndex;
+
     bool _eraseMode;
 
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 #endif // BUILDINGEDITORVIEW_H
