@@ -1,6 +1,8 @@
 #ifndef TRIPOINT_H
 #define TRIPOINT_H
 
+#include <QJsonArray>
+
 class Tripoint
 {
 public:
@@ -14,6 +16,7 @@ public:
     inline void setY(int y) { _y = y; }
     inline void setZ(int z) { _z = z; }
     bool operator==(const Tripoint& other) const;
+    QJsonArray ToJson() const;
 private:
     int _x;
     int _y;

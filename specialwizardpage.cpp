@@ -6,6 +6,7 @@ SpecialWizardPage::SpecialWizardPage(QWidget *parent) :
     ui(new Ui::SpecialWizardPage)
 {
     ui->setupUi(this);
+    ui->widget->SetMini(true);
 }
 
 SpecialWizardPage::~SpecialWizardPage()

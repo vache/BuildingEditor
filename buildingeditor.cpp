@@ -219,7 +219,6 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     connect(ui->tableView, SIGNAL(EraseIndex(QModelIndex)), m, SLOT(OnEraseIndex(QModelIndex)));
     connect(ui->tableView, SIGNAL(SelectedIndex(QModelIndex)), m, SLOT(OnSelectedIndex(QModelIndex)));
-    connect(m, SIGNAL(TileSelected(Tile&)), this, SLOT(SetEditTile(Tile&)));
 
     foreach (QString mod, Features::ModList())
     {

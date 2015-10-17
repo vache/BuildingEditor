@@ -48,3 +48,12 @@ bool Tripoint::operator==(const Tripoint& other) const
 {
     return (_x == other.x()) && (_y == other.y()) && (_z == other.z());
 }
+
+QJsonArray Tripoint::ToJson() const
+{
+    QJsonArray tripoint;
+    tripoint.append(_x);
+    tripoint.append(_y);
+    tripoint.append(_z);
+    return tripoint;
+}
