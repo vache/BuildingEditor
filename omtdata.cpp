@@ -1,11 +1,11 @@
 #include "omtdata.h"
 #include <QJsonArray>
 
-OMTData::OMTData() : _readOnly(false), _id(""), _name(""), _rotate(true), _symbols(QList<int>()),
+OMTData::OMTData() : _readOnly(false), _id(""), _name(""), _rotate(true),
     _knownUp(false), _knownDown(false), _color("black"), _seeCost(0), _extras("none"), _sidewalk(true),
     _allowRoad(false)
 {
-
+    _symbols.append(32);
 }
 
 OMTData OMTData::FromJson(QJsonObject &object)

@@ -22,10 +22,16 @@ public:
     void SetOMTData(OMTData data);
     OMTData GetOMTData() const;
 
+public slots:
+    void OnRotateClicked(bool rotate);
+
 private:
     Ui::OMTWidget *ui;
 
     bool _mini;
+
+    void InitSymList();
+    void InitColorList();
 };
 
 #endif // OMTWIDGET_H

@@ -1,16 +1,40 @@
 #include "overmapspeciallayout.h"
 #include "ui_overmapspeciallayout.h"
 
+#include "common.h"
 #include <QDebug>
+
+LayoutModel::LayoutModel()
+{
+    int size = 21 * rowCount() * columnCount();
+    _overmapsData.fill(OMTData(), size);
+    _activeOvermaps.fill(false, size);
+    _z = 0;
+    _maxZ = 10;
+}
 
 QVariant LayoutModel::data(const QModelIndex &index, int role) const
 {
     bool activeIndex = _activeOvermaps[Index(index)];
+    OMTData data = _overmapsData.at(Index(index));
 
     switch (role)
     {
     case Qt::DisplayRole:
-        return (activeIndex) ? "X" : " ";
+    {
+        //return (activeIndex) ? "X" : " ";
+        int sym = data.GetSymbols()[0];
+        QChar displayChar(sym);
+        if (sym >= 4194410)
+        {
+            displayChar = lineDrawingChars.at(lineDrawingSyms.indexOf(sym));
+        }
+        return displayChar;
+    }
+    case Qt::BackgroundRole:
+        return QBrush(color_from_string(data.GetColor()).bg);
+    case Qt::ForegroundRole:
+        return QBrush(color_from_string(data.GetColor()).fg);
     case Qt::UserRole:
         return activeIndex;
     default:
@@ -25,7 +49,19 @@ bool LayoutModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     if (role == Qt::UserRole)
     {
-        _activeOvermaps[Index(index)] = value.toBool();
+        _activeOvermaps[Index(index)] = true;
+        _overmapsData[Index(index)] = value.value<OMTData>();
+        emit dataChanged(index, index);
+    }
+    return true;
+}
+
+bool LayoutModel::eraseData(const QModelIndex &index, int role)
+{
+    if (role == Qt::UserRole)
+    {
+        _activeOvermaps[Index(index)] = false;
+        _overmapsData[Index(index)] = OMTData();
         emit dataChanged(index, index);
     }
     return true;
@@ -41,8 +77,13 @@ OvermapSpecialLayout::OvermapSpecialLayout(QWidget *parent) :
     ui->layoutTable->setModel(_layoutModel);
 
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelChanged(int)));
-    connect(ui->layoutTable, SIGNAL(clicked(QModelIndex)), this, SLOT(ModelClicked(QModelIndex)));
+    //connect(ui->layoutTable, SIGNAL(clicked(QModelIndex)), this, SLOT(ModelClicked(QModelIndex)));
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), _layoutModel, SLOT(ZLevelChanged(int)));
+
+    connect(ui->apply, SIGNAL(clicked(bool)), this, SLOT(OnApply()));
+    connect(ui->reset, SIGNAL(clicked(bool)), this, SLOT(OnReset()));
+
+    ui->omtWidget->SetMini(true);
 }
 
 OvermapSpecialLayout::~OvermapSpecialLayout()
@@ -53,12 +94,6 @@ OvermapSpecialLayout::~OvermapSpecialLayout()
 void OvermapSpecialLayout::ZLevelChanged(int zLevel)
 {
     ui->zLevelValue->setText(QString::number(zLevel));
-}
-
-void OvermapSpecialLayout::ModelClicked(QModelIndex index)
-{
-    bool enabled = _layoutModel->data(index, Qt::UserRole).toBool();
-    _layoutModel->setData(index, !enabled, Qt::UserRole);
 }
 
 void OvermapSpecialLayout::DumpLayout()
@@ -78,7 +113,7 @@ void OvermapSpecialLayout::DumpLayout()
             }
             qDebug() << row;
         }
-        qDebug() << "-----------------------";
+        qDebug() << "---------";
     }
 }
 
@@ -93,4 +128,25 @@ void OvermapSpecialLayout::SetZLevelsEnabled(bool enabled)
     {
         ui->zLevelSlider->setMaximum(0);
     }
+}
+
+void OvermapSpecialLayout::OnApply()
+{
+    foreach(QModelIndex index, ui->layoutTable->selectionModel()->selectedIndexes())
+    {
+        _layoutModel->setData(index, QVariant::fromValue<OMTData>(ui->omtWidget->GetOMTData()), Qt::UserRole);
+    }
+}
+
+void OvermapSpecialLayout::OnReset()
+{
+    foreach(QModelIndex index, ui->layoutTable->selectionModel()->selectedIndexes())
+    {
+        _layoutModel->eraseData(index, Qt::UserRole);
+    }
+}
+
+void OvermapSpecialLayout::RotateToggled(bool rotate)
+{
+    ui->omtWidget->OnRotateClicked(rotate);
 }

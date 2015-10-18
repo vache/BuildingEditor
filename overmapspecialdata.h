@@ -23,7 +23,8 @@ public:
     static OvermapSpecialData FromJson(QJsonObject& object);
 
     inline void SetID(QString id) { _id = id; }
-    inline void SetLayout(QVector<bool> layout) { _layout = layout; }
+    inline void SetLayout(QVector<SpecialLayoutEntry> layout) { _layout = layout; }
+    void AddLayoutEntry(Tripoint point, QString id, QString connection);
     inline void SetLocations(QStringList locations) { _locations = locations; }
     inline void AddLocation(QString location) { _locations.append(location); }
     inline void SetFlags(QStringList flags) { _flags = flags; }
@@ -39,7 +40,7 @@ public:
     inline bool HasFlag(QString flag) { return _flags.contains(flag); }
 
     inline QString GetID() const { return _id; }
-    inline QVector<bool> GetLayout() const { return _layout; }
+    inline QVector<SpecialLayoutEntry> GetLayout() const { return _layout; }
     inline QStringList GetLocaations() const { return _locations; }
     inline QStringList GetFlags() const { return _flags; }
     inline bool GetRotates() const { return _rotate; }
@@ -51,8 +52,7 @@ public:
 
 private:
     QString _id;
-    QVector<bool> _layout;
-    QVector<SpecialLayoutEntry> _specialLayout;
+    QVector<SpecialLayoutEntry> _layout;
     QStringList _locations;
     QStringList _flags;
     bool _rotate;

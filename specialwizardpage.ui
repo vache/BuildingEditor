@@ -36,16 +36,6 @@
      <item>
       <widget class="OvermapSpecialLayout" name="layout" native="true"/>
      </item>
-     <item>
-      <widget class="OMTWidget" name="widget" native="true">
-       <property name="maximumSize">
-        <size>
-         <width>220</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item row="3" column="0">
@@ -227,12 +217,6 @@ Overmap:</string>
    <class>OvermapSpecialLayout</class>
    <extends>QWidget</extends>
    <header>overmapspeciallayout.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>OMTWidget</class>
-   <extends>QWidget</extends>
-   <header>omtwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

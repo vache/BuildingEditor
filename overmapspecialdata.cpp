@@ -24,7 +24,7 @@ QJsonObject OvermapSpecialData::ToJson() const
     specialObject["id"] = _id;
 
     QJsonArray overmaps;
-    foreach (SpecialLayoutEntry entry, _specialLayout)
+    foreach (SpecialLayoutEntry entry, _layout)
     {
         overmaps.append(entry.ToJson());
     }
@@ -78,4 +78,13 @@ OvermapSpecialData OvermapSpecialData::FromJson(QJsonObject &object)
     data.SetUnique(object.value("unique").toBool(false));
 
     return data;
+}
+
+void OvermapSpecialData::AddLayoutEntry(Tripoint point, QString id, QString connection)
+{
+    SpecialLayoutEntry entry;
+    entry.connection = connection;
+    entry.location = point;
+    entry.overmapTerrainID = id;
+    _layout.append(entry);
 }

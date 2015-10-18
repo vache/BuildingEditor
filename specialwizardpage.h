@@ -2,6 +2,7 @@
 #define SPECIALWIZARDPAGE_H
 
 #include <QWizardPage>
+#include "overmapspecialdata.h"
 
 namespace Ui {
 class SpecialWizardPage;
@@ -16,6 +17,7 @@ public:
     ~SpecialWizardPage();
 
     QVector<bool> GetLayout();
+    OvermapSpecialData GetData();
 
 private:
     Ui::SpecialWizardPage *ui;

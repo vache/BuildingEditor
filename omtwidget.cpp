@@ -1,11 +1,19 @@
 #include "omtwidget.h"
 #include "ui_omtwidget.h"
 
+#include "common.h"
+#include "colors.h"
+
 OMTWidget::OMTWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OMTWidget)
 {
     ui->setupUi(this);
+
+    InitSymList();
+    InitColorList();
+
+    connect(ui->rotate, SIGNAL(toggled(bool)), this, SLOT(OnRotateClicked(bool)));
 }
 
 OMTWidget::~OMTWidget()
@@ -23,6 +31,8 @@ void OMTWidget::SetMini(bool mini)
     ui->knownUp->setHidden(mini);
     ui->label_13->setHidden(mini);
     ui->allowRoad->setHidden(mini);
+    ui->label_2->setHidden(mini);
+    ui->omtID->setHidden(mini);
 }
 
 // sets all the ui values to match the data
@@ -67,6 +77,7 @@ OMTData OMTWidget::GetOMTData() const
     data.SetSidewalk(ui->sidewalk->isChecked());
     data.SetExtras(ui->extras->currentText());
     data.SetSeeCost(ui->seeCost->value());
+    data.SetColor(ui->color->currentData().toString());
     QList<int> symbols;
     int symbol1 = ui->symbol1->currentData().toInt();
     int symbol2 = ui->symbol2->currentData().toInt();
@@ -87,4 +98,47 @@ OMTData OMTWidget::GetOMTData() const
     data.SetSymbols(symbols);
 
     return data;
+}
+
+void OMTWidget::OnRotateClicked(bool rotate)
+{
+    ui->symbol2->setEnabled(rotate);
+    ui->symbol3->setEnabled(rotate);
+    ui->symbol4->setEnabled(rotate);
+}
+
+void OMTWidget::InitSymList()
+{
+    ui->symbol1->clear();
+    ui->symbol2->clear();
+    ui->symbol3->clear();
+    ui->symbol4->clear();
+
+    for (int i = 32; i < 127; i++)
+    {
+        ui->symbol1->addItem(QChar(i), i);
+        ui->symbol2->addItem(QChar(i), i);
+        ui->symbol3->addItem(QChar(i), i);
+        ui->symbol4->addItem(QChar(i), i);
+    }
+    for (int i = 0; i < lineDrawingChars.count(); i++)
+    {
+        ui->symbol1->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+        ui->symbol2->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+        ui->symbol3->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+        ui->symbol4->addItem(lineDrawingChars[i], lineDrawingSyms[i]);
+    }
+}
+
+void OMTWidget::InitColorList()
+{
+    ui->color->clear();
+    int index = 0;
+    foreach (QString colorName, colorList)
+    {
+        ui->color->insertItem(index, colorName.replace("_", " "), colorName);
+        ui->color->setItemData(index, QBrush(color_from_string(colorName).fg), Qt::ForegroundRole);
+        ui->color->setItemData(index, QBrush(color_from_string(colorName).bg), Qt::BackgroundRole);
+        index++;
+    }
 }

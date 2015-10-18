@@ -6,7 +6,8 @@ SpecialWizardPage::SpecialWizardPage(QWidget *parent) :
     ui(new Ui::SpecialWizardPage)
 {
     ui->setupUi(this);
-    ui->widget->SetMini(true);
+
+    connect(ui->rotate, SIGNAL(toggled(bool)), ui->layout, SLOT(RotateToggled(bool)));
 }
 
 SpecialWizardPage::~SpecialWizardPage()
@@ -22,4 +23,20 @@ void SpecialWizardPage::initializePage()
 QVector<bool> SpecialWizardPage::GetLayout()
 {
     return ui->layout->GetLayout();
+}
+
+OvermapSpecialData SpecialWizardPage::GetData()
+{
+    OvermapSpecialData data;
+    data.SetID(ui->specialId->text());
+    for (int z = 10; z >= -10; z--)
+    {
+        for (int y = 0; y <= 9; y++)
+        {
+            for (int x = 0; x <= 9; x++)
+            {
+                Tripoint p(x, y, z);
+            }
+        }
+    }
 }
