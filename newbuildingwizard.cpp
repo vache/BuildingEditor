@@ -2,6 +2,7 @@
 #include "ui_newbuildingwizard.h"
 #include "generalwizardpage.h"
 #include "specialwizardpage.h"
+#include "omtwizardpage.h"
 
 NewBuildingWizard::NewBuildingWizard(QWidget *parent) :
     QWizard(parent),
@@ -11,6 +12,7 @@ NewBuildingWizard::NewBuildingWizard(QWidget *parent) :
 
     setPage(GENERAL_PAGE, new GeneralWizardPage());
     setPage(SPECIAL_PAGE, new SpecialWizardPage());
+    setPage(OMT_PAGE, new OMTWizardPage());
 
     setStartId(GENERAL_PAGE);
 }

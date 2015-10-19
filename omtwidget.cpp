@@ -14,6 +14,10 @@ OMTWidget::OMTWidget(QWidget *parent) :
     InitColorList();
 
     connect(ui->rotate, SIGNAL(toggled(bool)), this, SLOT(OnRotateClicked(bool)));
+
+    connect(ui->omtID, SIGNAL(textChanged(QString)), this, SIGNAL(OMTModified()));
+    connect(ui->omtName, SIGNAL(textChanged(QString)), this, SIGNAL(OMTModified()));
+    connect(ui->symbol1, SIGNAL(currentIndexChanged(int)), this, SIGNAL(OMTModified()));
 }
 
 OMTWidget::~OMTWidget()

@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     overmapspeciallayout.cpp \
     specialwizardpage.cpp \
     overmapspecialdata.cpp \
-    omtwidget.cpp
+    omtwidget.cpp \
+    omtwizardpage.cpp
 
 HEADERS  += buildingeditor.h \
     buildingeditorview.h \
@@ -74,7 +75,8 @@ HEADERS  += buildingeditor.h \
     overmapspeciallayout.h \
     specialwizardpage.h \
     overmapspecialdata.h \
-    omtwidget.h
+    omtwidget.h \
+    omtwizardpage.h
 
 FORMS    += buildingeditor.ui \
     generalwizardpage.ui \
@@ -82,4 +84,5 @@ FORMS    += buildingeditor.ui \
     omtdialog.ui \
     overmapspeciallayout.ui \
     specialwizardpage.ui \
-    omtwidget.ui
+    omtwidget.ui \
+    omtwizardpage.ui

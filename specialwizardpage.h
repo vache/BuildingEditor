@@ -23,6 +23,7 @@ private:
     Ui::SpecialWizardPage *ui;
 
     void initializePage() override;
+    bool isComplete() const override;
 };
 
 #endif // SPECIALWIZARDPAGE_H

@@ -52,14 +52,7 @@ int GeneralWizardPage::nextId() const
     {
         return NewBuildingWizard::OMT_PAGE;
     }
-    else if (ui->existingOMT->isChecked())
-    {
-        return -1;
-    }
-    else
-    {
-        return -1;
-    }
+    return -1;
 }
 
 bool GeneralWizardPage::isComplete() const
@@ -70,6 +63,7 @@ bool GeneralWizardPage::isComplete() const
     }
     if (ui->existingOMT->isChecked())
     {
+        // TODO make sure an OMT ID has been selected.
         if (ui->newMapgenWeight->value() == 0)
         {
             return false;

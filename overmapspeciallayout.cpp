@@ -136,6 +136,7 @@ void OvermapSpecialLayout::OnApply()
     {
         _layoutModel->setData(index, QVariant::fromValue<OMTData>(ui->omtWidget->GetOMTData()), Qt::UserRole);
     }
+    emit LayoutChanged();
 }
 
 void OvermapSpecialLayout::OnReset()
@@ -144,6 +145,7 @@ void OvermapSpecialLayout::OnReset()
     {
         _layoutModel->eraseData(index, Qt::UserRole);
     }
+    emit LayoutChanged();
 }
 
 void OvermapSpecialLayout::RotateToggled(bool rotate)

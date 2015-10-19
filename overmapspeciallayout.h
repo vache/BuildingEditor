@@ -21,7 +21,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override { Q_UNUSED(parent); return 9; }
     int columnCount(const QModelIndex &parent = QModelIndex()) const override { Q_UNUSED(parent); return 9; }
 
-    QVector<bool> GetLayout() { return _activeOvermaps; }
+    QVector<bool> GetLayout() const { return _activeOvermaps; }
+    QVector<OMTData> GetOvermapsData() const { return _overmapsData; }
     void EnablePositiveZ(bool enabled) { if (enabled) { _maxZ = 10; } else { _maxZ = 0; } }
 
 public slots:
@@ -48,7 +49,8 @@ public:
     ~OvermapSpecialLayout();
     void DumpLayout();
     void SetZLevelsEnabled(bool enabled);
-    QVector<bool> GetLayout() { return _layoutModel->GetLayout(); }
+    QVector<bool> GetLayout() const { return _layoutModel->GetLayout(); }
+    QVector<OMTData> GetOvermapsData() const { return _layoutModel->GetOvermapsData(); }
 
 public slots:
     void RotateToggled(bool rotate);
@@ -61,6 +63,9 @@ private slots:
 private:
     Ui::OvermapSpecialLayout *ui;
     LayoutModel* _layoutModel;
+
+signals:
+    void LayoutChanged();
 };
 
 #endif // OVERMAPSPECIALLAYOUT_H

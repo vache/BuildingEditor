@@ -8,6 +8,9 @@ SpecialWizardPage::SpecialWizardPage(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->rotate, SIGNAL(toggled(bool)), ui->layout, SLOT(RotateToggled(bool)));
+    connect(ui->specialId, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
+    connect(ui->layout, SIGNAL(LayoutChanged()), this, SIGNAL(completeChanged()));
+    connect(ui->occurrencesMax, SIGNAL(valueChanged(int)), this, SIGNAL(completeChanged()));
 }
 
 SpecialWizardPage::~SpecialWizardPage()
@@ -18,6 +21,16 @@ SpecialWizardPage::~SpecialWizardPage()
 void SpecialWizardPage::initializePage()
 {
     ui->layout->SetZLevelsEnabled(field("PositiveZLevels").toBool());
+}
+
+bool SpecialWizardPage::isComplete() const
+{
+    // required fields: ID, max occurrences > 0, at least one true in layout
+    if ((!ui->layout->GetLayout().contains(true)) || ui->specialId->text().isEmpty() || ui->occurrencesMax->value() < 1)
+    {
+        return false;
+    }
+    return true;
 }
 
 QVector<bool> SpecialWizardPage::GetLayout()
@@ -35,8 +48,22 @@ OvermapSpecialData SpecialWizardPage::GetData()
         {
             for (int x = 0; x <= 9; x++)
             {
-                Tripoint p(x, y, z);
+                int index = (z * 9 * 9) + (y * 9) + x;
+                if (ui->layout->GetLayout()[index])
+                {
+                    OMTData omtData = ui->layout->GetOvermapsData()[index];
+                    data.AddLayoutEntry(Tripoint(x, y, z), omtData.GetID(), "");
+                }
             }
         }
     }
+    data.SetRotate(ui->rotate->isChecked());
+    data.SetMinCityDistance(ui->cityDistanceMin->value());
+    data.SetMaxCityDistance(ui->cityDistanceMax->value());
+    data.SetMinOccurrences(ui->occurrencesMin->value());
+    data.SetMaxCityDistance(ui->occurrencesMax->value());
+    data.SetUnique(ui->unique->isChecked());
+    // TODO flags and location
+
+    return data;
 }

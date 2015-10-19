@@ -32,6 +32,9 @@ private:
 
     void InitSymList();
     void InitColorList();
+
+signals:
+    void OMTModified();
 };
 
 #endif // OMTWIDGET_H
