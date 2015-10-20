@@ -9,6 +9,7 @@
 #include "overmapterrain.h"
 #include "buildingmodel.h"
 #include "omtdata.h"
+#include "overmapspecialdata.h"
 
 int index(Tripoint p);
 
@@ -22,7 +23,9 @@ public:
     JsonWriter();
     void Write(BuildingModel* model);
     void WriteOMT(OvermapTerrain* t);
+    QJsonObject WriteOMT(OvermapTerrain *t, int weight);
     void WriteOMTData(OMTData data);
+    void WriteSpecialData(OvermapSpecialData data);
 };
 
 #endif // JSONWRITER_H

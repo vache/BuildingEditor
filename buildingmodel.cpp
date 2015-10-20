@@ -6,7 +6,7 @@
 #include "features.h"
 
 BuildingModel::BuildingModel(bool active[][9], QObject *parent) :
-    QAbstractTableModel(parent), _rows(0), _cols(0), _maxX(0), _maxY(0)
+    QAbstractTableModel(parent), _rows(0), _cols(0), _z(0), _maxX(0), _maxY(0)
 {
     int maxX = 0;
     int maxY = 0;
@@ -32,7 +32,7 @@ BuildingModel::BuildingModel(bool active[][9], QObject *parent) :
 }
 
 BuildingModel::BuildingModel(QVector<bool> active, QObject *parent) :
-    QAbstractTableModel(parent), _rows(0), _cols(0), _maxX(0), _maxY(0)
+    QAbstractTableModel(parent), _rows(0), _cols(0), _z(0), _maxX(0), _maxY(0)
 {
     int maxX = 0;
     int maxY = 0;
@@ -180,7 +180,6 @@ bool BuildingModel::setData(const QModelIndex &index, const QVariant &value, int
         emit dataChanged(index, index);
         break;
     case SignRole:
-        qDebug() << value.toString();
         t.SetSignage(value.toString());
         emit dataChanged(index, index);
         break;
@@ -301,7 +300,7 @@ BuildingModel* BuildingModel::CreateSpecialModel(OvermapSpecialData data)
     QVector<bool> activeList;
     foreach (OMTData d, data.GetOMTData())
     {
-        if (d.GetID() != "")
+        if (d.GetName() != "")
         {
             activeList.append(true);
         }
@@ -364,19 +363,10 @@ void BuildingModel::OnEraseIndex(QModelIndex index)
     emit dataChanged(index, index);
 }
 
-Tripoint BuildingModel::GetOMTIndex(const QModelIndex& index) const
+void BuildingModel::OnZLevelChanged(int level)
 {
-    return GetOMTIndex(index.row(), index.column());
-}
-
-Tripoint BuildingModel::GetOMTIndex(int row, int column) const
-{
-    // for a 10x10, index will be 0-239, 0-239
-    int x = column / OVERMAP_TERRAIN_WIDTH;
-    int y = row / OVERMAP_TERRAIN_WIDTH;
-    int z = 0; // TODO fill in
-
-    return Tripoint(x, y, z);
+    _z = level;
+    emit dataChanged(index(0, 0), index(_maxY, _maxX));
 }
 
 OvermapTerrain* BuildingModel::GetOMTFromIndex(const QModelIndex & index) const
@@ -485,5 +475,25 @@ QChar BuildingModel::GetLineDrawingChar(const QModelIndex & index) const
 
 int BuildingModel::OMTvIndex(const QModelIndex &index) const
 {
-    return (((index.row() / OVERMAP_TERRAIN_WIDTH) * 9) + (index.column() / OVERMAP_TERRAIN_WIDTH));
+    //return (((index.row() / OVERMAP_TERRAIN_WIDTH) * 9) + (index.column() / OVERMAP_TERRAIN_WIDTH));
+
+    int zComponent = ((10 - _z) * 9 * 9);
+    int rowComponent = ((index.row() / OVERMAP_TERRAIN_WIDTH) * 9);
+    int colComponent = (index.column() / OVERMAP_TERRAIN_WIDTH);
+    return zComponent + rowComponent + colComponent;
+}
+
+int BuildingModel::Index(Tripoint p) const
+{
+    return Index(p.x(), p.y(), p.z());
+}
+
+int BuildingModel::Index(int x, int y, int z) const
+{
+    return ((10 - z) * 9 * 9) + ((y / OVERMAP_TERRAIN_WIDTH) * 9) + (x / OVERMAP_TERRAIN_WIDTH);
+}
+
+int BuildingModel::Index(const QModelIndex &index) const
+{
+    return OMTvIndex(index);
 }

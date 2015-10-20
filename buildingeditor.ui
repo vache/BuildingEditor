@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1024</width>
-    <height>774</height>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -774,7 +774,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
@@ -785,7 +785,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>139</height>
             </rect>
            </property>
            <attribute name="label">
@@ -815,7 +815,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -845,7 +845,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -893,7 +893,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -923,7 +923,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -953,7 +953,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -983,7 +983,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1013,7 +1013,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1043,7 +1043,7 @@
              <x>0</x>
              <y>0</y>
              <width>400</width>
-             <height>173</height>
+             <height>166</height>
             </rect>
            </property>
            <attribute name="label">

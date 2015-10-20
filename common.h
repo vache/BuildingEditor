@@ -3,6 +3,11 @@
 
 #include <QList>
 
+#define MAX_WIDTH 9
+#define MAX_LENGTH 9
+#define MAX_HEIGHT 10
+#define MIN_HEIGHT -10
+
 // NS, EW, NE, NW, ES, SW, NES, NSW, NEW, ESW, NESW
 static QList<QChar> lineDrawingChars = { 0x2502, 0x2500, 0x2514, 0x2518, 0x250C, 0x2510, 0x251C, 0x2524, 0x2534, 0x252C, 0x253C };
 static QList<int> lineDrawingSyms = { 4194424, 4194417, 4194413, 4194410, 4194412, 4194411, 4194420, 4194421, 4194422, 4194423, 4194414 };

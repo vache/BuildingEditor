@@ -17,15 +17,15 @@
 
 BuildingEditor::BuildingEditor(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::BuildingEditor), m(NULL), _searchModel(NULL), _currentItem(NULL)
+    ui(new Ui::BuildingEditor), _buildingModel(NULL), _searchModel(NULL), _currentItem(NULL)
 {
     ui->setupUi(this);
 
     QCoreApplication::setApplicationName("Cataclysm Building Editor");
     QCoreApplication::setOrganizationName("vache");
 
-    ui->zLevelLE->setHidden(true);
-    ui->zLevelSlider->setHidden(true);
+//    ui->zLevelLE->setHidden(true);
+//    ui->zLevelSlider->setHidden(true);
     ui->lowerToolbar->setHidden(true);
 
     JsonParser p;
@@ -49,6 +49,7 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(ZLevelSliderChanged(int)));
     connect(ui->gridBox, SIGNAL(clicked(bool)), ui->tableView, SLOT(setShowGrid(bool)));
 
+    connect(ui->searchField, SIGNAL(returnPressed()), this, SLOT(Search()));
     connect(ui->search, SIGNAL(clicked(bool)), this, SLOT(Search()));
     connect(ui->searchSelect, SIGNAL(clicked(bool)), this, SLOT(OnSearchSelect()));
     connect(ui->searchHide, SIGNAL(clicked(bool)), this, SLOT(HideSearchArea()));
@@ -199,40 +200,6 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
 
     ui->objectEditor->setVisible(false);
 
-    NewBuildingWizard w;
-    w.exec();
-
-    if (w.IsNewSpecial())
-    {
-        qDebug() << "new special!";
-        qDebug() << QJsonDocument(w.GetSpecialData().ToJson()).toJson();
-    }
-
-    // TEMP TEST CODE
-    bool active[9][9];
-    for (int i = 0; i < 9; i++)
-    {
-        for (int j = 0; j < 9; j++)
-        {
-            // start at z=0 for now...
-            active[i][j] = w.GetLayout().at((10 * 9 * 9) + i * 9 + j);
-            //active[i][j] = false;
-        }
-    }
-
-    m = new BuildingModel(active);
-    _omtDialog.SetModel(m);
-    ui->tableView->setModel(m);
-
-    connect(ui->tableView, SIGNAL(EraseIndex(QModelIndex)), m, SLOT(OnEraseIndex(QModelIndex)));
-    connect(ui->tableView, SIGNAL(SelectedIndex(QModelIndex)), m, SLOT(OnSelectedIndex(QModelIndex)));
-
-    foreach (QString mod, Features::ModList())
-    {
-        qDebug() << mod;
-    }
-    // END TEST CODE
-
     _searchModel = new SearchModel();
     ui->searchResults->setModel(_searchModel);
 }
@@ -338,25 +305,78 @@ void BuildingEditor::ZLevelSliderChanged(int value)
 
 void BuildingEditor::NewBuilding()
 {
-    if (QMessageBox::critical(this, "Create new building", "Are you sure you want to continue?\n"
-                              "This will delete all unsaved changes!",
-                              QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel)
+    if (_buildingModel != NULL)
+    {
+        if (QMessageBox::critical(this, "Create new building", "Are you sure you want to continue?\n"
+                                  "This will delete all unsaved changes!",
+                                  QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel)
+        {
+            return;
+        }
+    }
+//    bool active[9][9];
+//    for (int i = 0; i < 9; i++)
+//    {
+//        for (int j = 0; j < 9; j++)
+//        {
+//            active[i][j] = false;
+//        }
+//    }
+//    active[0][0] = true;
+//    delete _buildingModel;
+//    _buildingModel = new BuildingModel(active);
+//    ui->tableView->setModel(_buildingModel);
+//    _omtDialog.SetModel(_buildingModel);
+
+
+    if (_wizard.exec())
+    {
+        delete _buildingModel;
+    }
+    else
     {
         return;
     }
-    bool active[9][9];
-    for (int i = 0; i < 9; i++)
+
+    if (_wizard.IsNewSpecial())
     {
-        for (int j = 0; j < 9; j++)
-        {
-            active[i][j] = false;
-        }
+        qDebug() << "new special!";
+        qDebug() << QJsonDocument(_wizard.GetSpecialData().ToJson()).toJson();
+        _buildingModel = BuildingModel::CreateSpecialModel(_wizard.GetSpecialData());
     }
-    active[0][0] = true;
-    delete m;
-    m = new BuildingModel(active);
-    ui->tableView->setModel(m);
-    _omtDialog.SetModel(m);
+    else if (_wizard.IsNewOMT())
+    {
+        qDebug() << "new or existing single omt";
+        _buildingModel = BuildingModel::CreateNormalModel(_wizard.GetOMTData());
+    }
+    else
+    {
+        // same as above.
+        bool active[9][9];
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                // start at z=0 for now...
+                active[i][j] = _wizard.GetLayout().at((10 * 9 * 9) + i * 9 + j);
+            }
+        }
+        _buildingModel = new BuildingModel(active);
+    }
+
+    _omtDialog.SetModel(_buildingModel);
+    ui->tableView->setModel(_buildingModel);
+
+    connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), _buildingModel, SLOT(OnZLevelChanged(int)));
+    connect(ui->tableView, SIGNAL(EraseIndex(QModelIndex)), _buildingModel, SLOT(OnEraseIndex(QModelIndex)));
+    connect(ui->tableView, SIGNAL(SelectedIndex(QModelIndex)), _buildingModel, SLOT(OnSelectedIndex(QModelIndex)));
+
+    foreach (QString mod, Features::ModList())
+    {
+        qDebug() << mod;
+    }
+    // END TEST CODE
+
 }
 
 void BuildingEditor::Open()
@@ -365,7 +385,7 @@ void BuildingEditor::Open()
     QString filename = QFileDialog::getOpenFileName(this, "Select a JSON file to open", settings.value("cataclysm_dir", "").toString(), "JSON (*.json)");
 
     JsonLoader l;
-    connect(&l, SIGNAL(OmtLoaded(OvermapTerrain*)), m, SLOT(OnOmtLoaded(OvermapTerrain*)));
+    connect(&l, SIGNAL(OmtLoaded(OvermapTerrain*)), _buildingModel, SLOT(OnOmtLoaded(OvermapTerrain*)));
     l.Load(filename);
 }
 
@@ -535,11 +555,19 @@ void BuildingEditor::NewNPC(QString id, QString name, QString faction, QString c
 void BuildingEditor::Write()
 {
     JsonWriter w;
-    if (!_omtDialog.GetOMTData().IsReadOnly())
+//    if (!_omtDialog.GetOMTData().IsReadOnly())
+//    {
+//        w.WriteOMTData(_omtDialog.GetOMTData());
+//    }
+    if (_wizard.IsNewSpecial())
     {
-        w.WriteOMTData(_omtDialog.GetOMTData());
+        w.WriteSpecialData(_wizard.GetSpecialData());
     }
-    w.Write(m);
+    else if (_wizard.IsNewOMT())
+    {
+        w.WriteOMTData(_wizard.GetOMTData());
+    }
+    w.Write(_buildingModel);
 }
 
 void BuildingEditor::SetObjectEditorMode(QListWidgetItem* i)

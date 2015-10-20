@@ -50,20 +50,19 @@ public slots:
     void OnOmtLoaded(OvermapTerrain* omt);
     void OnSelectedIndex(QModelIndex);
     void OnEraseIndex(QModelIndex);
+    void OnZLevelChanged(int);
 
 private:
     int _rows;
     int _cols;
+    int _z;
 
-    //int _z;
     int _maxX;
     int _maxY;
-    //int _maxZ;
+    int _maxZ;
 
     QList<OvermapTerrain*> _omtv;
 
-    Tripoint GetOMTIndex(const QModelIndex &index) const;
-    Tripoint GetOMTIndex(int row, int column) const;
     OvermapTerrain* GetOMTFromIndex(const QModelIndex & index) const;
     Tripoint GetTileIndex(const QModelIndex &index) const;
     Tripoint GetTileIndex(int row, int column) const;
@@ -72,6 +71,9 @@ private:
     QChar GetLineDrawingChar(const QModelIndex & index) const;
 
     int OMTvIndex(const QModelIndex & index) const;
+    int Index(Tripoint p) const;
+    int Index(int x, int y, int z) const;
+    int Index(const QModelIndex & index) const;
 };
 
 #endif // BUILDINGMODEL_H

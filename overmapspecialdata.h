@@ -37,6 +37,7 @@ public:
     inline void SetMinOccurrences(int minOccurrences) { _minOccurrences = minOccurrences; }
     inline void SetMaxOccurrences(int maxOccurrences) { _maxOccurrences = maxOccurrences; }
     inline void SetOMTData(QVector<OMTData> data) { _overmapData = data; }
+    inline void AddOMTData(OMTData data) { _overmapData.append(data); }
 
     inline bool HasLocation(QString location) { return _locations.contains(location); }
     inline bool HasFlag(QString flag) { return _flags.contains(flag); }
@@ -54,9 +55,9 @@ public:
     inline QVector<OMTData> GetOMTData() const { return _overmapData; }
 
 private:
-    // Only used internally
+    // These get exported as their own objects
     QVector<OMTData> _overmapData;
-    // These all get exported
+    // These all get exported as part of the overmap_special object
     QString _id;
     QVector<SpecialLayoutEntry> _layout;
     QStringList _locations;

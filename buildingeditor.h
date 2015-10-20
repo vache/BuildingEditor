@@ -10,6 +10,7 @@
 #include "features.h"
 #include "itemgroup.h"
 #include "vehicle.h"
+#include "newbuildingwizard.h"
 #include <QActionGroup>
 // test...
 #include <QListWidgetItem>
@@ -61,7 +62,8 @@ private slots:
 private:
     Ui::BuildingEditor *ui;
 
-    BuildingModel* m;
+    NewBuildingWizard _wizard;
+    BuildingModel* _buildingModel;
     SearchModel* _searchModel;
     QActionGroup* _tools;
 

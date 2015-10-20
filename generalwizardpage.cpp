@@ -31,7 +31,7 @@ GeneralWizardPage::GeneralWizardPage(QWidget *parent) :
     setCommitPage(false);
     setFinalPage(false);
 
-    QSettings settings;
+    QSettings settings("vache", "Cataclysm Building Editor");
 
     QString dataDir = settings.value("cataclysm_dir", "").toString();
     ui->dataDirectory->setText(dataDir);
