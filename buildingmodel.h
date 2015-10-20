@@ -7,6 +7,7 @@
 #include "omtdata.h"
 #include "tile.h"
 #include "tripoint.h"
+#include "overmapspecialdata.h"
 
 enum CustomRoles { ExportRole = Qt::UserRole + 1, FeatureTypeRole, TerrainRole, FurnitureRole,
                  TrapRole, MonsterGroupRole, ItemGroupRole, ItemRole, MonsterRole, VehicleRole,
@@ -23,6 +24,7 @@ class BuildingModel : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit BuildingModel(bool active[][9], QObject *parent = 0);
+    explicit BuildingModel(QVector<bool> active, QObject *parent = 0);
     ~BuildingModel() override;
 
     int rowCount(const QModelIndex &parent) const;
@@ -37,6 +39,9 @@ public:
 
 //    void SetDataAt(Tripoint p, OMTData data);
 //    OMTData GetDataAt(Tripoint p);
+
+    static BuildingModel* CreateSpecialModel(OvermapSpecialData data);
+    static BuildingModel* CreateNormalModel(OMTData data);
 
 signals:
     void TileSelected(Tile&);

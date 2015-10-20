@@ -23,17 +23,16 @@ public:
 
     QVector<bool> GetLayout() const { return _activeOvermaps; }
     QVector<OMTData> GetOvermapsData() const { return _overmapsData; }
-    void EnablePositiveZ(bool enabled) { if (enabled) { _maxZ = 10; } else { _maxZ = 0; } }
+    void EnablePositiveZ(bool enabled);
 
 public slots:
     void ZLevelChanged(int zLevel) { _z = zLevel; emit dataChanged(index(0,0), index(9,9)); }
 private:
     int Index(const QModelIndex &index) const
-        { return ((_maxZ - _z) * rowCount() * columnCount()) + index.row() * columnCount() + index.column(); }
+        { return ((10 - _z) * rowCount() * columnCount()) + index.row() * columnCount() + index.column(); }
     QVector<bool> _activeOvermaps;
     QVector<OMTData> _overmapsData;
     int _z;
-    int _maxZ;
 };
 
 namespace Ui {

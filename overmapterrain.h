@@ -16,7 +16,6 @@ public:
 
     inline bool IsActive() const { return _active; }
     void SetActive(bool active);
-    Tile GetTileAtIndex(int tileIndex);
     Tile& GetTile(Tripoint p);
     void SetTile(Tripoint p, Tile t);
     void SetTile(int row, int col, Tile t);

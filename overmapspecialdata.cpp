@@ -28,7 +28,7 @@ QJsonObject OvermapSpecialData::ToJson() const
     {
         overmaps.append(entry.ToJson());
     }
-    specialObject["overmaps"];
+    specialObject["overmaps"] = overmaps;
 
     specialObject["locations"] = QJsonArray::fromStringList(_locations);
 

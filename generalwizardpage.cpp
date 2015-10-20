@@ -86,6 +86,17 @@ void GeneralWizardPage::SetLastPage(bool last)
     setFinalPage(last);
 }
 
+QStringList GeneralWizardPage::GetEnabledMods() const
+{
+    QStringList mods;
+    int count = ui->enabledMods->count();
+    for (int i = 0; i < count; i++)
+    {
+        mods.append(ui->enabledMods->item(0)->text());
+    }
+    return mods;
+}
+
 void GeneralWizardPage::OnBrowse()
 {
     QString dir = ui->dataDirectory->text();

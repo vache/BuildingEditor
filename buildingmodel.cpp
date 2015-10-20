@@ -31,6 +31,36 @@ BuildingModel::BuildingModel(bool active[][9], QObject *parent) :
     _maxX = maxX;
 }
 
+BuildingModel::BuildingModel(QVector<bool> active, QObject *parent) :
+    QAbstractTableModel(parent), _rows(0), _cols(0), _maxX(0), _maxY(0)
+{
+    int maxX = 0;
+    int maxY = 0;
+    for (int z = 10; z >= -10; z--)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                int index = ((10 - z) * 9 * 9) + (row * 9) + col;
+                _omtv.append(new OvermapTerrain(active[index]));
+
+                if (active[index])
+                {
+                    maxX = qMax(maxX, col+1);
+                    maxY = qMax(maxY, row+1);
+                }
+            }
+        }
+    }
+
+    _rows = maxY * OVERMAP_TERRAIN_WIDTH;
+    _cols = maxX * OVERMAP_TERRAIN_WIDTH;
+
+    _maxY = maxY;
+    _maxX = maxX;
+}
+
 BuildingModel::~BuildingModel()
 {
     foreach (OvermapTerrain* omt, _omtv)
@@ -263,6 +293,42 @@ QList<OvermapTerrain*> BuildingModel::GetActiveOvermapTerrains()
     }
 
     return omts;
+}
+
+// TODO: i dont like these, but i want something similar in the end
+BuildingModel* BuildingModel::CreateSpecialModel(OvermapSpecialData data)
+{
+    QVector<bool> activeList;
+    foreach (OMTData d, data.GetOMTData())
+    {
+        if (d.GetID() != "")
+        {
+            activeList.append(true);
+        }
+        else
+        {
+            activeList.append(false);
+        }
+    }
+
+    BuildingModel* model = new BuildingModel(activeList);
+
+    for (int i = 0; i < model->GetOvermapTerrains().count(); i++)
+    {
+        model->GetOvermapTerrains()[i]->SetData(data.GetOMTData()[i]);
+    }
+    return model;
+}
+
+BuildingModel* BuildingModel::CreateNormalModel(OMTData data)
+{
+    QVector<bool> activeList;
+    activeList.fill(false, 21 * 9 * 9);
+    activeList.replace(10*9*9, true);
+    BuildingModel* model = new BuildingModel(activeList);
+    model->GetActiveOvermapTerrains()[0]->SetData(data);
+
+    return model;
 }
 
 void BuildingModel::OnOmtLoaded(OvermapTerrain* omt)

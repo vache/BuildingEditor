@@ -22,6 +22,21 @@ NewBuildingWizard::~NewBuildingWizard()
     delete ui;
 }
 
+bool NewBuildingWizard::IsExistingOMT()
+{
+    return field("ExistingOMT").toBool();
+}
+
+bool NewBuildingWizard::IsNewOMT()
+{
+    return field("NewOMT").toBool();
+}
+
+bool NewBuildingWizard::IsNewSpecial()
+{
+    return field("NewSpecial").toBool();
+}
+
 QVector<bool> NewBuildingWizard::GetLayout()
 {
     if (field("NewSpecial").toBool())
@@ -32,4 +47,19 @@ QVector<bool> NewBuildingWizard::GetLayout()
     layout.fill(false, 9 * 9 * 21);
     layout[0] = true;
     return layout;
+}
+
+OvermapSpecialData NewBuildingWizard::GetSpecialData()
+{
+    return ((SpecialWizardPage*)page(SPECIAL_PAGE))->GetData();
+}
+
+OMTData NewBuildingWizard::GetOMTData()
+{
+    return ((OMTWizardPage*)page(OMT_PAGE))->GetOMTData();
+}
+
+void NewBuildingWizard::Finalize()
+{
+
 }

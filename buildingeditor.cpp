@@ -202,13 +202,20 @@ BuildingEditor::BuildingEditor(QWidget *parent) :
     NewBuildingWizard w;
     w.exec();
 
+    if (w.IsNewSpecial())
+    {
+        qDebug() << "new special!";
+        qDebug() << QJsonDocument(w.GetSpecialData().ToJson()).toJson();
+    }
+
     // TEMP TEST CODE
     bool active[9][9];
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
         {
-            active[i][j] = w.GetLayout().at(i * 9 + j);
+            // start at z=0 for now...
+            active[i][j] = w.GetLayout().at((10 * 9 * 9) + i * 9 + j);
             //active[i][j] = false;
         }
     }

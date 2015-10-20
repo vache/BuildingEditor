@@ -8,6 +8,8 @@ OMTWizardPage::OMTWizardPage(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->widget, SIGNAL(OMTModified()), this, SIGNAL(completeChanged()));
+
+    setFinalPage(true);
 }
 
 OMTWizardPage::~OMTWizardPage()

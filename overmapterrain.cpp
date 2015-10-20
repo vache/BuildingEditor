@@ -4,11 +4,6 @@ OvermapTerrain::OvermapTerrain(bool active) : _active(active)
 {
 }
 
-Tile OvermapTerrain::GetTileAtIndex(int tileIndex)
-{
-    return BuildingTileArea.at(tileIndex);
-}
-
 Tile& OvermapTerrain::GetTile(Tripoint p)
 {
     return _tiles[p];

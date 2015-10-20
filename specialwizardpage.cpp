@@ -1,6 +1,8 @@
 #include "specialwizardpage.h"
 #include "ui_specialwizardpage.h"
 
+#include <QDebug>
+
 SpecialWizardPage::SpecialWizardPage(QWidget *parent) :
     QWizardPage(parent),
     ui(new Ui::SpecialWizardPage)
@@ -11,6 +13,12 @@ SpecialWizardPage::SpecialWizardPage(QWidget *parent) :
     connect(ui->specialId, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
     connect(ui->layout, SIGNAL(LayoutChanged()), this, SIGNAL(completeChanged()));
     connect(ui->occurrencesMax, SIGNAL(valueChanged(int)), this, SIGNAL(completeChanged()));
+    connect(ui->forestLocation, SIGNAL(toggled(bool)), this, SIGNAL(completeChanged()));
+    connect(ui->highwayLocation, SIGNAL(toggled(bool)), this, SIGNAL(completeChanged()));
+    connect(ui->landLocation, SIGNAL(toggled(bool)), this, SIGNAL(completeChanged()));
+    connect(ui->wildernessLocation, SIGNAL(toggled(bool)), this, SIGNAL(completeChanged()));
+
+    setFinalPage(true);
 }
 
 SpecialWizardPage::~SpecialWizardPage()
@@ -25,8 +33,11 @@ void SpecialWizardPage::initializePage()
 
 bool SpecialWizardPage::isComplete() const
 {
-    // required fields: ID, max occurrences > 0, at least one true in layout
-    if ((!ui->layout->GetLayout().contains(true)) || ui->specialId->text().isEmpty() || ui->occurrencesMax->value() < 1)
+    // required fields: ID, max occurrences > 0, at least one true in layout, at least one location checked
+    if ((!ui->layout->GetLayout().contains(true)) || ui->specialId->text().isEmpty() ||
+        (ui->occurrencesMax->value() < 1) ||
+        (!ui->wildernessLocation->isChecked() && !ui->highwayLocation->isChecked() &&
+         !ui->landLocation->isChecked() && !ui->forestLocation->isChecked()))
     {
         return false;
     }
@@ -41,29 +52,50 @@ QVector<bool> SpecialWizardPage::GetLayout()
 OvermapSpecialData SpecialWizardPage::GetData()
 {
     OvermapSpecialData data;
-    data.SetID(ui->specialId->text());
+    QString specialID = ui->specialId->text();
+    data.SetID(specialID);
+    data.SetOMTData(ui->layout->GetOvermapsData());
+    qDebug() << "before loop" << ui->layout->GetLayout().size();
     for (int z = 10; z >= -10; z--)
     {
-        for (int y = 0; y <= 9; y++)
+        for (int y = 0; y < 9; y++)
         {
-            for (int x = 0; x <= 9; x++)
+            for (int x = 0; x < 9; x++)
             {
-                int index = (z * 9 * 9) + (y * 9) + x;
+                int index = ((10 - z) * 9 * 9) + (y * 9) + x;
                 if (ui->layout->GetLayout()[index])
                 {
                     OMTData omtData = ui->layout->GetOvermapsData()[index];
+                    QString pattern = "%1_%2_%3_%4";
+                    omtData.SetID(pattern.arg(specialID).arg(QString::number(z).replace('-', 'b')).arg(x).arg(y));
                     data.AddLayoutEntry(Tripoint(x, y, z), omtData.GetID(), "");
                 }
             }
         }
     }
+    qDebug() << "after loop";
     data.SetRotate(ui->rotate->isChecked());
     data.SetMinCityDistance(ui->cityDistanceMin->value());
     data.SetMaxCityDistance(ui->cityDistanceMax->value());
     data.SetMinOccurrences(ui->occurrencesMin->value());
     data.SetMaxCityDistance(ui->occurrencesMax->value());
     data.SetUnique(ui->unique->isChecked());
-    // TODO flags and location
+    if (ui->landLocation->isChecked())
+    {
+        data.AddLocation("land");
+    }
+    if (ui->forestLocation->isChecked())
+    {
+        data.AddLocation("forest");
+    }
+    if (ui->highwayLocation->isChecked())
+    {
+        data.AddLocation("by_hiway");
+    }
+    if (ui->wildernessLocation->isChecked())
+    {
+        data.AddLocation("forest");
+    }
 
     return data;
 }

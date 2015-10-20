@@ -4,6 +4,7 @@
 #include <QString>
 #include <QVector>
 #include <QJsonObject>
+#include "omtdata.h"
 #include "tripoint.h"
 
 struct SpecialLayoutEntry
@@ -35,6 +36,7 @@ public:
     inline void SetMaxCityDistance(int maxDistance) { _maxCityDistance = maxDistance; }
     inline void SetMinOccurrences(int minOccurrences) { _minOccurrences = minOccurrences; }
     inline void SetMaxOccurrences(int maxOccurrences) { _maxOccurrences = maxOccurrences; }
+    inline void SetOMTData(QVector<OMTData> data) { _overmapData = data; }
 
     inline bool HasLocation(QString location) { return _locations.contains(location); }
     inline bool HasFlag(QString flag) { return _flags.contains(flag); }
@@ -49,8 +51,12 @@ public:
     inline int GetMaxCityDistance() const { return _maxCityDistance; }
     inline int GetMinOccurrences() const { return _minOccurrences; }
     inline int GetMaxOccurrences() const { return _maxOccurrences; }
+    inline QVector<OMTData> GetOMTData() const { return _overmapData; }
 
 private:
+    // Only used internally
+    QVector<OMTData> _overmapData;
+    // These all get exported
     QString _id;
     QVector<SpecialLayoutEntry> _layout;
     QStringList _locations;

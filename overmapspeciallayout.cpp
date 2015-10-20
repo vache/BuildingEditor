@@ -10,7 +10,6 @@ LayoutModel::LayoutModel()
     _overmapsData.fill(OMTData(), size);
     _activeOvermaps.fill(false, size);
     _z = 0;
-    _maxZ = 10;
 }
 
 QVariant LayoutModel::data(const QModelIndex &index, int role) const
@@ -65,6 +64,19 @@ bool LayoutModel::eraseData(const QModelIndex &index, int role)
         emit dataChanged(index, index);
     }
     return true;
+}
+
+// set +Z overmap terrains as false/default
+void LayoutModel::EnablePositiveZ(bool enabled)
+{
+    if (!enabled)
+    {
+        for (int index = 0; index < 10 * 9 * 9; index++)
+        {
+            _activeOvermaps.replace(index, false);
+            _overmapsData.replace(index, OMTData());
+        }
+    }
 }
 
 OvermapSpecialLayout::OvermapSpecialLayout(QWidget *parent) :

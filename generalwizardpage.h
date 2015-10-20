@@ -19,6 +19,7 @@ public:
     int nextId() const override;
     bool isComplete() const override;
     bool isFinalPage() const;
+    QStringList GetEnabledMods() const;
 
 private slots:
     void SetLastPage(bool last);
