@@ -1364,11 +1364,31 @@ void JsonWriter::WriteOMTData(OMTData data)
 
 void JsonWriter::WriteSpecialData(OvermapSpecialData data)
 {
-    qDebug() << QJsonDocument(data.ToJson()).toJson();
-    QJsonArray omtDataArray;
+
+    QFile jsonFile;
+    QSettings settings;
+    QString dataDir = settings.value("cataclysm_dir", "").toString();
+    QString filename = QFileDialog::getSaveFileName(0, "Save As...", dataDir, "JSON (*.json)");
+
+    if (filename.isEmpty())
+    {
+        return;
+    }
+    QJsonArray docArray;
+    docArray.append(data.ToJson());
     foreach (OMTData omtData, data.GetOMTData())
     {
-        omtDataArray.append(omtData.ToJson());
+        if (omtData.GetID() != "")
+        {
+            docArray.append(omtData.ToJson());
+        }
     }
-    qDebug() << QJsonDocument(omtDataArray).toJson();
+    QJsonDocument doc(docArray);
+    jsonFile.setFileName(filename);
+    jsonFile.open(QIODevice::Text | QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream ts(&jsonFile);
+    ts << doc.toJson();
+    ts.flush();
+    jsonFile.flush();
+    jsonFile.close();
 }

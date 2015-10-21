@@ -331,7 +331,10 @@ void BuildingEditor::NewBuilding()
 
     if (_wizard.exec())
     {
-        delete _buildingModel;
+        if (_buildingModel != NULL)
+        {
+            delete _buildingModel;
+        }
     }
     else
     {
@@ -370,13 +373,7 @@ void BuildingEditor::NewBuilding()
     connect(ui->zLevelSlider, SIGNAL(valueChanged(int)), _buildingModel, SLOT(OnZLevelChanged(int)));
     connect(ui->tableView, SIGNAL(EraseIndex(QModelIndex)), _buildingModel, SLOT(OnEraseIndex(QModelIndex)));
     connect(ui->tableView, SIGNAL(SelectedIndex(QModelIndex)), _buildingModel, SLOT(OnSelectedIndex(QModelIndex)));
-
-    foreach (QString mod, Features::ModList())
-    {
-        qDebug() << mod;
-    }
-    // END TEST CODE
-
+    qDebug() << "Finished NewBuilding()";
 }
 
 void BuildingEditor::Open()

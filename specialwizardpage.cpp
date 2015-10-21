@@ -54,6 +54,7 @@ OvermapSpecialData SpecialWizardPage::GetData()
     OvermapSpecialData data;
     QString specialID = ui->specialId->text();
     data.SetID(specialID);
+    data.SetRotate(ui->rotate->isChecked());
     qDebug() << "before loop" << ui->layout->GetLayout().size();
     for (int z = 10; z >= -10; z--)
     {
@@ -67,14 +68,24 @@ OvermapSpecialData SpecialWizardPage::GetData()
                     OMTData omtData = ui->layout->GetOvermapsData()[index];
                     QString pattern = "%1_%2_%3_%4";
                     omtData.SetID(pattern.arg(specialID).arg(QString::number(z).replace('-', 'b')).arg(x).arg(y));
+                    omtData.SetRotate(data.GetRotates());
                     data.AddOMTData(omtData);
-                    data.AddLayoutEntry(Tripoint(x, y, z), omtData.GetID(), "");
+                    QString layoutID = omtData.GetID();
+                    if (data.GetRotates())
+                    {
+                        omtData = omtData.GetID().append("_north");
+                    }
+                    data.AddLayoutEntry(Tripoint(x, y, z), layoutID, "");
+                }
+                else
+                {
+                    // this is a necessary evil right now.  i need to refactor how this whole thing works eventually
+                    data.AddOMTData(OMTData());
                 }
             }
         }
     }
     qDebug() << "after loop";
-    data.SetRotate(ui->rotate->isChecked());
     data.SetMinCityDistance(ui->cityDistanceMin->value());
     data.SetMaxCityDistance(ui->cityDistanceMax->value());
     data.SetMinOccurrences(ui->occurrencesMin->value());
