@@ -73,7 +73,7 @@ OvermapSpecialData SpecialWizardPage::GetData()
                     QString layoutID = omtData.GetID();
                     if (data.GetRotates())
                     {
-                        omtData = omtData.GetID().append("_north");
+                        layoutID = layoutID.append("_north");
                     }
                     data.AddLayoutEntry(Tripoint(x, y, z), layoutID, "");
                 }
@@ -89,7 +89,7 @@ OvermapSpecialData SpecialWizardPage::GetData()
     data.SetMinCityDistance(ui->cityDistanceMin->value());
     data.SetMaxCityDistance(ui->cityDistanceMax->value());
     data.SetMinOccurrences(ui->occurrencesMin->value());
-    data.SetMaxCityDistance(ui->occurrencesMax->value());
+    data.SetMaxOccurrences(ui->occurrencesMax->value());
     data.SetUnique(ui->unique->isChecked());
     if (ui->landLocation->isChecked())
     {
@@ -105,7 +105,7 @@ OvermapSpecialData SpecialWizardPage::GetData()
     }
     if (ui->wildernessLocation->isChecked())
     {
-        data.AddLocation("forest");
+        data.AddLocation("wilderness");
     }
 
     return data;

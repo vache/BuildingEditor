@@ -300,7 +300,6 @@ BuildingModel* BuildingModel::CreateSpecialModel(OvermapSpecialData data)
     QVector<bool> activeList;
     foreach (OMTData d, data.GetOMTData())
     {
-        qDebug() << d.GetName() << d.GetID();
         if (d.GetName() != "")
         {
             activeList.append(true);
@@ -310,18 +309,12 @@ BuildingModel* BuildingModel::CreateSpecialModel(OvermapSpecialData data)
             activeList.append(false);
         }
     }
-    qDebug() << activeList.count();
     BuildingModel* model = new BuildingModel(activeList);
 
-    qDebug() << "model created";
-    qDebug() << model->GetActiveOvermapTerrains().count() << model->GetOvermapTerrains().count() <<
-                data.GetOMTData().count();
-    for (int i = 0; i < model->GetActiveOvermapTerrains().count(); i++)
+    for (int i = 0; i < model->GetOvermapTerrains().count(); i++)
     {
-        qDebug() << i << data.GetOMTData()[i].GetID();
-        model->GetActiveOvermapTerrains()[i]->SetData(data.GetOMTData()[i]);
+        model->GetOvermapTerrains()[i]->SetData(data.GetOMTData()[i]);
     }
-    qDebug() << "Set all data";
     return model;
 }
 
