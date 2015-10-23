@@ -355,16 +355,10 @@ void BuildingEditor::NewBuilding()
     else
     {
         // same as above.
-        bool active[9][9];
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                // start at z=0 for now...
-                active[i][j] = _wizard.GetLayout().at((10 * 9 * 9) + i * 9 + j);
-            }
-        }
-        _buildingModel = new BuildingModel(active);
+        QVector<bool> activeList;
+        activeList.fill(false, 21 * 9 * 9);
+        activeList.replace(10*9*9, true);
+        _buildingModel = new BuildingModel(activeList);
     }
 
     _omtDialog.SetModel(_buildingModel);
