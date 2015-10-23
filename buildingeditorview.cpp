@@ -67,6 +67,10 @@ void BuildingEditorView::OnErase()
 
 void BuildingEditorView::contextMenuEvent(QContextMenuEvent *event)
 {
+    if (model() == NULL)
+    {
+        return;
+    }
     static QMenu* menu = NULL;
     if (menu == NULL)
     {
@@ -81,6 +85,10 @@ void BuildingEditorView::contextMenuEvent(QContextMenuEvent *event)
 
 void BuildingEditorView::mousePressEvent(QMouseEvent *event)
 {
+    if (model() == NULL)
+    {
+        return;
+    }
     // reset the selection
     setCurrentIndex(QModelIndex());
 
@@ -131,6 +139,10 @@ void BuildingEditorView::mousePressEvent(QMouseEvent *event)
 
 void BuildingEditorView::mouseMoveEvent(QMouseEvent *event)
 {
+    if (model() == NULL)
+    {
+        return;
+    }
     if (event->buttons().testFlag(Qt::RightButton))
     {
         return;
@@ -175,6 +187,10 @@ void BuildingEditorView::mouseMoveEvent(QMouseEvent *event)
 
 void BuildingEditorView::mouseReleaseEvent(QMouseEvent *event)
 {
+    if (model() == NULL)
+    {
+        return;
+    }
     if (event->buttons().testFlag(Qt::RightButton))
     {
         return;
