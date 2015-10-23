@@ -74,6 +74,7 @@ private:
     int Index(Tripoint p) const;
     int Index(int x, int y, int z) const;
     int Index(const QModelIndex & index) const;
+    int Index(const QModelIndex &index, int z) const;
 };
 
 #endif // BUILDINGMODEL_H

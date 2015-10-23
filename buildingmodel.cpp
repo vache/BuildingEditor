@@ -117,12 +117,60 @@ QVariant BuildingModel::data(const QModelIndex &index, int role) const
         {
             return GetLineDrawingChar(index);
         }
-        return tile.GetDisplayChar();
+        else if (tile.GetTerrainID() == "t_null")
+        {
+            // grab tile from z level below then above. look for up/down connections
+            Tile below = _omtv[Index(index, _z - 1)]->GetTile(GetTileIndex(index));
+            if (Features::GetTerrain(below.GetTerrainID()).HasFlag("GOES_UP"))
+            {
+                return below.GetTerrainChar();
+            }
+            Tile above = _omtv[Index(index, _z + 1)]->GetTile(GetTileIndex(index));
+            if (Features::GetTerrain(above.GetTerrainID()).HasFlag("GOES_DOWN"))
+            {
+                return above.GetTerrainChar();
+            }
+            return tile.GetDisplayChar();
+        }
+        else
+        {
+            return tile.GetDisplayChar();
+        }
     }
     case Qt::BackgroundRole:
+    {
+        if (tile.GetTerrainID() == "t_null")
+        {
+            Tile below = _omtv[Index(index, _z - 1)]->GetTile(GetTileIndex(index));
+            if (Features::GetTerrain(below.GetTerrainID()).HasFlag("GOES_UP"))
+            {
+                return QBrush(Qt::gray);
+            }
+            Tile above = _omtv[Index(index, _z + 1)]->GetTile(GetTileIndex(index));
+            if (Features::GetTerrain(above.GetTerrainID()).HasFlag("GOES_DOWN"))
+            {
+                return QBrush(Qt::gray);
+            }
+        }
         return QBrush(tile.GetBackgroundColor());
+    }
     case Qt::ForegroundRole:
+    {
+        if (tile.GetTerrainID() == "t_null")
+        {
+            Tile below = _omtv[Index(index, _z - 1)]->GetTile(GetTileIndex(index));
+            if (Features::GetTerrain(below.GetTerrainID()).HasFlag("GOES_UP"))
+            {
+                return QBrush(Features::GetTerrain(below.GetTerrainID()).GetForeground());
+            }
+            Tile above = _omtv[Index(index, _z + 1)]->GetTile(GetTileIndex(index));
+            if (Features::GetTerrain(above.GetTerrainID()).HasFlag("GOES_DOWN"))
+            {
+                return QBrush(Features::GetTerrain(above.GetTerrainID()).GetForeground());
+            }
+        }
         return QBrush(tile.GetForegroundColor());
+    }
     default:
         return QVariant();
     }
@@ -495,4 +543,9 @@ int BuildingModel::Index(int x, int y, int z) const
 int BuildingModel::Index(const QModelIndex &index) const
 {
     return OMTvIndex(index);
+}
+
+int BuildingModel::Index(const QModelIndex &index, int z) const
+{
+    return Index(index.column(), index.row(), z);
 }
